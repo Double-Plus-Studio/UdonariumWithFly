@@ -12,23 +12,12 @@
     </select>
   </div>
   <div class="flex-item">
-    <div style="float: right; margin-top: 3px; margin-right: 3px">
-      <label sytle="white-space: nowrap">
-        <input name="show-hide-images" type="checkbox" value="Show Hides" checked="{{isShowHideImages ? 'checked' : ''}}" (click)="onShowHiddenImages($event)">
-        <i class="material-icons" style="font-size: smaller" [ngClass]="{'red-eye': isShowHideImages}">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
-      </label>
-    </div>
     @if (!isEmpty || selectedTable) {
       <div class="images-select">
         <div>
           <b>圖片</b>
           <span (click)="openBgImageModal()" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'">
-            @if (getHidden(tableBackgroundImage)) {
-              <span style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
-                <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
-              </span>
-            }
-            <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableBackgroundImage) }" [src]="tableBackgroundImage.url | safe: 'resourceUrl'" draggable="false">
+            <img height="120" [src]="tableBackgroundImage.url | safe: 'resourceUrl'" draggable="false">
           </span>
         </div>
       </div>
@@ -42,12 +31,7 @@
           }
           @if (tableDistanceviewImage.url) {
             <span style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal()">
-              @if (getHidden(tableDistanceviewImage)) {
-                <span style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
-                  <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
-                </span>
-              }
-              <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableDistanceviewImage) }" [src]="tableDistanceviewImage.url | safe: 'resourceUrl'" draggable="false">
+              <img height="120" [src]="tableDistanceviewImage.url | safe: 'resourceUrl'" draggable="false">
             </span>
           }
         </div>
@@ -60,12 +44,7 @@
           }
           @if (tableDistanceviewImage2.url) {
             <span style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal2()">
-              @if (getHidden(tableDistanceviewImage2)) {
-                <span style="display: block; position: absolute; text-align: right; top: 0px; right: 0px; pointer-events: none; z-index: 5">
-                  <i class="material-icons" [class]="isShowHideImages ? 'red-eye': 'grow'" style="margin-right: 2px; font-size: 16px; display: block">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
-                </span>
-              }
-              <img height="120" [ngClass]="{ blackout: !isShowHideImages && getHidden(tableDistanceviewImage2) }" [src]="tableDistanceviewImage2.url | safe: 'resourceUrl'" draggable="false">
+              <img height="120" [src]="tableDistanceviewImage2.url | safe: 'resourceUrl'" draggable="false">
             </span>
           }
         </div>
