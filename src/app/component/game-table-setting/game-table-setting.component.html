@@ -12,6 +12,11 @@
     </select>
   </div>
   <div class="flex-item">
+    @if (!isGMMode) {
+      <div style="float: right; margin-top: 3px; margin-right: 3px">
+        <span style="font-size: 0.8em; color: #888;">🔒 僅 GM 可編輯</span>
+      </div>
+    }
     @if (!isEmpty || selectedTable) {
       <div class="images-select">
         <div>
@@ -136,9 +141,6 @@
         }
         @if (isGMMode && isDeleted) {
           <button (click)="restore()">還原</button>
-        }
-        @if (!isGMMode) {
-          <span style="font-size: 0.8em; color: #888; margin-left: 1em;">🔒 僅 GM 可編輯</span>
         }
       </div>
     }
