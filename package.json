@@ -8,7 +8,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package && node scripts/generate-bcdice-registry.mjs"
   },
   "private": true,
   "dependencies": {
