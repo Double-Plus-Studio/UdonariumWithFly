@@ -14,11 +14,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/udonarium",
+            "outputPath": {
+              "base": "dist/udonarium"
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -52,7 +53,7 @@
               "skyway-js",
               "vkbeautify"
             ],
-            "main": "src/main.ts"
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
@@ -75,7 +76,6 @@
                 }
               ],
               "serviceWorker": false,
-              "ngswConfigPath": "src/ngsw-config.json",
               "outputHashing": "all"
             },
             "development": {

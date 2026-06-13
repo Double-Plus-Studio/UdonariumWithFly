@@ -21,7 +21,7 @@
     "@angular/platform-browser-dynamic": "^19.2.25",
     "@angular/router": "^19.2.25",
     "@angular/service-worker": "^19.2.25",
-    "@angular/youtube-player": "^17.3.10",
+    "@angular/youtube-player": "^19.2.19",
     "@skyway-sdk/core": "~1.9.2",
     "@skyway-sdk/token": "~1.6.3",
     "@trystero-p2p/firebase": "^0.25.1",
