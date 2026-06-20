@@ -50,6 +50,7 @@ export class TrysteroConnection implements Connection {
   private pingInterval: ReturnType<typeof setInterval> | null = null;
   private syncInterval: ReturnType<typeof setInterval> | null = null;
   private unlistenReconnect: (() => void) | null = null;
+  private reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private lastReconnectTime = 0;
   private reconnectRequestedPeers = new Map<string, number>();
 
@@ -79,6 +80,7 @@ export class TrysteroConnection implements Connection {
     if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
     if (this.syncInterval) { clearInterval(this.syncInterval); this.syncInterval = null; }
     if (this.unlistenReconnect) { this.unlistenReconnect(); this.unlistenReconnect = null; }
+    if (this.reconnectTimeoutId) { clearTimeout(this.reconnectTimeoutId); this.reconnectTimeoutId = null; }
     this.lobby?.unregister();
     this.room?.leave();
     this.room = null;
@@ -326,7 +328,8 @@ export class TrysteroConnection implements Connection {
     const roomName = this._peer.roomName;
     const password = this._peer.password;
     // setTimeout 避免在 Firebase callback 內同步呼叫 close()
-    setTimeout(() => {
+    this.reconnectTimeoutId = setTimeout(() => {
+      this.reconnectTimeoutId = null;
       console.log('Trystero: reconnect requested, rejoining room');
       this.close();
       this.open(userId, roomId, roomName, password);
