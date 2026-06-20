@@ -230,6 +230,11 @@ export class TrysteroConnection implements Connection {
         this.removePeer(trysteroId);
       };
 
+      // 無論是否有初始連線，進房間後就啟動 sync，確保 Trystero 完全沒連上任何人時也能觸發重連
+      if (peer.isRoom && !this.syncInterval) {
+        this.syncInterval = setInterval(() => this.syncRoomPeersAsync(), 60000);
+      }
+
       this._peer.isOpen = true;
       if (this.callback.onOpen) this.callback.onOpen(this._peer);
 
@@ -279,11 +284,6 @@ export class TrysteroConnection implements Connection {
     // Start periodic ping if not already running
     if (!this.pingInterval) {
       this.pingInterval = setInterval(() => this.updatePingAll(), 30000);
-    }
-
-    // Start periodic room peer sync if not already running
-    if (!this.syncInterval && this._peer?.isRoom) {
-      this.syncInterval = setInterval(() => this.syncRoomPeersAsync(), 60000);
     }
   }
 
