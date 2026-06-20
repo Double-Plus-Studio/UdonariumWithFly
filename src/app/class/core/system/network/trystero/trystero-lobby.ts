@@ -1,10 +1,11 @@
 import { FirebaseApp } from 'firebase/app';
 import { Auth, getAuth, signInAnonymously } from 'firebase/auth';
-import { Database, get, getDatabase, onDisconnect, ref, remove, set } from 'firebase/database';
+import { Database, get, getDatabase, onChildAdded, onDisconnect, push, ref, remove, set } from 'firebase/database';
 import { IPeerContext } from '../peer-context';
 
 const LOBBY_ROOT = 'udonarium-lobby';
 const STALE_MS = 10 * 60 * 1000;
+const RECONNECT_REQUESTS_PATH = `${LOBBY_ROOT}/reconnect-requests`;
 
 interface LobbyEntry {
   peerId: string;
@@ -43,6 +44,24 @@ export class TrysteroLobby {
     const peerRef = ref(this.db, `${LOBBY_ROOT}/peers/${this.registeredPeerId}`);
     await remove(peerRef);
     this.registeredPeerId = null;
+  }
+
+  async requestReconnect(targetPeerId: string): Promise<void> {
+    await this.ensureSignedIn();
+    const newRef = push(ref(this.db, `${RECONNECT_REQUESTS_PATH}/${targetPeerId}`));
+    await set(newRef, { timestamp: Date.now() });
+    setTimeout(() => remove(newRef).catch(() => {}), 30_000);
+  }
+
+  listenForReconnectRequests(myPeerId: string, callback: () => void): () => void {
+    const requestsRef = ref(this.db, `${RECONNECT_REQUESTS_PATH}/${myPeerId}`);
+    return onChildAdded(requestsRef, (snapshot) => {
+      const data = snapshot.val();
+      remove(snapshot.ref).catch(() => {});
+      // 忽略超過 30 秒的舊請求（Firebase onChildAdded 初始化時會補發現有資料）
+      if (Date.now() - (data?.timestamp ?? 0) > 30_000) return;
+      callback();
+    });
   }
 
   async listAllPeers(): Promise<string[]> {

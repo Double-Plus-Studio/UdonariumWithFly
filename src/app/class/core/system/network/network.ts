@@ -170,7 +170,7 @@ export class Network {
     for (const peer of targetPeers) {
       if (!connectedIds.has(peer.peerId)) {
         console.log('Syncing room peer:', peer.peerId);
-        this.connect(peer);
+        (this.connection as any)?.requestReconnect?.(peer.peerId);
       }
     }
   }

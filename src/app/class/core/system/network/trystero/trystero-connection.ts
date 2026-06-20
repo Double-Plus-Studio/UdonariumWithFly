@@ -49,6 +49,9 @@ export class TrysteroConnection implements Connection {
   private helloAction: MessageAction<HelloPayload> | null = null;
   private pingInterval: ReturnType<typeof setInterval> | null = null;
   private syncInterval: ReturnType<typeof setInterval> | null = null;
+  private unlistenReconnect: (() => void) | null = null;
+  private lastReconnectTime = 0;
+  private reconnectRequestedPeers = new Map<string, number>();
 
   private outboundQueue: Promise<void> = Promise.resolve();
   private inboundQueue: Promise<void> = Promise.resolve();
@@ -75,6 +78,7 @@ export class TrysteroConnection implements Connection {
   close(): void {
     if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
     if (this.syncInterval) { clearInterval(this.syncInterval); this.syncInterval = null; }
+    if (this.unlistenReconnect) { this.unlistenReconnect(); this.unlistenReconnect = null; }
     this.lobby?.unregister();
     this.room?.leave();
     this.room = null;
@@ -180,7 +184,10 @@ export class TrysteroConnection implements Connection {
 
       this.lobby = new TrysteroLobby(this.firebaseApp);
       await this.lobby.ensureSignedIn();
-      if (peer.isRoom) await this.lobby.register(peer);
+      if (peer.isRoom) {
+        await this.lobby.register(peer);
+        this.unlistenReconnect = this.lobby.listenForReconnectRequests(peer.peerId, () => this.handleReconnectRequest());
+      }
 
       const trysteroRoomId = this.calcTrysteroRoomId(peer);
       this.room = joinRoom(
@@ -204,13 +211,18 @@ export class TrysteroConnection implements Connection {
         this.onHello(trysteroId, payload);
       };
 
-      this.room.onPeerJoin = (trysteroId: TrysteroPeerId) => {
+      this.room.onPeerJoin = async (trysteroId: TrysteroPeerId) => {
         console.log('Trystero: peer joined', trysteroId);
-        // Send our Udonarium identity to the new peer
-        this.helloAction?.send(
-          { peerId: this._peer.peerId, userId: this._peer.userId },
-          { target: [trysteroId] }
-        );
+        // 送出 hello 後若對方沒有回應（trysteroToContext 未新增該 peer），
+        // 代表 hello 可能在 data channel 剛建立時遺失，每秒重試一次直到收到對方的 hello。
+        for (let attempt = 0; attempt <= 5; attempt++) {
+          if (this.trysteroToContext.has(trysteroId) || !this.room) break;
+          this.helloAction?.send(
+            { peerId: this._peer.peerId, userId: this._peer.userId },
+            { target: [trysteroId] }
+          );
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       };
 
       this.room.onPeerLeave = (trysteroId: TrysteroPeerId) => {
@@ -242,6 +254,9 @@ export class TrysteroConnection implements Connection {
   }
 
   private onHello(trysteroId: TrysteroPeerId, payload: HelloPayload): void {
+    // 已處理過同一個 peer 的 hello，不重複觸發 onConnect，避免 SYNCHRONIZE_GAME_OBJECT 多次執行產生 race condition
+    if (this.trysteroToContext.has(trysteroId)) return;
+
     const context = PeerContext.parse(payload.peerId);
     context.userId = payload.userId;
 
@@ -296,6 +311,28 @@ export class TrysteroConnection implements Connection {
     }
   }
 
+  async requestReconnect(targetPeerId: string): Promise<void> {
+    await this.lobby?.requestReconnect(targetPeerId);
+  }
+
+  private handleReconnectRequest(): void {
+    if (!this._peer?.isRoom) return;
+    const now = Date.now();
+    if (now - this.lastReconnectTime < 30_000) return;
+    this.lastReconnectTime = now;
+
+    const userId = this._peer.userId;
+    const roomId = this._peer.roomId;
+    const roomName = this._peer.roomName;
+    const password = this._peer.password;
+    // setTimeout 避免在 Firebase callback 內同步呼叫 close()
+    setTimeout(() => {
+      console.log('Trystero: reconnect requested, rejoining room');
+      this.close();
+      this.open(userId, roomId, roomName, password);
+    }, 0);
+  }
+
   private async syncRoomPeersAsync(): Promise<void> {
     if (!this._peer?.isRoom) return;
     try {
@@ -308,10 +345,14 @@ export class TrysteroConnection implements Connection {
         ? currentRoom.filterByPassword(this._peer.password)
         : currentRoom.peers;
 
+      const now = Date.now();
       for (const peer of targetPeers) {
-        if (!connectedIds.has(peer.peerId) && this.connect(peer)) {
-          console.log('Trystero: syncing room peer', peer.peerId);
-        }
+        if (connectedIds.has(peer.peerId)) continue;
+        const lastRequest = this.reconnectRequestedPeers.get(peer.peerId) ?? 0;
+        if (now - lastRequest < 60_000) continue;
+        this.reconnectRequestedPeers.set(peer.peerId, now);
+        console.log('Trystero: requesting reconnect from peer', peer.peerId);
+        this.lobby?.requestReconnect(peer.peerId);
       }
     } catch (e) {
       console.warn('Trystero: room peer sync failed:', e);
