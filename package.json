@@ -8,6 +8,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "lint": "ng lint",
     "postinstall": "patch-package && node scripts/generate-bcdice-registry.mjs"
   },
   "private": true,
@@ -23,7 +24,6 @@
     "@angular/service-worker": "^21.2.17",
     "@angular/youtube-player": "^21.2.14",
     "@skyway-sdk/core": "~1.9.2",
-    "@skyway-sdk/token": "~1.6.3",
     "@tailwindcss/postcss": "^4.3.1",
     "@trystero-p2p/firebase": "^0.25.1",
     "@types/ws": "8.5.4",
@@ -40,7 +40,6 @@
     "lzbase62": "^2.0.0",
     "msgpack-lite": "^0.1.26",
     "ngx-linky": "^4.0.0",
-    "pako": "^2.1.0",
     "postcss": "^8.5.15",
     "rxjs": "^7.8.2",
     "skyway-js": "^4.4.5",
@@ -52,6 +51,11 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^21.2.15",
+    "@angular-eslint/builder": "^21.4.0",
+    "@angular-eslint/eslint-plugin": "^21.4.0",
+    "@angular-eslint/eslint-plugin-template": "^21.4.0",
+    "@angular-eslint/schematics": "^21.4.0",
+    "@angular-eslint/template-parser": "^21.4.0",
     "@angular/cli": "^21.2.15",
     "@angular/compiler-cli": "^21.2.17",
     "@types/crypto-js": "^4.2.2",
@@ -63,8 +67,8 @@
     "@types/lzbase62": "^2.0.3",
     "@types/msgpack-lite": "^0.1.11",
     "@types/node": "^12.20.55",
-    "@types/pako": "^2.0.4",
     "@types/vkbeautify": "^0.99.4",
+    "eslint": "^9.39.4",
     "jasmine-core": "~5.1.2",
     "karma": "~6.4.3",
     "karma-chrome-launcher": "~3.2.0",
@@ -72,6 +76,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "patch-package": "^8.0.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.61.1"
   }
 }
