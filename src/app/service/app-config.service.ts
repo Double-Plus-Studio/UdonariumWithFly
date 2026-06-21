@@ -58,7 +58,7 @@ export class AppConfigService {
       console.log('YAML読み込み...');
       const config = await this.loadYaml();
       const obj = yaml.load(config);
-      AppConfigService.applyConfig(obj);
+      AppConfigService.applyConfig(obj as object);
     } catch (e) {
       console.warn(e);
     }

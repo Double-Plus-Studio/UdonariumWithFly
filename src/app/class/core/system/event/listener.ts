@@ -46,7 +46,8 @@ export class Listener implements Observer {
   once<T>(eventName: string, callback: Callback<T>): Listener
   once<T>(eventName: string, priority: number, callback: Callback<T>): Listener
   once(...args: any[]): Listener {
-    const listener = this.on(...args);
+    // eslint-disable-next-line prefer-spread
+    const listener = this.on.apply(this, args);
     this._isOnlyOnce = true;
     return listener;
   }

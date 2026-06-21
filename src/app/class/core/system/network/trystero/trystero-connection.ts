@@ -1,6 +1,5 @@
 import { FirebaseApp, getApps, initializeApp } from 'firebase/app';
 import type { MessageAction, Room } from '@trystero-p2p/firebase';
-// @ts-expect-error — resolved by webpack at bundle time
 import { joinRoom, selfId } from '@trystero-p2p/firebase';
 
 import { compressAsync, decompressAsync } from '../../util/compress';

@@ -7,21 +7,21 @@ https://opensource.org/licenses/mit-license.php
 */
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { RengeComponent } from './renge.component';
+import { RangeComponent } from './range.component';
 
-describe('RengeComponent', () => {
-  let component: RengeComponent;
-  let fixture: ComponentFixture<RengeComponent>;
+describe('RangeComponent', () => {
+  let component: RangeComponent;
+  let fixture: ComponentFixture<RangeComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RengeComponent ]
+      declarations: [ RangeComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RengeComponent);
+    fixture = TestBed.createComponent(RangeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
