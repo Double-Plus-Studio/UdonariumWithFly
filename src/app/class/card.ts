@@ -30,7 +30,7 @@ export class Card extends TabletopObject {
   get imageFile(): ImageFile { return this.isVisible ? this.frontImage : this.backImage; }
 
   get fontsize(): number { 
-    let element = this.getElement('fontsize', this.commonDataElement);
+    const element = this.getElement('fontsize', this.commonDataElement);
     //if (!element && this.commonDataElement) {
     //  this.commonDataElement.appendChild(DataElement.create('fontsize', 18, { }, 'fontsize_' + this.identifier));
     //}
@@ -39,7 +39,7 @@ export class Card extends TabletopObject {
   set fontsize(fontsize: number) { this.setCommonValue('fontsize', fontsize); }
   
   get text(): string { 
-    let element = this.getElement('text', this.commonDataElement);
+    const element = this.getElement('text', this.commonDataElement);
     //if (!element && this.commonDataElement) {
     //  this.commonDataElement.appendChild(DataElement.create('text', '', { type: 'note', currentValue: '' }, 'text_' + this.identifier));
     //}
@@ -53,12 +53,12 @@ export class Card extends TabletopObject {
   set color(color: string) { this.setCommonValue('color', color); }
 
   get ownerName(): string {
-    let object = PeerCursor.findByUserId(this.owner);
+    const object = PeerCursor.findByUserId(this.owner);
     return object ? object.name : '';
   }
 
   get ownerColor(): string {
-    let object = PeerCursor.findByUserId(this.owner);
+    const object = PeerCursor.findByUserId(this.owner);
     return object ? object.color : '#444444';
   }
   

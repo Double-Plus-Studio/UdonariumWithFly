@@ -52,7 +52,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   private _chatTabidentifier: string = '';
   get chatTabidentifier(): string { return this._chatTabidentifier; }
   set chatTabidentifier(chatTabidentifier: string) {
-    let hasChanged: boolean = this._chatTabidentifier !== chatTabidentifier;
+    const hasChanged: boolean = this._chatTabidentifier !== chatTabidentifier;
     this._chatTabidentifier = chatTabidentifier;
     this.updatePanelTitle();
     if (hasChanged) {
@@ -77,7 +77,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
     EventSystem.register(this)
       .on('MESSAGE_ADDED', event => {
         if (event.data.tabIdentifier !== this.chatTabidentifier) return;
-        let message = ObjectStore.instance.get<ChatMessage>(event.data.messageIdentifier);
+        const message = ObjectStore.instance.get<ChatMessage>(event.data.messageIdentifier);
         if (message && message.isSendFromSelf) {
           this.isAutoScroll = true;
         } else {
@@ -100,7 +100,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   scrollToBottom(isForce: boolean = false) {
     if (isForce) this.isAutoScroll = true;
     if (!this.isAutoScroll) return;
-    let event = new CustomEvent('scrolltobottom', {});
+    const event = new CustomEvent('scrolltobottom', {});
     this.panelService.scrollablePanel.dispatchEvent(event);
     if (this.scrollToBottomTimer != null) return;
     this.scrollToBottomTimer = setTimeout(() => {
@@ -116,7 +116,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   // @TODO
   checkAutoScroll() {
     if (!this.panelService.scrollablePanel) return;
-    let top = this.panelService.scrollablePanel.scrollHeight - this.panelService.scrollablePanel.clientHeight;
+    const top = this.panelService.scrollablePanel.scrollHeight - this.panelService.scrollablePanel.clientHeight;
     if (top - 150 <= this.panelService.scrollablePanel.scrollTop) {
       this.isAutoScroll = true;
     } else {
@@ -137,16 +137,16 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   showTabSetting() {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 460, height: 330 };
-    let component = this.panelService.open<ChatTabSettingComponent>(ChatTabSettingComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 460, height: 330 };
+    const component = this.panelService.open<ChatTabSettingComponent>(ChatTabSettingComponent, option);
     component.selectedTab = this.chatTab;
   }
 
   showLogOutput() {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 540, height: 300 };
-    let component = this.panelService.open<ChatLogOutputComponent>(ChatLogOutputComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 540, height: 300 };
+    const component = this.panelService.open<ChatLogOutputComponent>(ChatLogOutputComponent, option);
     component.selectedTabs = this.chatTab ? [this.chatTab] : [];
     component.selectTabsApplay();
   }

@@ -184,7 +184,7 @@ export class CutInComponent implements OnInit, OnDestroy {
   get cutInImage(): ImageFile {
     if (!this.cutIn) return this._imageFile;
     if (this._imageFile.identifier !== this.cutIn.imageIdentifier) { 
-      let file: ImageFile = ImageStorage.instance.get(this.cutIn.imageIdentifier);
+      const file: ImageFile = ImageStorage.instance.get(this.cutIn.imageIdentifier);
       this._imageFile = file ? file : ImageFile.Empty;
     }
     return this._imageFile;
@@ -367,7 +367,7 @@ export class CutInComponent implements OnInit, OnDestroy {
   get senderName() {
     let ret = ''; 
     if (!this.sender) return ret;
-    let object = PeerCursor.findByPeerId(this.sender);
+    const object = PeerCursor.findByPeerId(this.sender);
     if (object instanceof PeerCursor) {
       ret = object.name;
     }
@@ -381,7 +381,7 @@ export class CutInComponent implements OnInit, OnDestroy {
   get senderColor() {
     let ret = PeerCursor.CHAT_DEFAULT_COLOR;
     if (!this.sender) return ret;
-    let object = PeerCursor.findByPeerId(this.sender);
+    const object = PeerCursor.findByPeerId(this.sender);
     if (object instanceof PeerCursor) {
       ret = object.color;
     }
@@ -525,7 +525,7 @@ export class CutInComponent implements OnInit, OnDestroy {
     e.preventDefault();
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
-    let position = this.pointerDeviceService.pointers[0];
+    const position = this.pointerDeviceService.pointers[0];
     this.contextMenuService.open(position, [
       {
         name: '關閉（僅停止自己）',

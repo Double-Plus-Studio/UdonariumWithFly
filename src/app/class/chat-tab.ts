@@ -18,7 +18,7 @@ export class ChatTab extends ObjectNode implements InnerXml {
   get hasUnread(): boolean { return 0 < this.unreadLength; }
 
   get latestTimeStamp(): number {
-    let lastIndex = this.chatMessages.length - 1;
+    const lastIndex = this.chatMessages.length - 1;
     return lastIndex < 0 ? 0 : this.chatMessages[lastIndex].timestamp;
   }
 
@@ -37,8 +37,8 @@ export class ChatTab extends ObjectNode implements InnerXml {
   addMessage(message: ChatMessageContext): ChatMessage {
     message.tabIdentifier = this.identifier;
 
-    let chat = new ChatMessage();
-    for (let key in message) {
+    const chat = new ChatMessage();
+    for (const key in message) {
       if (key === 'identifier') continue;
       if (key === 'tabIdentifier') continue;
       if (key === 'text') {
@@ -60,7 +60,7 @@ export class ChatTab extends ObjectNode implements InnerXml {
 
   innerXml(): string {
     let xml = '';
-    for (let child of this.children) {
+    for (const child of this.children) {
       if (child instanceof ChatMessage && !child.isDisplayable) continue;
       xml += ObjectSerializer.instance.toXml(child);
     }
@@ -71,7 +71,7 @@ export class ChatTab extends ObjectNode implements InnerXml {
     return super.parseInnerXml(element);
   };
 
-  log(logFormat, dateFormat,  isWriteOerationLog=true, imageDict?: {}): string {
+  log(logFormat, dateFormat,  isWriteOerationLog=true, imageDict?: Record<string, unknown>): string {
     const logBody = this.chatMessages
     .filter(chatMessage => chatMessage.isDisplayable && (isWriteOerationLog || !chatMessage.isOperationLog))
     .sort((a, b) => a.index - b.index)

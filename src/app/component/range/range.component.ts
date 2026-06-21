@@ -109,8 +109,8 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   public get clipCircle() {
-    let clipSize = ( this.rangeLength + 1.5 ) * this.gridSize;
-    let circle = 'circle(' + clipSize + 'px)';
+    const clipSize = ( this.rangeLength + 1.5 ) * this.gridSize;
+    const circle = 'circle(' + clipSize + 'px)';
     return circle;
   }
 
@@ -312,8 +312,8 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
 
   get areaQuadrantSize(): number { 
-    let w = this.width < 1 ? 1 : this.width;
-    let l = this.rangeLength < 1 ? 1 : this.rangeLength;
+    const w = this.width < 1 ? 1 : this.width;
+    const l = this.rangeLength < 1 ? 1 : this.rangeLength;
     return Math.ceil( Math.sqrt(w * w + l * l) ) +1 ; 
   }
 
@@ -324,7 +324,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     if(!this.rotate.nativeElement.style){ return 0;}
     if(!this.rotate.nativeElement.style.transform){ return 0;}
 
-    let data = this.rotate.nativeElement.style.transform;
+    const data = this.rotate.nativeElement.style.transform;
     data2 = data.replace(/[^0-9\.\-]/g, '');
     if(!data2) data2 = '0.0';
     return parseFloat(data2);
@@ -341,7 +341,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   set isAltitudeIndicate(isAltitudeIndicate: boolean) { this.range.isAltitudeIndicate = isAltitudeIndicate; }
 
   get textShadowCss(): string {
-    let shadow = StringUtil.textShadowColor(this.range.rangeColor, '#f5f5f5');
+    const shadow = StringUtil.textShadowColor(this.range.rangeColor, '#f5f5f5');
     return `${shadow} 0px 0px 3px`;
   }
 
@@ -356,7 +356,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   get dockableCharacters(): GameCharacter[] {
-    let ary: GameCharacter[] = this.tabletopService.characters.filter(character => {
+    const ary: GameCharacter[] = this.tabletopService.characters.filter(character => {
       if (character.location.name !== 'table' || character.isHideIn) return false;
       //if (this.range.followingCharctor && this.range.followingCharctor === character) isContainFollowing = true;
       return [
@@ -380,7 +380,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   get rotateHandlesLeftPos(): number[] {
-    let ret: number[] = [];
+    const ret: number[] = [];
     for (let i = 1; i < Math.ceil((this.rangeLength) / 6); i++) {
       ret.push(this.rangeLength * i / Math.ceil((this.rangeLength) / 6));
     }
@@ -423,7 +423,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     EventSystem.unregister(this);
     EventSystem.register(this)
       .on('UPDATE_GAME_OBJECT', -1000, event => {
-        let object = ObjectStore.instance.get(event.data.identifier);
+        const object = ObjectStore.instance.get(event.data.identifier);
         //this.setRange();
         if (!this.range || !object) return;
         let markForCheck = false;
@@ -516,10 +516,10 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     e.preventDefault();
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
-    let menuPosition = this.pointerDeviceService.pointers[0];
-    let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
+    const menuPosition = this.pointerDeviceService.pointers[0];
+    const objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
 
-    let menuArray = [];
+    const menuArray = [];
 
     if (this.selectionService.objects.length) {
       menuArray.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
@@ -559,7 +559,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     menuArray.push(ContextMenuSeparator);
 
     if (this.range.type == 'CIRCLE' || this.range.type == 'SQUARE' || this.range.type == 'DIAMOND') {
-      let menu: ContextMenuAction[] = this.dockableCharacters.length <= 0
+      const menu: ContextMenuAction[] = this.dockableCharacters.length <= 0
         ? this.followingCharactor ? [] : [{ name: '沒有角色', action: null, disabled: true, center: true }] 
         : this.dockableCharacters.map(character => {
           return {
@@ -708,7 +708,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     menuArray.push(
       {
         name: '建立副本', action: () => {
-          let cloneObject = this.range.clone();
+          const cloneObject = this.range.clone();
           //console.log('コピー', cloneObject);
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
@@ -761,20 +761,20 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   private showDetail(gameObject: RangeArea) {
-    let coordinate = this.pointerDeviceService.pointers[0];
+    const coordinate = this.pointerDeviceService.pointers[0];
     let title = '射程・範圍設定';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
-    let option: PanelOption = { title: title, left: coordinate.x - 200, top: coordinate.y - 150, width: 400, height: 390 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x - 200, top: coordinate.y - 150, width: 400, height: 390 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 
   private setRange() {
-    let render = new RangeRender(this.gridCanvas.nativeElement,this.rangeCanvas.nativeElement, this.centerPunch.nativeElement);
+    const render = new RangeRender(this.gridCanvas.nativeElement,this.rangeCanvas.nativeElement, this.centerPunch.nativeElement);
 
 //    this.width, this.length, this.gridSize, this.currentTable.gridType, this.currentTable.gridColor
 
-    let setting: RangeRenderSetting = {
+    const setting: RangeRenderSetting = {
       areaWidth: this.areaQuadrantSize * 2,
       areaHeight: this.areaQuadrantSize * 2,
       range: this.rangeLength,
@@ -819,7 +819,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
         break;
     }
 
-    let opacity: number = this.range.opacity;
+    const opacity: number = this.range.opacity;
     this.gridCanvas.nativeElement.style.opacity = opacity + '';
 
   }

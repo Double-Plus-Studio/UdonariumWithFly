@@ -22,10 +22,15 @@ interface LoggingValue {
     standalone: false
 })
 export class LoggingInputDirective implements AfterViewInit, OnDestroy {
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('logging.disable') isDisable: boolean = false;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('logging.timeout') timeout: number = 666;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('logging.name') name: string;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('logging.dataElement') dataElement: DataElement;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('logging.loggingValue') showValue: boolean = true;
 
   private static LoggingValueMap = new Map<string, LoggingValue>(); 
@@ -33,7 +38,8 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     let elm = <ObjectNode>this.dataElement;
-    while (elm = elm.parent) {
+    elm = elm.parent;
+    while (elm) {
       if (elm instanceof Card) {
         this.type = '牌';
       }
@@ -59,6 +65,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
         this.type = '射程・範圍';
       }
       if (!elm.parentIsAssigned || elm.parentIsUnknown) break;
+      elm = elm.parent;
     }
     const LoggingValueMap = LoggingInputDirective.LoggingValueMap;
     const identifier = this.dataElement.identifier;

@@ -76,24 +76,24 @@ export class SkyWayFacade {
     await this.disposeContext();
     if (this.isDestroyed) return;
 
-    let backend = new SkyWayBackend(this.url);
-    let channelName = this.peer.isRoom
+    const backend = new SkyWayBackend(this.url);
+    const channelName = this.peer.isRoom
       ? CryptoUtil.sha256Base64Url(this.peer.roomId + this.peer.roomName + this.peer.password)
       : this.peer.peerId;
 
-    let authToken = await backend.createSkyWayAuthToken(channelName, this.peer.peerId);
+    const authToken = await backend.createSkyWayAuthToken(channelName, this.peer.peerId);
     if (authToken.length < 1) {
-      let message = `無法連線到 API 後端伺服器 < ${backend.url} >，需要能發行 SkyWay 認証令牌的伺服器。`
+      const message = `無法連線到 API 後端伺服器 < ${backend.url} >，需要能發行 SkyWay 認証令牌的伺服器。`
       if (this.onFatalError) this.onFatalError(this.peer, 'server-error', message, new Error(message));
       return;
     }
 
-    let context = await SkyWayContext.Create(authToken);
+    const context = await SkyWayContext.Create(authToken);
     context.onTokenUpdateReminder.add(async () => {
       console.log(`skyWay onTokenUpdateReminder ${new Date().toISOString()}`);
-      let authToken = await backend.createSkyWayAuthToken(channelName, this.peer.peerId);
+      const authToken = await backend.createSkyWayAuthToken(channelName, this.peer.peerId);
       if (authToken.length < 1) {
-        let message = `無法連線到 API 後端伺服器 < ${backend.url} >。`
+        const message = `無法連線到 API 後端伺服器 < ${backend.url} >。`
         if (this.onFatalError) this.onFatalError(this.peer, 'server-error', message, new Error(message));
         return;
       }
@@ -106,7 +106,7 @@ export class SkyWayFacade {
         this.close();
         if (this.onClose) this.onClose(this.peer);
       }
-      let message = 'SkyWay 認証令牌已過期。'
+      const message = 'SkyWay 認証令牌已過期。'
       if (this.onFatalError) this.onFatalError(this.peer, 'token-expired', message, new Error(message));
     });
 
@@ -131,9 +131,9 @@ export class SkyWayFacade {
     await this.leaveLobbyChannel();
     if (this.isDestroyed || !this.peer.isRoom || !this.context || this.context?.disposed) return;
 
-    let lobbys: Channel[] = [];
-    for (let lobbyName of this.getLobbyNames()) {
-      let lobby = await SkyWayChannel.FindOrCreate(this.context, {
+    const lobbys: Channel[] = [];
+    for (const lobbyName of this.getLobbyNames()) {
+      const lobby = await SkyWayChannel.FindOrCreate(this.context, {
         name: lobbyName,
       });
       console.log(`FindOrCreate<${lobbyName}>`);
@@ -165,7 +165,7 @@ export class SkyWayFacade {
     await this.leaveLobbyPerson();
     if (this.isDestroyed || !this.peer.isRoom || !this.context || this.context?.disposed || this.lobby == null) return;
 
-    let lobbyPerson = await this.lobby.join({
+    const lobbyPerson = await this.lobby.join({
       name: this.peer.peerId,
     });
 
@@ -191,10 +191,10 @@ export class SkyWayFacade {
     await this.leaveRoomChannel();
     if (this.isDestroyed || !this.peer.isRoom || !this.context || this.context?.disposed) return;
 
-    let roomName = CryptoUtil.sha256Base64Url(this.peer.roomId + this.peer.roomName + this.peer.password);
+    const roomName = CryptoUtil.sha256Base64Url(this.peer.roomId + this.peer.roomName + this.peer.password);
     console.log(`roomName: ${roomName}`);
 
-    let room = await SkyWayChannel.FindOrCreate(this.context, {
+    const room = await SkyWayChannel.FindOrCreate(this.context, {
       name: roomName,
     });
     console.log(`FindOrCreate<${roomName}>`);
@@ -213,7 +213,7 @@ export class SkyWayFacade {
     await this.leaveRoomPerson();
     if (this.isDestroyed || !this.peer.isRoom || !this.context || this.context?.disposed || this.room == null) return;
 
-    let roomPerson = await this.room.join({
+    const roomPerson = await this.room.join({
       name: this.peer.peerId
     });
 
@@ -233,18 +233,18 @@ export class SkyWayFacade {
 
   private async createRoomDataStream() {
     if (this.isDestroyed || !this.peer.isRoom || !this.context || this.context?.disposed || this.roomPerson == null) return;
-    let dataStream = await SkyWayStreamFactory.createDataStream();
-    let publication = await this.roomPerson.publish(dataStream, { metadata: 'udonarium-data-stream' });
+    const dataStream = await SkyWayStreamFactory.createDataStream();
+    const publication = await this.roomPerson.publish(dataStream, { metadata: 'udonarium-data-stream' });
 
     publication.onSubscribed.add(event => {
       console.log(`publication onSubscribed ${event.subscription.subscriber.name}`);
-      let peerId = event.subscription.subscriber.name;
+      const peerId = event.subscription.subscriber.name;
       if (peerId == null) {
         event.subscription.cancel();
         return;
       }
 
-      let peer = PeerContext.parse(event.subscription.subscriber.name);
+      const peer = PeerContext.parse(event.subscription.subscriber.name);
       if (this.onSubscribed) this.onSubscribed(peer, event.subscription);
     });
 
@@ -252,7 +252,7 @@ export class SkyWayFacade {
   }
 
   private async disposeContext() {
-    let context = this.context;
+    const context = this.context;
     this.context = null;
     if (!context) return;
     console.log('disposeContext');
@@ -265,7 +265,7 @@ export class SkyWayFacade {
   }
 
   private async leaveLobbyChannel() {
-    let lobby = this.lobby;
+    const lobby = this.lobby;
     this.lobby = null;
 
     if (!lobby) return;
@@ -274,7 +274,7 @@ export class SkyWayFacade {
   }
 
   private async leaveLobbyPerson() {
-    let lobbyPerson = this.lobbyPerson;
+    const lobbyPerson = this.lobbyPerson;
     this.lobbyPerson = null;
 
     if (!lobbyPerson || lobbyPerson.state === 'left') return;
@@ -291,7 +291,7 @@ export class SkyWayFacade {
   }
 
   private async leaveRoomChannel() {
-    let room = this.room;
+    const room = this.room;
     this.room = null;
 
     if (!room) return;
@@ -305,7 +305,7 @@ export class SkyWayFacade {
   }
 
   private async leaveRoomPerson() {
-    let roomPerson = this.roomPerson;
+    const roomPerson = this.roomPerson;
     this.roomPerson = null;
 
     if (!roomPerson || roomPerson.state === 'left') return;
@@ -316,7 +316,7 @@ export class SkyWayFacade {
   }
 
   private async closeRoomDataStream() {
-    let publication = this.publication;
+    const publication = this.publication;
     this.publication = null;
 
     if (!publication) return;
@@ -326,12 +326,12 @@ export class SkyWayFacade {
   async listAllPeers(): Promise<string[]> {
     if (this.isDestroyed || !this.isOpen) return [];
 
-    let lobbys: Channel[] = [];
-    for (let lobbyName of this.getLobbyNames()) {
-      let level = Logger.level;
+    const lobbys: Channel[] = [];
+    for (const lobbyName of this.getLobbyNames()) {
+      const level = Logger.level;
       Logger.level = 'disable';
       try {
-        let lobby = this.lobby?.name === lobbyName ? this.lobby : await SkyWayChannel.Find(this.context, { name: lobbyName });
+        const lobby = this.lobby?.name === lobbyName ? this.lobby : await SkyWayChannel.Find(this.context, { name: lobbyName });
         lobbys.push(lobby);
       } catch (error) {
         if (error instanceof SkyWayError) {
@@ -343,7 +343,7 @@ export class SkyWayFacade {
       Logger.level = level;
     }
 
-    let allPeerIds = lobbys.flatMap(lobby => lobby.members.map(member => member.name ?? '???'));
+    const allPeerIds = lobbys.flatMap(lobby => lobby.members.map(member => member.name ?? '???'));
 
     lobbys.forEach(lobby => {
       if (lobby.name !== this.lobby?.name) lobby.dispose();
@@ -352,14 +352,14 @@ export class SkyWayFacade {
   }
 
   private getLobbyNames(): string[] {
-    let names: Set<string> = new Set();
-    let wildcards: Set<string> = new Set();
+    const names: Set<string> = new Set();
+    const wildcards: Set<string> = new Set();
     let maxLobbySize = 0;
 
     // udonarium-lobby-* -> udonarium-lobby-1, udonarium-lobby-2, ...
     // udonarium-lobby-*-of-4 -> udonarium-lobby-1-of-4, udonarium-lobby-2-of-4, ...
-    for (let channel of this.context?.authToken.scope.app.channels ?? []) {
-      let name = channel.name ?? '';
+    for (const channel of this.context?.authToken.scope.app.channels ?? []) {
+      const name = channel.name ?? '';
       if (name.startsWith('udonarium-lobby-')) {
         if (name.includes('*')) {
           wildcards.add(name);
@@ -367,7 +367,7 @@ export class SkyWayFacade {
           names.add(name);
         }
         try {
-          let regArray = /-(\d+)$/.exec(name);
+          const regArray = /-(\d+)$/.exec(name);
           console.log(regArray);
           let lobbySize = regArray && 1 < regArray.length ? Number(regArray[1]) : 0;
           if (isNaN(lobbySize)) lobbySize = 0;
@@ -378,13 +378,13 @@ export class SkyWayFacade {
       }
     }
 
-    for (let wildcard of wildcards) {
+    for (const wildcard of wildcards) {
       [...Array(maxLobbySize)].map((value, index) => names.add(wildcard.replace('*', `${index + 1}`)));
     }
 
-    let sorted = Array.from(names).sort((a, b) => {
-      let aIndex = a.replace(/\d+/g, m => m.padStart(10, '0'));
-      let bIndex = b.replace(/\d+/g, m => m.padStart(10, '0'));
+    const sorted = Array.from(names).sort((a, b) => {
+      const aIndex = a.replace(/\d+/g, m => m.padStart(10, '0'));
+      const bIndex = b.replace(/\d+/g, m => m.padStart(10, '0'));
       return aIndex < bIndex ? -1 : aIndex > bIndex ? 1 : 0;
     });
 

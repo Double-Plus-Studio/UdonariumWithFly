@@ -34,13 +34,13 @@ function startBatching() {
 
 const triggerEvent = () => {
   isBatching = false;
-  let objects = Array.from(objectBatches.values());
-  let nodes = Array.from(nodeBatches.values());
+  const objects = Array.from(objectBatches.values());
+  const nodes = Array.from(nodeBatches.values());
   objectBatches.clear();
   nodeBatches.clear();
 
-  for (let data of objects) {
-    let context = {
+  for (const data of objects) {
+    const context = {
       aliasName: data.object.aliasName,
       identifier: data.object.identifier,
     }
@@ -48,7 +48,7 @@ const triggerEvent = () => {
     EventSystem.trigger(new Event(`UPDATE_GAME_OBJECT/identifier/${context.identifier}`, context, data.originFrom));
   }
 
-  for (let identifier of nodes) {
+  for (const identifier of nodes) {
     EventSystem.trigger(`UPDATE_OBJECT_CHILDREN/identifier/${identifier}`, { identifier: identifier });
   }
 }

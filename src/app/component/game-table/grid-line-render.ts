@@ -14,7 +14,7 @@ export class GridLineRender {
     context.fillStyle = context.strokeStyle;
     context.lineWidth = 1;
 
-    let fontSize: number = Math.floor(gridSize / 5);
+    const fontSize: number = Math.floor(gridSize / 5);
     context.font = `bold ${fontSize}px sans-serif`;
     context.textBaseline = 'top';
     context.textAlign = 'center';
@@ -24,15 +24,15 @@ export class GridLineRender {
   render(width: number, height: number, gridSize: number = 50, gridType: GridType = GridType.SQUARE, gridColor: string = '#000000e6', isShowNumber = true) {
     this.canvasElement.width = width * gridSize;
     this.canvasElement.height = height * gridSize;
-    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
+    const context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
 
     if (gridType < 0) return;
 
-    let calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(gridType);
+    const calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(gridType);
     this.makeBrush(context, gridSize, gridColor);
     for (let h = 0; h <= height; h++) {
       for (let w = 0; w <= width; w++) {
-        let { gx, gy } = calcGridPosition(w, h, gridSize);
+        const { gx, gy } = calcGridPosition(w, h, gridSize);
         this.strokeSquare(context, gx, gy, gridSize);
         if (isShowNumber) context.fillText((w + 1).toString() + '-' + (h + 1).toString(), gx + (gridSize / 2), gy + (gridSize / 2));
       }
@@ -73,16 +73,16 @@ export class GridLineRender {
 
   private strokeHex(context: CanvasRenderingContext2D, gx: number, gy: number, gridSize: number, gridType: GridType) {
     let deg = gridType === GridType.HEX_HORIZONTAL ? -30 : 0;
-    let radius = gridSize / Math.sqrt(3);
-    let cx = gx + gridSize / 2;
-    let cy = gy + gridSize / 2;
+    const radius = gridSize / Math.sqrt(3);
+    const cx = gx + gridSize / 2;
+    const cy = gy + gridSize / 2;
 
     context.beginPath();
     for (let i = 0; i < 6; i++) {
       deg += 60;
-      let radian = MathUtil.radians(deg);
-      let x = Math.cos(radian) * radius + cx;
-      let y = Math.sin(radian) * radius + cy;
+      const radian = MathUtil.radians(deg);
+      const x = Math.cos(radian) * radius + cx;
+      const y = Math.sin(radian) * radius + cy;
       context.lineTo(x, y);
     }
     context.closePath();

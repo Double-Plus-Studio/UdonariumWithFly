@@ -3,7 +3,7 @@
   @if (!isFarewell && (isVisible || !isCanBeGone)) {
     <div [@standInOut]="groupValue" (@standInOut.start)="refleshImageUrls(true)" class="stand-image-container"
       [style.left]="position + '%'"
-      [style.height]="height == 0 ? '' : height + 'vh'"
+      [style.height]="height === 0 ? '' : height + 'vh'"
       [style.margin-left.px]="-imageWidth / 2"
       [style.margin-bottom.px]="adjustY"
       [ngClass]="{'is-can-be-gone': isCanBeGone, 'is-ghostly': isGhostly, backyard: isBackyard, secret: isSecret}" (click)="toGhostly(); toBackyard()">
@@ -21,9 +21,9 @@
         }
         <div style="transform-origin: center 66%" [ngStyle]="{'transform': isApplyRoll ? ('rotate(' + gameCharacter.roll + 'deg)') : ''}">
           <div class="inverser" [ngClass]="{inverse: isApplyImageEffect && gameCharacter.isInverse}">
-          <div class="aura" [ngClass]="{black: isApplyImageEffect && gameCharacter.aura == 0, blue: isApplyImageEffect && gameCharacter.aura == 1, 
-            green: isApplyImageEffect && gameCharacter.aura == 2, cyan: isApplyImageEffect && gameCharacter.aura == 3, red: isApplyImageEffect && gameCharacter.aura == 4,
-            magenta: isApplyImageEffect && gameCharacter.aura == 5, yellow: isApplyImageEffect && gameCharacter.aura == 6, white: isApplyImageEffect && gameCharacter.aura == 7}">
+          <div class="aura" [ngClass]="{black: isApplyImageEffect && gameCharacter.aura === 0, blue: isApplyImageEffect && gameCharacter.aura === 1,
+            green: isApplyImageEffect && gameCharacter.aura === 2, cyan: isApplyImageEffect && gameCharacter.aura === 3, red: isApplyImageEffect && gameCharacter.aura === 4,
+            magenta: isApplyImageEffect && gameCharacter.aura === 5, yellow: isApplyImageEffect && gameCharacter.aura === 6, white: isApplyImageEffect && gameCharacter.aura === 7}">
               <div class="color-filter">
                 <img #standImageElement (load)="onImageLoad()" class="stand-image" draggable="false"
                   [style.display]="!isSpeakable || !isSpeaking ? 'inline-block' : 'none'"

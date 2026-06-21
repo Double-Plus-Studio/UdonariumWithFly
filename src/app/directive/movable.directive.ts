@@ -47,6 +47,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
   get colideLayers(): string[] { return this._colideLayers; }
   get transformCssOffset(): string { return this._transformCssOffset; }
 
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('movable.option') set option(option: MovableOption) {
     this.unregister();
     this.synchronizer.unregister();
@@ -61,12 +62,19 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     this.register();
     this.synchronizer.register();
   }
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('movable.disable') isDisable: boolean = false;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('movable.interact') isInteract: boolean = true;
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('movable.onstart') onstart: EventEmitter<PointerEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('movable.ondragstart') ondragstart: EventEmitter<PointerEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('movable.ondrag') ondrag: EventEmitter<PointerEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('movable.ondragend') ondragend: EventEmitter<PointerEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('movable.onend') onend: EventEmitter<PointerEvent> = new EventEmitter();
 
   get nativeElement(): HTMLElement { return this.elementRef.nativeElement; }
@@ -192,12 +200,12 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     this.width = this.nativeElement.clientWidth;
     this.height = this.nativeElement.clientHeight;
 
-    let target3d = {
+    const target3d = {
       x: this.posX + (this.width / 2),
       y: this.posY + (this.height / 2),
       z: this.posZ,
     };
-    let target2d = this.coordinateService.convertToGlobal(target3d, this.coordinateService.tabletopOriginElement);
+    const target2d = this.coordinateService.convertToGlobal(target3d, this.coordinateService.tabletopOriginElement);
 
     this.setPointerEvents(true);
 
@@ -232,7 +240,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
 
     if (!this.input.isDragging) this.setPointerEvents(false);
 
-    let pointer2d = {
+    const pointer2d = {
       x: this.input.pointer.x + (this.pointerOffset2d.x * this.ratio),
       y: this.input.pointer.y + (this.pointerOffset2d.y * this.ratio),
       z: 0,
@@ -241,10 +249,10 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     pointer2d.x = Math.min(window.innerWidth - 0.1, Math.max(pointer2d.x, 0.1));
     pointer2d.y = Math.min(window.innerHeight - 0.1, Math.max(pointer2d.y, 0.1));
 
-    let element = document.elementFromPoint(pointer2d.x, pointer2d.y) as HTMLElement;
+    const element = document.elementFromPoint(pointer2d.x, pointer2d.y) as HTMLElement;
     if (element == null) return;
 
-    let pointer3d = this.coordinateService.calcTabletopLocalCoordinate(pointer2d, element);
+    const pointer3d = this.coordinateService.calcTabletopLocalCoordinate(pointer2d, element);
     pointer3d.x -= this.width / 2;
     pointer3d.y -= this.height / 2;
 
@@ -253,8 +261,8 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     if (!this.input.isDragging) this.ondragstart.emit(e as PointerEvent);
     this.ondrag.emit(e as PointerEvent);
 
-    let targetRect = this.nativeElement.getBoundingClientRect();
-    let ratio = targetRect.width / this.targetStartRect.width;
+    const targetRect = this.nativeElement.getBoundingClientRect();
+    const ratio = targetRect.width / this.targetStartRect.width;
     if (ratio < this.ratio) {
       this.ratio += (ratio - this.ratio) * 0.1;
     }
@@ -270,7 +278,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     const viewTable = TableSelecter.instance.viewTable;
     viewTable.gridClipRect = null;
     viewTable.gridHeight = this.posZ + 0.5;
-    let delta = {
+    const delta = {
       x: pointer3d.x - this.posX,
       y: pointer3d.y - this.posY,
       z: pointer3d.z - this.posZ,
@@ -287,7 +295,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     if (this.isDisable) return this.cancel();
     if (this.input.isDragging) this.ondragend.emit(e as PointerEvent);
 
-    let prev = {
+    const prev = {
       x: this.posX,
       y: this.posY,
       z: this.posZ,
@@ -295,7 +303,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
 
     if (this.isGridSnap && this.input.isDragging) this.snapToGrid();
 
-    let delta = {
+    const delta = {
       x: this.posX - prev.x,
       y: this.posY - prev.y,
       z: this.posZ - prev.z,
@@ -313,13 +321,13 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
 
     if (this.isGridSnap && this.input.isDragging) this.snapToGrid();
 
-    let needsDispatch = this.input.isGrabbing && e.isTrusted;
+    const needsDispatch = this.input.isGrabbing && e.isTrusted;
     this.cancel();
 
     if (needsDispatch) {
       // ロングプレスによるタッチ操作でコンテキストメニューを開く場合、イベントを適切なDOMに伝搬させる
       e.stopPropagation();
-      let ev = new MouseEvent(e.type, e);
+      const ev = new MouseEvent(e.type, e);
       this.ngZone.run(() => this.nativeElement.dispatchEvent(ev));
     }
   }
@@ -371,9 +379,9 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
 
   private findNestedCollidableElements(element: HTMLElement) {
     // TODO:不完全
-    let children = element.children;
+    const children = element.children;
     for (let i = 0; i < children.length; i++) {
-      let child = children[i]
+      const child = children[i]
       if (!(child instanceof HTMLElement)) continue;
       if (getComputedStyle(child).pointerEvents !== 'none') {
         this.collidableElements.push(child);
@@ -381,7 +389,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     }
     if (this.collidableElements.length < 1) {
       for (let i = 0; i < children.length; i++) {
-        let child = children[i]
+        const child = children[i]
         if (!(child instanceof HTMLElement)) continue;
         this.findNestedCollidableElements(child);
       }
@@ -389,7 +397,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   setPointerEvents(isEnable: boolean) {
-    let css = isEnable ? 'auto' : 'none';
+    const css = isEnable ? 'auto' : 'none';
     this.collidableElements.forEach(element => element.style.pointerEvents = css);
   }
 
@@ -406,14 +414,14 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   private updateTransformCss() {
-    let css = `${this.transformCssOffset} translate3d(${this.posX.toFixed(4)}px, ${this.posY.toFixed(4)}px, ${this.posZ.toFixed(4)}px)`;
+    const css = `${this.transformCssOffset} translate3d(${this.posX.toFixed(4)}px, ${this.posY.toFixed(4)}px, ${this.posZ.toFixed(4)}px)`;
     this.nativeElement.style.transform = css;
   }
 
   private setCollidableLayer(isCollidable: boolean) {
     // todo
     let isEnable = isCollidable;
-    for (let layerName of MovableDirective.layerMap.keys()) {
+    for (const layerName of MovableDirective.layerMap.keys()) {
       if (this.colideLayers.includes(layerName)) {
         //isEnable = this.input.isGrabbing ? isCollidable : true;
         if (layerName == 'character') {
@@ -432,13 +440,13 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   private register() {
-    let layerSet = MovableDirective.layerMap.get(this.layerName) ?? new Set();
+    const layerSet = MovableDirective.layerMap.get(this.layerName) ?? new Set();
     layerSet.add(this);
     MovableDirective.layerMap.set(this.layerName, layerSet);
   }
 
   private unregister() {
-    let layerSet = MovableDirective.layerMap.get(this.layerName);
+    const layerSet = MovableDirective.layerMap.get(this.layerName);
     if (!layerSet) return;
     layerSet.delete(this);
     if (layerSet.size < 1) MovableDirective.layerMap.delete(this.layerName);

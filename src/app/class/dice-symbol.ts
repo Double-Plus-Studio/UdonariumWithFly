@@ -46,12 +46,12 @@ export class DiceSymbol extends TabletopObject {
   get nothingFaces(): string[] { return this.imageDataElement.children.filter(element => (element as DataElement).currentValue == 'nothing').map(element => (element as DataElement).name); }
 
   get ownerName(): string {
-    let object = PeerCursor.findByUserId(this.owner);
+    const object = PeerCursor.findByUserId(this.owner);
     return object ? object.name : '';
   }
 
   get ownerColor(): string {
-    let object = PeerCursor.findByUserId(this.owner);
+    const object = PeerCursor.findByUserId(this.owner);
     return object ? object.color : '#444444';
   }
   
@@ -62,7 +62,7 @@ export class DiceSymbol extends TabletopObject {
   get isCoin(): boolean { return this.faces.length === 2; }S
 
   diceRoll(): string {
-    let faces = this.faces;
+    const faces = this.faces;
     this.face = 0 < faces.length ? faces[Math.floor(Math.random() * faces.length)] : '';
     return this.face;
   }
@@ -73,7 +73,7 @@ export class DiceSymbol extends TabletopObject {
 
   private makeDiceFace(type: DiceType, identifierSuffix?: string): DataElement[] {
     let sided: number = 1;
-    let faces: DataElement[] = [];
+    const faces: DataElement[] = [];
     let faceGeneratorFunc: (index: number) => string = index => (index + 1) + '';
 
     switch (type) {
@@ -84,16 +84,18 @@ export class DiceSymbol extends TabletopObject {
       case DiceType.D4:
         sided = 4;
         break;
-      case DiceType.D6:
+      case DiceType.D6: {
         sided = 6;
-        let identifier = identifierSuffix != null ? 'nothing_' + identifierSuffix : null;
+        const identifier = identifierSuffix != null ? 'nothing_' + identifierSuffix : null;
         faces.push(DataElement.create('無', '', { type: 'image', currentValue: 'nothing' }, identifier));
         break;
+      }
       case DiceType.D8:
         sided = 8;
         break;
       case DiceType.D10_10TIMES:
         faceGeneratorFunc = index => (index + 1) + '0';
+        // falls through
       case DiceType.D10:
         sided = 10;
         break;
@@ -109,8 +111,8 @@ export class DiceSymbol extends TabletopObject {
     }
 
     for (let i = 0; i < sided; i++) {
-      let faceName = faceGeneratorFunc(i);
-      let identifier = identifierSuffix != null ? faceName + '_' + identifierSuffix : null;
+      const faceName = faceGeneratorFunc(i);
+      const identifier = identifierSuffix != null ? faceName + '_' + identifierSuffix : null;
       faces.push(DataElement.create(faceName, '', { type: 'image' }, identifier));
     }
 
@@ -122,7 +124,7 @@ export class DiceSymbol extends TabletopObject {
   }
 
   static create(name: string, type: DiceType, size: number, identifier?: string): DiceSymbol {
-    let object: DiceSymbol = identifier ? new DiceSymbol(identifier) : new DiceSymbol();
+    const object: DiceSymbol = identifier ? new DiceSymbol(identifier) : new DiceSymbol();
 
     object.createDataElements();
     object.commonDataElement.appendChild(DataElement.create('name', name, {}, 'name_' + object.identifier));

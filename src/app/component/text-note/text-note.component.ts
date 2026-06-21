@@ -8,7 +8,7 @@ import {
   NgZone,
   OnChanges,
   OnDestroy,
-  ViewChild
+  ViewChild, AfterViewInit
 } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { EventSystem } from '@udonarium/core/system';
@@ -34,7 +34,7 @@ import { SelectionState, TabletopSelectionService } from 'service/tabletop-selec
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
-export class TextNoteComponent implements OnChanges, OnDestroy {
+export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   @ViewChild('textArea', { static: true }) textAreaElementRef: ElementRef;
 
   @Input() textNote: TextNote = null;
@@ -211,7 +211,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
 
   onMouseUp(e: any) {
     if (this.pointerDeviceService.isAllowedToOpenContextMenu) {
-      let selection = window.getSelection();
+      const selection = window.getSelection();
       if (!selection.isCollapsed) selection.removeAllRanges();
       this.textAreaElementRef.nativeElement.focus();
     }
@@ -232,7 +232,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
     e.preventDefault();
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
-    let position = this.pointerDeviceService.pointers[0];
+    const position = this.pointerDeviceService.pointers[0];
 
     let menuActions: ContextMenuAction[] = [];
     menuActions = menuActions.concat(this.makeSelectionContextMenu());
@@ -253,9 +253,9 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   private makeSelectionContextMenu(): ContextMenuAction[] {
     if (this.selectionService.objects.length < 1) return [];
 
-    let actions: ContextMenuAction[] = [];
+    const actions: ContextMenuAction[] = [];
 
-    let objectPosition = { x: this.textNote.location.x, y: this.textNote.location.y, z: this.textNote.posZ };
+    const objectPosition = { x: this.textNote.location.x, y: this.textNote.location.y, z: this.textNote.posZ };
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
     actions.push(ContextMenuSeparator);
 
@@ -263,7 +263,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   }
 
   private makeContextMenu(): ContextMenuAction[] {
-    let actions: ContextMenuAction[] = [
+    const actions: ContextMenuAction[] = [
       (this.isLocked
         ? {
           name: '☑ 固定', action: () => {
@@ -363,7 +363,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
       (this.textNote.getUrls().length <= 0 ? null : ContextMenuSeparator),
       {
         name: '建立副本', action: () => {
-          let cloneObject = this.textNote.clone();
+          const cloneObject = this.textNote.clone();
           cloneObject.isLocked = false;
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
@@ -393,7 +393,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
   }
 
   calcFitHeight() {
-    let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
+    const textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
     textArea.style.height = '0';
     if (textArea.scrollHeight > textArea.offsetHeight) {
       textArea.style.height = textArea.scrollHeight + 'px';
@@ -415,11 +415,11 @@ export class TextNoteComponent implements OnChanges, OnDestroy {
 
   private showDetail(gameObject: TextNote) {
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName });
-    let coordinate = this.pointerDeviceService.pointers[0];
+    const coordinate = this.pointerDeviceService.pointers[0];
     let title = '共用備注設定';
     if (gameObject.title.length) title += ' - ' + gameObject.title;
-    let option: PanelOption = { title: title, left: coordinate.x - 350, top: coordinate.y - 200, width: 560, height: 470 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x - 350, top: coordinate.y - 200, width: 560, height: 470 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 

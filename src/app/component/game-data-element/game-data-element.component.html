@@ -1,4 +1,4 @@
-@if (gameDataElement && !isNotApplicable && !(isHideText && (name == 'text' || name == 'fontsize' || name == 'color'))) {
+@if (gameDataElement && !isNotApplicable && !(isHideText && (name === 'text' || name === 'fontsize' || name === 'color'))) {
   @if (gameDataElement.children.length < 1) {
     <!-- 有送出按鈕：block 佈局，按鈕全寬獨占一行，name/value 用 flex row -->
     @if (canSendToChat) {
@@ -47,7 +47,7 @@
     <div class="table-cell table-cell_inner-table" style="padding:0; width:0;"></div>
     <div class="table-cell_inner-table">
       <div class="table-cell_inner-table-title" [style.border-color]="isTagLocked && name === 'common' ? 'transparent' : ''">
-        @if (isTagLocked && name != 'common') {
+        @if (isTagLocked && name !== 'common') {
           <div style="padding: 2px; font-family: Cambria, Georgia; font-size: 1.0rem; font-weight: bold;">{{name}}</div>
         }
         @if (!isTagLocked) {

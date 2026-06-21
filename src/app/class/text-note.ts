@@ -40,7 +40,7 @@ export class TextNote extends TabletopObject {
   }
 
   static create(title: string, text: string, fontSize: number = 16, width: number = 1, height: number = 1, identifier?: string): TextNote {
-    let object: TextNote = identifier ? new TextNote(identifier) : new TextNote();
+    const object: TextNote = identifier ? new TextNote(identifier) : new TextNote();
 
     object.createDataElements();
     object.commonDataElement.appendChild(DataElement.create('width', width, {}, 'width_' + object.identifier));

@@ -98,7 +98,7 @@ export class RangeRender {
     context.fillStyle = context.strokeStyle;
     context.lineWidth = 1;
 
-    let fontSize: number = Math.floor(gridSize / 5);
+    const fontSize: number = Math.floor(gridSize / 5);
     context.font = `bold ${fontSize}px sans-serif`;
     context.textBaseline = 'top';
     context.textAlign = 'center';
@@ -108,11 +108,11 @@ export class RangeRender {
   //多角形の構成ベクトルをを盤面見下ろしで右回転にとる
   //ベクトルP1P2 x Px1Pchk の外積が+ならば図形の内側にある
   chkOuterProduct(p1x: number,p1y: number, p2x: number,p2y: number, pchkx: number,pchky: number ): boolean{
-    let ax = p2x - p1x;
-    let ay = p2y - p1y;
-    let bx = pchkx - p1x;
-    let by = pchky - p1y;
-    let calc = ax * by - ay * bx;
+    const ax = p2x - p1x;
+    const ay = p2y - p1y;
+    const bx = pchkx - p1x;
+    const by = pchky - p1y;
+    const calc = ax * by - ay * bx;
     // console.log('p1:' + p1x + ',' + p1y +' p2:' + p2x + ',' + p2y + ' pchk:' + pchkx + ',' + pchky);
     // console.log('a:' + ax + ',' + ay +' b:' + bx + ',' + by + ' calc:' + calc);
     //return calc >= -100000;
@@ -124,10 +124,10 @@ export class RangeRender {
   }
 
   renderCircle(setting: RangeRenderSetting){
-    let gridSize = setting.gridSize;
-    let offSetX_px = setting.areaWidth * gridSize / 2;
-    let offSetY_px = setting.areaHeight * gridSize / 2;
-    let rad = Math.PI / 180 * setting.degree;
+    const gridSize = setting.gridSize;
+    const offSetX_px = setting.areaWidth * gridSize / 2;
+    const offSetY_px = setting.areaHeight * gridSize / 2;
+    const rad = Math.PI / 180 * setting.degree;
 
     let gridOffX = - (setting.centerX % gridSize);
     let gridOffY = - (setting.centerY % gridSize);
@@ -157,7 +157,7 @@ export class RangeRender {
     let gcx = 0.0;
     let gcy = 0.0;
 
-    let calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(setting.gridType, setting.centerX, setting.centerY, setting.areaWidth, setting.areaHeight);
+    const calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(setting.gridType, setting.centerX, setting.centerY, setting.areaWidth, setting.areaHeight);
     if(setting.fillType == 0){
       this.makeBrush(context, gridSize, setting.gridColor);
       context.beginPath();
@@ -167,7 +167,7 @@ export class RangeRender {
       this.makeBrush(context, gridSize, setting.gridColor);
       for (let h = 0; h <= setting.areaHeight + 1 ; h++) {
         for (let w = 0; w <= setting.areaWidth + 1 ; w++) {
-          let { gx, gy } = calcGridPosition(w, h, gridSize);
+          const { gx, gy } = calcGridPosition(w, h, gridSize);
           if (setting.fillType == 1) {
             gcx = gx + gridOffX + (gridSize / 2) - offSetX_px;
             gcy = gy + gridOffY + (gridSize / 2) - offSetY_px;
@@ -233,10 +233,10 @@ export class RangeRender {
   }
 
   renderLine(setting: RangeRenderSetting): ClipAreaLine{
-    let gridSize = setting.gridSize;
-    let offSetX_px = setting.areaWidth * gridSize / 2;
-    let offSetY_px = setting.areaHeight * gridSize / 2;
-    let rad = Math.PI / 180 * setting.degree;
+    const gridSize = setting.gridSize;
+    const offSetX_px = setting.areaWidth * gridSize / 2;
+    const offSetY_px = setting.areaHeight * gridSize / 2;
+    const rad = Math.PI / 180 * setting.degree;
 
     let gridOffX = - (setting.centerX % gridSize);
     let gridOffY = - (setting.centerY % gridSize);
@@ -264,37 +264,37 @@ export class RangeRender {
     let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
 
     // 範圍座標
-    let p1x_ = 0;
-    let p1y_ = 0.5 * setting.width * gridSize;
-    let p2x_ = 0;
-    let p2y_ = -0.5 * setting.width * gridSize;
-    let p3x_ = setting.range * gridSize;
-    let p3y_ = -0.5 * setting.width * gridSize;
-    let p4x_ = setting.range * gridSize;
-    let p4y_ = 0.5 * setting.width * gridSize;
+    const p1x_ = 0;
+    const p1y_ = 0.5 * setting.width * gridSize;
+    const p2x_ = 0;
+    const p2y_ = -0.5 * setting.width * gridSize;
+    const p3x_ = setting.range * gridSize;
+    const p3y_ = -0.5 * setting.width * gridSize;
+    const p4x_ = setting.range * gridSize;
+    const p4y_ = 0.5 * setting.width * gridSize;
 
     // クリッピング座標
     // コーンの根本から時計回りにクリップ範圍を定義
-    let clip01x_ = p1x_ - gridSize * Math.sqrt(2);
-    let clip01y_ = p1y_ + gridSize * Math.sqrt(2);
-    let clip02x_ = p2x_ - gridSize * Math.sqrt(2);
-    let clip02y_ = p2y_ - gridSize * Math.sqrt(2);
-    let clip03x_ = p3x_ + gridSize * Math.sqrt(2);
-    let clip03y_ = p3y_ - gridSize * Math.sqrt(2);
-    let clip04x_ = p4x_ + gridSize * Math.sqrt(2);
-    let clip04y_ = p4y_ + gridSize * Math.sqrt(2);
+    const clip01x_ = p1x_ - gridSize * Math.sqrt(2);
+    const clip01y_ = p1y_ + gridSize * Math.sqrt(2);
+    const clip02x_ = p2x_ - gridSize * Math.sqrt(2);
+    const clip02y_ = p2y_ - gridSize * Math.sqrt(2);
+    const clip03x_ = p3x_ + gridSize * Math.sqrt(2);
+    const clip03y_ = p3y_ - gridSize * Math.sqrt(2);
+    const clip04x_ = p4x_ + gridSize * Math.sqrt(2);
+    const clip04y_ = p4y_ + gridSize * Math.sqrt(2);
 
     // 座標変換回転
-    let p1x = p1x_ * Math.cos(rad) - p1y_ * Math.sin(rad);
-    let p1y = p1x_ * Math.sin(rad) + p1y_ * Math.cos(rad);
-    let p2x = p2x_ * Math.cos(rad) - p2y_ * Math.sin(rad);
-    let p2y = p2x_ * Math.sin(rad) + p2y_ * Math.cos(rad);
-    let p3x = p3x_ * Math.cos(rad) - p3y_ * Math.sin(rad);
-    let p3y = p3x_ * Math.sin(rad) + p3y_ * Math.cos(rad);
-    let p4x = p4x_ * Math.cos(rad) - p4y_ * Math.sin(rad);
-    let p4y = p4x_ * Math.sin(rad) + p4y_ * Math.cos(rad);
+    const p1x = p1x_ * Math.cos(rad) - p1y_ * Math.sin(rad);
+    const p1y = p1x_ * Math.sin(rad) + p1y_ * Math.cos(rad);
+    const p2x = p2x_ * Math.cos(rad) - p2y_ * Math.sin(rad);
+    const p2y = p2x_ * Math.sin(rad) + p2y_ * Math.cos(rad);
+    const p3x = p3x_ * Math.cos(rad) - p3y_ * Math.sin(rad);
+    const p3y = p3x_ * Math.sin(rad) + p3y_ * Math.cos(rad);
+    const p4x = p4x_ * Math.cos(rad) - p4y_ * Math.sin(rad);
+    const p4y = p4x_ * Math.sin(rad) + p4y_ * Math.cos(rad);
 
-    let clip: ClipAreaLine = {
+    const clip: ClipAreaLine = {
       clip01x: clip01x_ * Math.cos(rad) - clip01y_ * Math.sin(rad), // 根本始点
       clip01y: clip01x_ * Math.sin(rad) + clip01y_ * Math.cos(rad),
       clip02x: clip02x_ * Math.cos(rad) - clip02y_ * Math.sin(rad),
@@ -307,7 +307,7 @@ export class RangeRender {
     let gcx = 0.0;
     let gcy = 0.0;
 
-    let calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(setting.gridType, setting.centerX, setting.centerY, setting.areaWidth, setting.areaHeight);
+    const calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(setting.gridType, setting.centerX, setting.centerY, setting.areaWidth, setting.areaHeight);
     //console.log('LINE setting.centerX:'+setting.centerX + 'LINE setting.centerY:'+setting.centerY);
     this.makeBrush(context, gridSize, setting.gridColor);
 
@@ -325,7 +325,7 @@ export class RangeRender {
       this.makeBrush(context, gridSize, setting.gridColor);
       for (let h = 0; h <= setting.areaHeight + 1 ; h++) {
         for (let w = 0; w <= setting.areaWidth + 1 ; w++) {
-          let { gx, gy } = calcGridPosition(w, h, gridSize);
+          const { gx, gy } = calcGridPosition(w, h, gridSize);
           if (setting.fillType == 1) {
             gcx = gx + gridOffX + (gridSize / 2) - offSetX_px;
             gcy = gy + gridOffY + (gridSize / 2) - offSetY_px;
@@ -395,31 +395,31 @@ export class RangeRender {
   }
 
   static gripAreaPathLine(setting: RangeRenderSetting): ClipAreaLine {
-    let gridSize = setting.gridSize;
-    let rad = Math.PI / 180 * setting.degree;
+    const gridSize = setting.gridSize;
+    const rad = Math.PI / 180 * setting.degree;
 
     // 範圍座標
-    let p1x_ = 0;
-    let p1y_ = 0.5 * setting.width * gridSize;
-    let p2x_ = 0;
-    let p2y_ = -0.5 * setting.width * gridSize;
-    let p3x_ = setting.range * gridSize;
-    let p3y_ = -0.5 * setting.width * gridSize;
-    let p4x_ = setting.range * gridSize;
-    let p4y_ = 0.5 * setting.width * gridSize;
+    const p1x_ = 0;
+    const p1y_ = 0.5 * setting.width * gridSize;
+    const p2x_ = 0;
+    const p2y_ = -0.5 * setting.width * gridSize;
+    const p3x_ = setting.range * gridSize;
+    const p3y_ = -0.5 * setting.width * gridSize;
+    const p4x_ = setting.range * gridSize;
+    const p4y_ = 0.5 * setting.width * gridSize;
 
     // クリッピング座標
     // コーンの根本から時計回りにクリップ範圍を定義
-    let clip01x_ = p1x_;
-    let clip01y_ = p1y_;
-    let clip02x_ = p2x_;
-    let clip02y_ = p2y_;
-    let clip03x_ = p3x_;
-    let clip03y_ = p3y_;
-    let clip04x_ = p4x_;
-    let clip04y_ = p4y_;
+    const clip01x_ = p1x_;
+    const clip01y_ = p1y_;
+    const clip02x_ = p2x_;
+    const clip02y_ = p2y_;
+    const clip03x_ = p3x_;
+    const clip03y_ = p3y_;
+    const clip04x_ = p4x_;
+    const clip04y_ = p4y_;
 
-    let clip: ClipAreaLine = {
+    const clip: ClipAreaLine = {
       clip01x: clip01x_ * Math.cos(rad) - clip01y_ * Math.sin(rad), // 根本始点
       clip01y: clip01x_ * Math.sin(rad) + clip01y_ * Math.cos(rad),
       clip02x: clip02x_ * Math.cos(rad) - clip02y_ * Math.sin(rad),
@@ -434,10 +434,10 @@ export class RangeRender {
   }
 
   renderSquare(setting: RangeRenderSetting): ClipAreaSquare{
-    let gridSize = setting.gridSize;
-    let offSetX_px = setting.areaWidth * gridSize / 2;
-    let offSetY_px = setting.areaHeight * gridSize / 2;
-    let rad = Math.PI / 180 * setting.degree;
+    const gridSize = setting.gridSize;
+    const offSetX_px = setting.areaWidth * gridSize / 2;
+    const offSetY_px = setting.areaHeight * gridSize / 2;
+    const rad = Math.PI / 180 * setting.degree;
 
     let gridOffX = - (setting.centerX % gridSize);
     let gridOffY = - (setting.centerY % gridSize);
@@ -465,27 +465,27 @@ export class RangeRender {
     let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
 
     // 範圍座標
-    let p1x = -setting.range * gridSize; // 左下
-    let p1y = setting.range * gridSize;
-    let p2x = -setting.range * gridSize; // 左上
-    let p2y = -setting.range * gridSize;
-    let p3x = setting.range * gridSize; // 右上
-    let p3y = -setting.range * gridSize;
-    let p4x = setting.range * gridSize; // 右下
-    let p4y = setting.range * gridSize;
+    const p1x = -setting.range * gridSize; // 左下
+    const p1y = setting.range * gridSize;
+    const p2x = -setting.range * gridSize; // 左上
+    const p2y = -setting.range * gridSize;
+    const p3x = setting.range * gridSize; // 右上
+    const p3y = -setting.range * gridSize;
+    const p4x = setting.range * gridSize; // 右下
+    const p4y = setting.range * gridSize;
 
     // クリッピング座標
     // 根本から時計回りにクリップ範圍を定義
-    let clip01x = p1x - (gridSize * 1.0);
-    let clip01y = p1y + (gridSize * 1.0);
-    let clip02x = p2x - (gridSize * 1.0);
-    let clip02y = p2y - (gridSize * 1.0);
-    let clip03x = p3x + (gridSize * 1.0);
-    let clip03y = p3y - (gridSize * 1.0);
-    let clip04x = p4x + (gridSize * 1.0);
-    let clip04y = p4y + (gridSize * 1.0);
+    const clip01x = p1x - (gridSize * 1.0);
+    const clip01y = p1y + (gridSize * 1.0);
+    const clip02x = p2x - (gridSize * 1.0);
+    const clip02y = p2y - (gridSize * 1.0);
+    const clip03x = p3x + (gridSize * 1.0);
+    const clip03y = p3y - (gridSize * 1.0);
+    const clip04x = p4x + (gridSize * 1.0);
+    const clip04y = p4y + (gridSize * 1.0);
 
-    let clip: ClipAreaSquare = {
+    const clip: ClipAreaSquare = {
       clip01x: clip01x, // 根本始点
       clip01y: clip01y,
       clip02x: clip02x,
@@ -498,7 +498,7 @@ export class RangeRender {
     let gcx = 0.0;
     let gcy = 0.0;
 
-    let calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(setting.gridType, setting.centerX, setting.centerY, setting.areaWidth, setting.areaHeight);
+    const calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(setting.gridType, setting.centerX, setting.centerY, setting.areaWidth, setting.areaHeight);
     //console.log('LINE setting.centerX:'+setting.centerX + 'LINE setting.centerY:'+setting.centerY);
     this.makeBrush(context, gridSize, setting.gridColor);
 
@@ -515,7 +515,7 @@ export class RangeRender {
       this.makeBrush(context, gridSize, setting.gridColor);
       for (let h = 0; h <= setting.areaHeight + 1 ; h++) {
         for (let w = 0; w <= setting.areaWidth + 1 ; w++) {
-          let { gx, gy } = calcGridPosition(w, h, gridSize);
+          const { gx, gy } = calcGridPosition(w, h, gridSize);
           if (setting.fillType == 1) {
             gcx = gx + gridOffX + (gridSize / 2) - offSetX_px;
             gcy = gy + gridOffY + (gridSize / 2) - offSetY_px;
@@ -597,31 +597,31 @@ export class RangeRender {
   }
 
   static gripAreaPathSquare(setting: RangeRenderSetting): ClipAreaSquare {
-    let gridSize = setting.gridSize;
-    let rad = Math.PI / 180 * setting.degree;
+    const gridSize = setting.gridSize;
+    const rad = Math.PI / 180 * setting.degree;
 
     // 範圍座標
-    let p1x = -setting.range * gridSize; // 左下
-    let p1y = setting.range * gridSize;
-    let p2x = -setting.range * gridSize; // 左上
-    let p2y = -setting.range * gridSize;
-    let p3x = setting.range * gridSize; // 右上
-    let p3y = -setting.range * gridSize;
-    let p4x = setting.range * gridSize; // 右下
-    let p4y = setting.range * gridSize;
+    const p1x = -setting.range * gridSize; // 左下
+    const p1y = setting.range * gridSize;
+    const p2x = -setting.range * gridSize; // 左上
+    const p2y = -setting.range * gridSize;
+    const p3x = setting.range * gridSize; // 右上
+    const p3y = -setting.range * gridSize;
+    const p4x = setting.range * gridSize; // 右下
+    const p4y = setting.range * gridSize;
 
     // クリッピング座標
     // 根本から時計回りにクリップ範圍を定義
-    let clip01x = p1x;
-    let clip01y = p1y;
-    let clip02x = p2x;
-    let clip02y = p2y;
-    let clip03x = p3x;
-    let clip03y = p3y;
-    let clip04x = p4x;
-    let clip04y = p4y;
+    const clip01x = p1x;
+    const clip01y = p1y;
+    const clip02x = p2x;
+    const clip02y = p2y;
+    const clip03x = p3x;
+    const clip03y = p3y;
+    const clip04x = p4x;
+    const clip04y = p4y;
 
-    let clip: ClipAreaSquare = {
+    const clip: ClipAreaSquare = {
       clip01x: clip01x, // 根本始点
       clip01y: clip01y,
       clip02x: clip02x,
@@ -637,9 +637,9 @@ export class RangeRender {
 
 
   renderDiamond(setting: RangeRenderSetting): ClipAreaDiamond{
-    let gridSize = setting.gridSize;
-    let offSetX_px = setting.areaWidth * gridSize / 2;
-    let offSetY_px = setting.areaHeight * gridSize / 2;
+    const gridSize = setting.gridSize;
+    const offSetX_px = setting.areaWidth * gridSize / 2;
+    const offSetY_px = setting.areaHeight * gridSize / 2;
     //let rad = Math.PI / 180 * setting.degree;
 
     let gridOffX = - (setting.centerX % gridSize);
@@ -668,27 +668,27 @@ export class RangeRender {
     let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
 
     // 範圍座標
-    let p1x = -setting.range * gridSize; // 左
-    let p1y = 0;
-    let p2x = 0; // 上
-    let p2y = -setting.range * gridSize;
-    let p3x = setting.range * gridSize; // 右
-    let p3y = 0;
-    let p4x = 0; // 下
-    let p4y = setting.range * gridSize;
+    const p1x = -setting.range * gridSize; // 左
+    const p1y = 0;
+    const p2x = 0; // 上
+    const p2y = -setting.range * gridSize;
+    const p3x = setting.range * gridSize; // 右
+    const p3y = 0;
+    const p4x = 0; // 下
+    const p4y = setting.range * gridSize;
 
     // クリッピング座標
     // 根本から時計回りにクリップ範圍を定義
-    let clip01x = p1x - (gridSize * 2);
-    let clip01y = 0;
-    let clip02x = 0;
-    let clip02y = p2y - (gridSize * 2);
-    let clip03x = p3x + (gridSize * 2);
-    let clip03y = 0;
-    let clip04x = 0;
-    let clip04y = p4y + (gridSize * 2);
+    const clip01x = p1x - (gridSize * 2);
+    const clip01y = 0;
+    const clip02x = 0;
+    const clip02y = p2y - (gridSize * 2);
+    const clip03x = p3x + (gridSize * 2);
+    const clip03y = 0;
+    const clip04x = 0;
+    const clip04y = p4y + (gridSize * 2);
 
-    let clip: ClipAreaSquare = {
+    const clip: ClipAreaSquare = {
       clip01x: clip01x, // 根本始点
       clip01y: clip01y,
       clip02x: clip02x,
@@ -701,7 +701,7 @@ export class RangeRender {
     let gcx = 0.0;
     let gcy = 0.0;
 
-    let calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(setting.gridType, setting.centerX, setting.centerY, setting.areaWidth, setting.areaHeight);
+    const calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(setting.gridType, setting.centerX, setting.centerY, setting.areaWidth, setting.areaHeight);
     //console.log('LINE setting.centerX:'+setting.centerX + 'LINE setting.centerY:'+setting.centerY);
     this.makeBrush(context, gridSize, setting.gridColor);
 
@@ -720,7 +720,7 @@ export class RangeRender {
       this.makeBrush(context, gridSize, setting.gridColor);
       for (let h = 0; h <= setting.areaHeight + 1 ; h++) {
         for (let w = 0; w <= setting.areaWidth + 1 ; w++) {
-          let { gx, gy } = calcGridPosition(w, h, gridSize);
+          const { gx, gy } = calcGridPosition(w, h, gridSize);
           if (setting.fillType == 1) {
             gcx = gx + gridOffX + (gridSize / 2) - offSetX_px;
             gcy = gy + gridOffY + (gridSize / 2) - offSetY_px;
@@ -802,26 +802,26 @@ export class RangeRender {
   }
 
   static gripAreaPathDiamond(setting: RangeRenderSetting): ClipAreaSquare {
-    let gridSize = setting.gridSize;
+    const gridSize = setting.gridSize;
 
     // 範圍座標
-    let p1x = -setting.range * gridSize; // 左
-    let p2y = -setting.range * gridSize;
-    let p3x = setting.range * gridSize; // 右
-    let p4y = setting.range * gridSize;
+    const p1x = -setting.range * gridSize; // 左
+    const p2y = -setting.range * gridSize;
+    const p3x = setting.range * gridSize; // 右
+    const p4y = setting.range * gridSize;
 
     // クリッピング座標
     // 根本から時計回りにクリップ範圍を定義
-    let clip01x = p1x;
-    let clip01y = 0;
-    let clip02x = 0;
-    let clip02y = p2y;
-    let clip03x = p3x;
-    let clip03y = 0;
-    let clip04x = 0;
-    let clip04y = p4y;
+    const clip01x = p1x;
+    const clip01y = 0;
+    const clip02x = 0;
+    const clip02y = p2y;
+    const clip03x = p3x;
+    const clip03y = 0;
+    const clip04x = 0;
+    const clip04y = p4y;
 
-    let clip: ClipAreaSquare = {
+    const clip: ClipAreaSquare = {
       clip01x: clip01x, // 根本始点
       clip01y: clip01y,
       clip02x: clip02x,
@@ -835,10 +835,10 @@ export class RangeRender {
   }
 
   renderCorn(setting: RangeRenderSetting): ClipAreaCorn{
-    let gridSize = setting.gridSize;
-    let offSetX_px = setting.areaWidth * gridSize / 2;
-    let offSetY_px = setting.areaHeight * gridSize / 2;
-    let rad = Math.PI / 180 * setting.degree;
+    const gridSize = setting.gridSize;
+    const offSetX_px = setting.areaWidth * gridSize / 2;
+    const offSetY_px = setting.areaHeight * gridSize / 2;
+    const rad = Math.PI / 180 * setting.degree;
 
     let gridOffX = - (setting.centerX % gridSize);
     let gridOffY = - (setting.centerY % gridSize);
@@ -867,45 +867,45 @@ export class RangeRender {
     let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
 
     // 範圍座標
-    let cx_ = 0.0;
-    let cy_ = 0.0;
-    let p1x_ = setting.range * gridSize;
-    let p1y_ = -0.5 * setting.width * gridSize;
-    let p2x_ = setting.range * gridSize;
-    let p2y_ = 0.5 * setting.width * gridSize;
+    const cx_ = 0.0;
+    const cy_ = 0.0;
+    const p1x_ = setting.range * gridSize;
+    const p1y_ = -0.5 * setting.width * gridSize;
+    const p2x_ = setting.range * gridSize;
+    const p2y_ = 0.5 * setting.width * gridSize;
 
     // クリッピング座標
     // コーンの根本から時計回りにクリップ範圍を定義
     
-    let clip01x_ = cx_ - gridSize * Math.sqrt(2); // コーン根本
-    let clip01y_ = cy_;
-    let clip02x_ = cx_ - gridSize * Math.sqrt(2); // 領部根本
-    let clip02y_ = cy_ - gridSize *  Math.sqrt(2);
-    let clip03x_ = p1x_ - gridSize * Math.sqrt(2); // 領部先端
-    let clip03y_ = p1y_ - gridSize * Math.sqrt(2);
-    let clip04x_ = p1x_;// 領部先端2
-    let clip04y_ = p1y_ - gridSize * Math.sqrt(2);
-    let clip05x_ = p1x_ + gridSize * Math.sqrt(2);// 領部先端3
-    let clip05y_ = p1y_ - gridSize * Math.sqrt(2);
+    const clip01x_ = cx_ - gridSize * Math.sqrt(2); // コーン根本
+    const clip01y_ = cy_;
+    const clip02x_ = cx_ - gridSize * Math.sqrt(2); // 領部根本
+    const clip02y_ = cy_ - gridSize *  Math.sqrt(2);
+    const clip03x_ = p1x_ - gridSize * Math.sqrt(2); // 領部先端
+    const clip03y_ = p1y_ - gridSize * Math.sqrt(2);
+    const clip04x_ = p1x_;// 領部先端2
+    const clip04y_ = p1y_ - gridSize * Math.sqrt(2);
+    const clip05x_ = p1x_ + gridSize * Math.sqrt(2);// 領部先端3
+    const clip05y_ = p1y_ - gridSize * Math.sqrt(2);
 
-    let clip06x_ = clip05x_;// 領部先端3
-    let clip06y_ = - clip05y_;
-    let clip07x_ = clip04x_;
-    let clip07y_ = - clip04y_;
-    let clip08x_ = clip03x_;
-    let clip08y_ = - clip03y_;
-    let clip09x_ = clip02x_;
-    let clip09y_ = - clip02y_;
+    const clip06x_ = clip05x_;// 領部先端3
+    const clip06y_ = - clip05y_;
+    const clip07x_ = clip04x_;
+    const clip07y_ = - clip04y_;
+    const clip08x_ = clip03x_;
+    const clip08y_ = - clip03y_;
+    const clip09x_ = clip02x_;
+    const clip09y_ = - clip02y_;
 
     // 座標変換回転
-    let cx = cx_;
-    let cy = cy_;
-    let p1x = p1x_ * Math.cos(rad) - p1y_ * Math.sin(rad);
-    let p1y = p1x_ * Math.sin(rad) + p1y_ * Math.cos(rad);
-    let p2x = p2x_ * Math.cos(rad) - p2y_ * Math.sin(rad);
-    let p2y = p2x_ * Math.sin(rad) + p2y_ * Math.cos(rad);
+    const cx = cx_;
+    const cy = cy_;
+    const p1x = p1x_ * Math.cos(rad) - p1y_ * Math.sin(rad);
+    const p1y = p1x_ * Math.sin(rad) + p1y_ * Math.cos(rad);
+    const p2x = p2x_ * Math.cos(rad) - p2y_ * Math.sin(rad);
+    const p2y = p2x_ * Math.sin(rad) + p2y_ * Math.cos(rad);
 
-    let clip: ClipAreaCorn = {
+    const clip: ClipAreaCorn = {
       clip01x: clip01x_ * Math.cos(rad) - clip01y_ * Math.sin(rad), // 根本支店
       clip01y: clip01x_ * Math.sin(rad) + clip01y_ * Math.cos(rad),
       clip02x: clip02x_ * Math.cos(rad) - clip02y_ * Math.sin(rad),
@@ -929,7 +929,7 @@ export class RangeRender {
     let gcx = 0.0;
     let gcy = 0.0;
 
-    let calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(setting.gridType, setting.centerX, setting.centerY, setting.areaWidth, setting.areaHeight);
+    const calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(setting.gridType, setting.centerX, setting.centerY, setting.areaWidth, setting.areaHeight);
 
     if(setting.fillType == 0){
       this.makeBrush(context, gridSize, setting.gridColor);
@@ -944,7 +944,7 @@ export class RangeRender {
       this.makeBrush(context, gridSize, setting.gridColor);
       for (let h = 0; h <= setting.areaHeight + 1 ; h++) {
         for (let w = 0; w <= setting.areaWidth + 1 ; w++) {
-          let { gx, gy } = calcGridPosition(w, h, gridSize);
+          const { gx, gy } = calcGridPosition(w, h, gridSize);
           if (setting.fillType == 1) {
             gcx = gx + gridOffX + (gridSize / 2) - offSetX_px;
             gcy = gy + gridOffY + (gridSize / 2) - offSetY_px;
@@ -1010,39 +1010,39 @@ export class RangeRender {
   }
 
   static gripAreaPathCorn(setting: RangeRenderSetting): ClipAreaCorn {
-    let gridSize = setting.gridSize;
-    let rad = Math.PI / 180 * setting.degree;
+    const gridSize = setting.gridSize;
+    const rad = Math.PI / 180 * setting.degree;
 
     // 範圍座標
-    let cx_ = 0.0;
-    let cy_ = 0.0;
-    let p1x_ = setting.range * gridSize;
-    let p1y_ = -0.5 * setting.width * gridSize;
+    const cx_ = 0.0;
+    const cy_ = 0.0;
+    const p1x_ = setting.range * gridSize;
+    const p1y_ = -0.5 * setting.width * gridSize;
 
     // クリッピング座標
     // コーンの根本から時計回りにクリップ範圍を定義
     
-    let clip01x_ = cx_; // コーン根本
-    let clip01y_ = cy_;
-    let clip02x_ = cx_; // 領部根本
-    let clip02y_ = cy_;
-    let clip03x_ = p1x_; // 領部先端
-    let clip03y_ = p1y_ ;
-    let clip04x_ = p1x_;// 領部先端2
-    let clip04y_ = p1y_;
-    let clip05x_ = p1x_;// 領部先端3
-    let clip05y_ = p1y_ ;
+    const clip01x_ = cx_; // コーン根本
+    const clip01y_ = cy_;
+    const clip02x_ = cx_; // 領部根本
+    const clip02y_ = cy_;
+    const clip03x_ = p1x_; // 領部先端
+    const clip03y_ = p1y_ ;
+    const clip04x_ = p1x_;// 領部先端2
+    const clip04y_ = p1y_;
+    const clip05x_ = p1x_;// 領部先端3
+    const clip05y_ = p1y_ ;
 
-    let clip06x_ = clip05x_;// 領部先端3
-    let clip06y_ = - clip05y_;
-    let clip07x_ = clip04x_;
-    let clip07y_ = - clip04y_;
-    let clip08x_ = clip03x_;
-    let clip08y_ = - clip03y_;
-    let clip09x_ = clip02x_;
-    let clip09y_ = - clip02y_;
+    const clip06x_ = clip05x_;// 領部先端3
+    const clip06y_ = - clip05y_;
+    const clip07x_ = clip04x_;
+    const clip07y_ = - clip04y_;
+    const clip08x_ = clip03x_;
+    const clip08y_ = - clip03y_;
+    const clip09x_ = clip02x_;
+    const clip09y_ = - clip02y_;
 
-    let clip: ClipAreaCorn = {
+    const clip: ClipAreaCorn = {
       clip01x: clip01x_ * Math.cos(rad) - clip01y_ * Math.sin(rad), // 根本支店
       clip01y: clip01x_ * Math.sin(rad) + clip01y_ * Math.cos(rad),
       clip02x: clip02x_ * Math.cos(rad) - clip02y_ * Math.sin(rad),
@@ -1071,8 +1071,8 @@ export class RangeRender {
     switch (gridType) {
       case GridType.HEX_VERTICAL: // ヘクス縦揃え
         return (w, h, gridSize) => {
-          let isHalfSlideXLine = centerX % (gridSize * 2) < gridSize ? 1:0;
-          let idAreaWidthMulti4 = areaWidth % 4 == 0 ? 1:0;
+          const isHalfSlideXLine = centerX % (gridSize * 2) < gridSize ? 1:0;
+          const idAreaWidthMulti4 = areaWidth % 4 == 0 ? 1:0;
           if (((w + isHalfSlideXLine + idAreaWidthMulti4) % 2) === 1) {
             return { gx: w * gridSize, gy: h * gridSize };
           } else {
@@ -1081,8 +1081,8 @@ export class RangeRender {
         }
       case GridType.HEX_HORIZONTAL: // ヘクス横揃え(どどんとふ互換)
         return (w, h, gridSize) => {
-          let isHalfSlideYLine = centerY % (gridSize * 2) < gridSize ? 1:0;
-          let idAreaHeightMulti4 = areaHeight % 4 == 0 ? 1:0;
+          const isHalfSlideYLine = centerY % (gridSize * 2) < gridSize ? 1:0;
+          const idAreaHeightMulti4 = areaHeight % 4 == 0 ? 1:0;
           if (((h + isHalfSlideYLine + idAreaHeightMulti4) % 2) === 1) {
             return { gx: w * gridSize, gy: h * gridSize };
           } else {
@@ -1111,16 +1111,16 @@ export class RangeRender {
 
   private strokeHex(context: CanvasRenderingContext2D, gx: number, gy: number, gridSize: number, gridType: GridType) {
     let deg = gridType === GridType.HEX_HORIZONTAL ? -30 : 0;
-    let radius = gridSize / Math.sqrt(3);
-    let cx = gx + gridSize / 2;
-    let cy = gy + gridSize / 2;
+    const radius = gridSize / Math.sqrt(3);
+    const cx = gx + gridSize / 2;
+    const cy = gy + gridSize / 2;
 
     context.beginPath();
     for (let i = 0; i < 6; i++) {
       deg += 60;
-      let radian = Math.PI / 180 * deg;
-      let x = Math.cos(radian) * radius + cx;
-      let y = Math.sin(radian) * radius + cy;
+      const radian = Math.PI / 180 * deg;
+      const x = Math.cos(radian) * radius + cx;
+      const y = Math.sin(radian) * radius + cy;
       context.lineTo(x, y);
     }
     context.closePath();

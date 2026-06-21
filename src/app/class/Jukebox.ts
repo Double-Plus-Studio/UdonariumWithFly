@@ -29,7 +29,7 @@ export class Jukebox extends GameObject {
   }
 
   play(identifier: string, isLoop: boolean = false) {
-    let audio = AudioStorage.instance.get(identifier);
+    const audio = AudioStorage.instance.get(identifier);
     if (!audio || !audio.isReady) return;
     this.audioIdentifier = identifier;
     this.isPlaying = true;
@@ -66,7 +66,7 @@ export class Jukebox extends GameObject {
   }
 
   private unlockAfterUserInteraction() {
-    let callback = () => {
+    const callback = () => {
       document.body.removeEventListener('touchstart', callback, true);
       document.body.removeEventListener('mousedown', callback, true);
       this.audioPlayer.stop();
@@ -82,8 +82,8 @@ export class Jukebox extends GameObject {
 
   // override
   apply(context: ObjectContext) {
-    let audioIdentifier = this.audioIdentifier;
-    let isPlaying = this.isPlaying;
+    const audioIdentifier = this.audioIdentifier;
+    const isPlaying = this.isPlaying;
     super.apply(context);
     if ((audioIdentifier !== this.audioIdentifier || !isPlaying) && this.isPlaying) {
       this._play();

@@ -56,7 +56,7 @@
   @if (networkService.peer.password) {
     <div>
       密碼
-      <label sytle="white-space: nowrap">
+      <label style="white-space: nowrap">
         <input name="show-hide-password" type="checkbox" value="Show Hides" class="show-hides" checked="{{ isPasswordOpen ? 'checked' : '' }}" (click)="onPasswordOpen($event)">
         <b class="material-icons show-hides" [ngClass]="{'red-eye': isPasswordOpen}" style="font-size: smaller">{{ isPasswordOpen ? 'visibility' : 'visibility_off' }}</b>：
       </label>
@@ -87,7 +87,7 @@
 <hr/>
 @for (peer of networkService.peers; track peer; let i = $index) {
   <div>
-    @if (i == 0) {
+    @if (i === 0) {
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
         <div style="font-weight: bold">與其他參加者的連線狀態<br/><span class="health">（良好 </span><i class="material-icons health health-blue">sentiment_very_satisfied</i><span class="health"> ＞ </span><i class="material-icons health health-green">sentiment_dissatisfied</i><span class="health"> ＞ </span><i class="material-icons health health-yellow">mood_bad</i><span class="health"> ＞ </span><i class="material-icons health health-red">sentiment_very_dissatisfied</i><span class="health"> 不良）</span>：</div>
         @if (networkService.peer.isRoom && networkService.peerIds.length > 0) {
@@ -124,7 +124,7 @@
   <div style="margin-top: 1px">
     @if (!networkService.peer.isRoom && canUsePrivateSession) {
       <input [(ngModel)]="targetUserId" placeholder="要連線的對象ID" name="targetUserId" [disabled]="isDisableConnect" />
-      <button (click)="connectPeer()" [disabled]="!networkService.isOpen || targetUserId == null || targetUserId == '' || isDisableConnect">私人連線</button><br>
+      <button (click)="connectPeer()" [disabled]="!networkService.isOpen || targetUserId == null || targetUserId === '' || isDisableConnect">私人連線</button><br>
     }
     @if (networkService.peers.length < 1) {
       <button style="margin-left: 0px" (click)="showLobby()" [disabled]="!networkService.isOpen || isDisableConnect"><i class="material-icons" style="vertical-align: bottom">meeting_room</i>顯示大廳（房間列表）</button>

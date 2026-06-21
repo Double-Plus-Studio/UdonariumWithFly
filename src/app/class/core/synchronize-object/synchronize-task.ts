@@ -39,7 +39,7 @@ export class SynchronizeTask {
           SynchronizeTask.onUpdate(event.data.identifier);
         });
     }
-    let task = new SynchronizeTask(peerId);
+    const task = new SynchronizeTask(peerId);
     task.initialize(requests);
     return task;
   }
@@ -49,7 +49,7 @@ export class SynchronizeTask {
     this.timeoutTimer = null;
     this.onsynchronize = this.onfinish = this.ontimeout = null;
 
-    for (let request of this.requestMap.values()) {
+    for (const request of this.requestMap.values()) {
       this.deleteTasksMap(request.identifier);
     };
 
@@ -57,14 +57,14 @@ export class SynchronizeTask {
   }
 
   private initialize(requests: SynchronizeRequest[]) {
-    for (let request of requests) {
+    for (const request of requests) {
       request.ttl--;
       this.requestMap.set(request.identifier, request);
       let tasks: SynchronizeTask[] = SynchronizeTask.tasksMap.get(request.identifier);
       if (tasks == null) tasks = [];
       tasks.push(this);
       SynchronizeTask.tasksMap.set(request.identifier, tasks);
-      let sendTo = this.peerId != null && request.holderIds.includes(this.peerId) ? this.peerId : null;
+      const sendTo = this.peerId != null && request.holderIds.includes(this.peerId) ? this.peerId : null;
       EventSystem.call('REQUEST_GAME_OBJECT', request.identifier, sendTo);
     }
 
@@ -87,8 +87,8 @@ export class SynchronizeTask {
   }
 
   private static onDisconnect(peerId: PeerId) {
-    for (let tasks of SynchronizeTask.tasksMap.values()) {
-      for (let task of tasks.concat()) {
+    for (const tasks of SynchronizeTask.tasksMap.values()) {
+      for (const task of tasks.concat()) {
         if (task.peerId === peerId) task.timeout();
       }
     }
@@ -97,8 +97,8 @@ export class SynchronizeTask {
 
   private static onUpdate(identifier: ObjectIdentifier) {
     if (!SynchronizeTask.tasksMap.has(identifier)) return;
-    let tasks = SynchronizeTask.tasksMap.get(identifier);
-    for (let task of tasks.concat()) {
+    const tasks = SynchronizeTask.tasksMap.get(identifier);
+    for (const task of tasks.concat()) {
       task.onUpdate(identifier);
     }
     if (SynchronizeTask.tasksMap.size < 1) EventSystem.unregister(SynchronizeTask.key);
@@ -115,8 +115,8 @@ export class SynchronizeTask {
   }
 
   private deleteTasksMap(identifier: ObjectIdentifier) {
-    let tasks = SynchronizeTask.tasksMap.get(identifier);
-    let index = tasks.indexOf(this);
+    const tasks = SynchronizeTask.tasksMap.get(identifier);
+    const index = tasks.indexOf(this);
     if (-1 < index) tasks.splice(index, 1);
     if (tasks.length < 1) SynchronizeTask.tasksMap.delete(identifier);
   }

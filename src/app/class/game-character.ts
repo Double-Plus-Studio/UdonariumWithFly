@@ -43,7 +43,7 @@ export class GameCharacter extends TabletopObject {
     return d > 0 ? d : this.size;
   }
   get height(): number {
-    let element = this.getElement('height', this.commonDataElement);
+    const element = this.getElement('height', this.commonDataElement);
     //if (!element && this.commonDataElement) {
     //  this.commonDataElement.insertBefore(DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier), this.getElement('altitude', this.commonDataElement));
     //}
@@ -53,34 +53,34 @@ export class GameCharacter extends TabletopObject {
   }
 
   get chatPalette(): ChatPalette {
-    for (let child of this.children) {
+    for (const child of this.children) {
       if (child instanceof ChatPalette) return child;
     }
     return null;
   }
 
   get ownerName(): string {
-    let object = PeerCursor.findByUserId(this.owner);
+    const object = PeerCursor.findByUserId(this.owner);
     return object ? object.name : null;
   }
 
   get ownerColor(): string {
-    let object = PeerCursor.findByUserId(this.owner);
+    const object = PeerCursor.findByUserId(this.owner);
     return object ? object.color : '#444444';
   }
   
   get standList(): StandList {
-    for (let child of this.children) {
+    for (const child of this.children) {
       if (child instanceof StandList) return child;
     }
-    let standList = new StandList('StandList_' + this.identifier);
+    const standList = new StandList('StandList_' + this.identifier);
     standList.initialize();
     this.appendChild(standList);
     return standList;
   }
 
   static create(name: string, size: number, imageIdentifier: string): GameCharacter {
-    let gameCharacter: GameCharacter = new GameCharacter();
+    const gameCharacter: GameCharacter = new GameCharacter();
     gameCharacter.createDataElements();
     gameCharacter.initialize();
     gameCharacter.createTestGameDataElement(name, size, imageIdentifier);
@@ -125,20 +125,20 @@ export class GameCharacter extends TabletopObject {
   createTestGameDataElement(name: string, size: number, imageIdentifier: string) {
     this.createDataElements();
 
-    let nameElement: DataElement = DataElement.create('name', name, {}, 'name_' + this.identifier);
-    let sizeElement: DataElement = DataElement.create('size', size, {}, 'size_' + this.identifier);
-    let widthElement: DataElement = DataElement.create('width', 0, {}, 'width_' + this.identifier);
-    let depthElement: DataElement = DataElement.create('depth', 0, {}, 'depth_' + this.identifier);
-    let heightElement: DataElement = DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier);
-    let altitudeElement: DataElement = DataElement.create('altitude', 0, {}, 'altitude_' + this.identifier);
+    const nameElement: DataElement = DataElement.create('name', name, {}, 'name_' + this.identifier);
+    const sizeElement: DataElement = DataElement.create('size', size, {}, 'size_' + this.identifier);
+    const widthElement: DataElement = DataElement.create('width', 0, {}, 'width_' + this.identifier);
+    const depthElement: DataElement = DataElement.create('depth', 0, {}, 'depth_' + this.identifier);
+    const heightElement: DataElement = DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier);
+    const altitudeElement: DataElement = DataElement.create('altitude', 0, {}, 'altitude_' + this.identifier);
 
     if (this.imageDataElement.getFirstElementByName('imageIdentifier')) {
       this.imageDataElement.getFirstElementByName('imageIdentifier').value = imageIdentifier;
     }
 
-    let resourceElement: DataElement = DataElement.create('資源', '', {}, '資源' + this.identifier);
-    let hpElement: DataElement = DataElement.create('HP', 200, { 'type': 'numberResource', 'currentValue': '200' }, 'HP_' + this.identifier);
-    let mpElement: DataElement = DataElement.create('MP', 100, { 'type': 'numberResource', 'currentValue': '100' }, 'MP_' + this.identifier);
+    const resourceElement: DataElement = DataElement.create('資源', '', {}, '資源' + this.identifier);
+    const hpElement: DataElement = DataElement.create('HP', 200, { 'type': 'numberResource', 'currentValue': '200' }, 'HP_' + this.identifier);
+    const mpElement: DataElement = DataElement.create('MP', 100, { 'type': 'numberResource', 'currentValue': '100' }, 'MP_' + this.identifier);
 
     this.commonDataElement.appendChild(nameElement);
     this.commonDataElement.appendChild(sizeElement);
@@ -178,10 +178,10 @@ export class GameCharacter extends TabletopObject {
     testElement.appendChild(DataElement.create('Lv9', '橫掃', {}, 'Lv9' + this.identifier));
     testElement.appendChild(DataElement.create('自動', '治療適性', {}, '自動' + this.identifier));
 
-    let domParser: DOMParser = new DOMParser();
-    let gameCharacterXMLDocument: Document = domParser.parseFromString(this.rootDataElement.toXml(), 'application/xml');
+    const domParser: DOMParser = new DOMParser();
+    const gameCharacterXMLDocument: Document = domParser.parseFromString(this.rootDataElement.toXml(), 'application/xml');
 
-    let palette: ChatPalette = new ChatPalette('ChatPalette_' + this.identifier);
+    const palette: ChatPalette = new ChatPalette('ChatPalette_' + this.identifier);
     palette.setPalette(`聊天面板輸入範例：
 2d6+1 擲骰
 １ｄ２０＋{敏捷}＋｛格闘｝　{name}的格闘！
@@ -193,7 +193,7 @@ export class GameCharacter extends TabletopObject {
     palette.initialize();
     this.appendChild(palette);
 
-    let standList = new StandList('StandList_' + this.identifier);
+    const standList = new StandList('StandList_' + this.identifier);
     standList.initialize();
     this.appendChild(standList);
   }

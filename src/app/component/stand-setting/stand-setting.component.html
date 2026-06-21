@@ -3,7 +3,7 @@
   <div class="position-indicate">
     <b>Pos: </b>
     <input style="width: 350px" type="range" [title]="position + '%'" min="0" max="100" [(ngModel)]="position">
-    <input style="width: 3em; text-align: right; margin-right: 3px;" type="number" min="0" max="100" [(ngModel)]="position"><b sytle="margin-left: 3px; margin-right: 1em ">％　</b>
+    <input style="width: 3em; text-align: right; margin-right: 3px;" type="number" min="0" max="100" [(ngModel)]="position"><b style="margin-left: 3px; margin-right: 1em ">％　</b>
     <label style="margin-left: 1em; white-space: nowrap">
       <input type="checkbox" [(ngModel)]="isSortNameList" checked="{{isSortNameList ? 'checked' : ''}}" (change)="isSortNameList = (isSortNameList ? true : false)" />
       <b style="font-size: smaller">在聊天輸入中依名稱排序</b>
@@ -12,19 +12,19 @@
   <div class="position-indicate">
     <b>Height (0=維持原始): </b>
     <input style="width: 350px" type="range" [title]="height ? height + '%' : '維持原始'" min="0" max="100" [(ngModel)]="height">
-    <input style="width: 3em; text-align: right; margin-right: 3px;" type="number" min="0" max="200" [(ngModel)]="height"><b sytle="margin-left: 3px; margin-right: 1em ">％</b>
+    <input style="width: 3em; text-align: right; margin-right: 3px;" type="number" min="0" max="200" [(ngModel)]="height"><b style="margin-left: 3px; margin-right: 1em ">％</b>
   </div>
 </div>
-<div class="overview-selecter" [style.border-color]="overviewIndex == -1 ? 'red' : 'transparent'" style="padding: 0px; width: 695px;">
-  <label style="font-size: smaller; font-weight: bolder;"><input type="radio" style="cursor: pointer" name="{{panelId}}_overviewIndex" value="-1" [checked]="overviewIndex == -1" (click)="overviewIndex = -1"> 不使用立繪圖片作為概覽</label>
+<div class="overview-selecter" [style.border-color]="overviewIndex === -1 ? 'red' : 'transparent'" style="padding: 0px; width: 695px;">
+  <label style="font-size: smaller; font-weight: bolder;"><input type="radio" style="cursor: pointer" name="{{panelId}}_overviewIndex" value="-1" [checked]="overviewIndex === -1" (click)="overviewIndex = -1"> 不使用立繪圖片作為概覽</label>
 </div>
 <hr>
   <div style="display: flex; flex-direction: row; flex-wrap: wrap">
     @for (standElement of standElements; track standElement; let i = $index) {
       <div style="width: 700px">
-        <div style="display: flex; flex-direction: row; justify-content: space-between;" [style.border-color]="overviewIndex == i ? 'red' : 'transparent'" class="overview-selecter">
+        <div style="display: flex; flex-direction: row; justify-content: space-between;" [style.border-color]="overviewIndex === i ? 'red' : 'transparent'" class="overview-selecter">
           <div style="display: flex; align-items: center; justify-content: center;">
-            <input style="z-index: 10;" type="radio" style="cursor: pointer" name="{{panelId}}_overviewIndex" value="{{ i }}" [checked]="overviewIndex == i" (click)="overviewIndex = i">
+            <input style="z-index: 10;" type="radio" style="cursor: pointer" name="{{panelId}}_overviewIndex" value="{{ i }}" [checked]="overviewIndex === i" (click)="overviewIndex = i">
           </div>
           <div style="margin-left: -1em; margin-right: -1em;">
             <stand-element #standElementComponent [standElement]="standElement" [imageList]="imageList" [gameCharacter]="character"></stand-element>

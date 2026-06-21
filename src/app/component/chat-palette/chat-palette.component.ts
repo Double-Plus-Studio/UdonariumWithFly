@@ -110,10 +110,10 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
 
   onSelectedCharacter(identifier: string) {
     if (this.isEdit) this.toggleEditMode();
-    let object = ObjectStore.instance.get(identifier);
+    const object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter) {
       this.character = object;
-      let gameType = this.character.chatPalette ? this.character.chatPalette.dicebot : '';
+      const gameType = this.character.chatPalette ? this.character.chatPalette.dicebot : '';
       if (0 < gameType.length) this.gameType = gameType;
     }
     this.updatePanelTitle();
@@ -129,7 +129,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     } else {
       this.selectedPaletteIndex = this.chatPletteElementRef.nativeElement.selectedIndex;
       this.text = evaluatedLine;
-      let textArea: HTMLTextAreaElement = this.chatInputComponent.textAreaElementRef.nativeElement;
+      const textArea: HTMLTextAreaElement = this.chatInputComponent.textAreaElementRef.nativeElement;
       textArea.value = this.text;
       this.doubleClickTimer = setTimeout(() => { this.doubleClickTimer = null }, 400);
     }
@@ -152,7 +152,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     if (this.selectedPaletteIndex >= 0 && this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex]) {
       this.ngZone.run(() => {
         this.text = this.palette.evaluate(this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex].value, this.character.rootDataElement);
-        let textArea: HTMLTextAreaElement = this.chatInputComponent.textAreaElementRef.nativeElement;
+        const textArea: HTMLTextAreaElement = this.chatInputComponent.textAreaElementRef.nativeElement;
         textArea.value = this.text;
       });
     }
@@ -180,7 +180,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   sendChat(value: { text: string, gameType: string, sendFrom: string, sendTo: string,
     color?: string, isInverse?:boolean, isHollow?: boolean, isBlackPaint?: boolean, aura?: number, isUseFaceIcon?: boolean, characterIdentifier?: string, standIdentifier?: string, standName?: string, isUseStandImage?: boolean }) {
     if (this.chatTab) {
-      let text = this.palette.evaluate(value.text, this.character.rootDataElement);
+      const text = this.palette.evaluate(value.text, this.character.rootDataElement);
       this.chatMessageService.sendMessage(
         this.chatTab, 
         text, 
@@ -226,9 +226,9 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   }
 
   helpChatPallet() {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 560, height: 620 };
-    let textView = this.panelService.open(TextViewComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 560, height: 620 };
+    const textView = this.panelService.open(TextViewComponent, option);
     textView.title = '聊天語法與聊天面板的使用方法';
     textView.shadowing = '💭';
     textView.text = [

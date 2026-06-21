@@ -62,8 +62,8 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
   set text(text: string) { this.value = (text == null) ? '' : text; }
 
   get timestamp(): number {
-    let timestamp = this.getAttribute('timestamp');
-    let num = timestamp ? +timestamp : 0;
+    const timestamp = this.getAttribute('timestamp');
+    const num = timestamp ? +timestamp : 0;
     return Number.isNaN(num) ? 1 : num;
   }
   private _to: string;
@@ -144,7 +144,7 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
     return text;
   }
 
-  logFragment(logForamt: number, tabName: string=null, dateFormat='HH:mm', imageDict?: {}): string {
+  logFragment(logForamt: number, tabName: string=null, dateFormat='HH:mm', imageDict?: Record<string, unknown>): string {
     if (logForamt == 0) {
       return this.logFragmentText(tabName, dateFormat);
     } else {
@@ -166,7 +166,7 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
     return `${ tabName }${ dateStr }${ this.name }${ this.toColor ? (' ➡ ' + this.toName) : '' }：${ (this.isSecret && !this.isSendFromSelf) ? '（秘密擲骰）' : text + lastUpdateStr }`
   }
 
-  logFragmentHtml(tabName: string=null, dateFormat='HH:mm', imageDict?: {}): string {
+  logFragmentHtml(tabName: string=null, dateFormat='HH:mm', imageDict?: Record<string, unknown>): string {
     const isWithImage = !!imageDict;
     const color = StringUtil.escapeHtml(this.color ? this.color : PeerCursor.CHAT_DEFAULT_COLOR);
     const colorStyle = ` style="color: ${ color }"`;
@@ -183,14 +183,14 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
     const nameHtml = `<span${growClass}${colorStyle}>${StringUtil.escapeHtml(this.name)}</span>` 
       + (this.toColor ? ` ➡ ${toImageTag}<span${growClass}${toColorStyle}>${StringUtil.escapeHtml(this.toName)}</span>` : '');
 
-    let messageClassNames = ['message'];
+    const messageClassNames = ['message'];
     if (this.isDirect || this.isSecret) messageClassNames.push('direct-message');
     if (this.isSystem) messageClassNames.push('system-message');
     if (this.isDicebot || this.isCalculate) messageClassNames.push('dicebot-message');
     if (this.isOperationLog) messageClassNames.push('operation-log');
     if (isWithImage && this.isFaceIcon) messageClassNames.push('face-icon-msessage');
 
-    let messageTextClassNames = ['msg-text'];
+    const messageTextClassNames = ['msg-text'];
     if (!this.isSecret || this.isSendFromSelf) {
       if (this.isSuccess) messageTextClassNames.push('is-success');
       if (this.isFailure) messageTextClassNames.push('is-failure');

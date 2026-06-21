@@ -14,14 +14,14 @@ export class ImageService {
   getSkeletonOr(image: ImageFile): ImageFile
   getSkeletonOr(imageIdentifier: string): ImageFile
   getSkeletonOr(arg: any): ImageFile {
-    let image: ImageFile = arg instanceof ImageFile ? arg : ImageStorage.instance.get(arg);
+    const image: ImageFile = arg instanceof ImageFile ? arg : ImageStorage.instance.get(arg);
     return image && !image.isEmpty ? image : skeletonImage;
   }
 
   getEmptyOr(image: ImageFile): ImageFile
   getEmptyOr(imageIdentifier: string): ImageFile
   getEmptyOr(arg: any): ImageFile {
-    let image: ImageFile = arg instanceof ImageFile ? arg : ImageStorage.instance.get(arg);
+    const image: ImageFile = arg instanceof ImageFile ? arg : ImageStorage.instance.get(arg);
     return image && !image.isEmpty ? image : ImageFile.Empty;
   }
 }

@@ -40,7 +40,7 @@ export class AudioFile {
   private constructor() { }
 
   static createEmpty(identifier: string): AudioFile {
-    let audio = new AudioFile();
+    const audio = new AudioFile();
     audio.context.identifier = identifier;
 
     return audio;
@@ -50,13 +50,13 @@ export class AudioFile {
   static create(context: AudioFileContext): AudioFile
   static create(arg: any): AudioFile {
     if (typeof arg === 'string') {
-      let audio = new AudioFile();
+      const audio = new AudioFile();
       audio.context.identifier = arg;
       audio.context.name = arg;
       audio.context.url = arg;
       return audio;
     } else {
-      let audio = new AudioFile();
+      const audio = new AudioFile();
       audio.apply(arg);
       return audio;
     }
@@ -73,9 +73,9 @@ export class AudioFile {
   }
 
   private static async _createAsync(blob: Blob, name?: string): Promise<AudioFile> {
-    let arrayBuffer = await FileReaderUtil.readAsArrayBufferAsync(blob);
+    const arrayBuffer = await FileReaderUtil.readAsArrayBufferAsync(blob);
 
-    let audio = new AudioFile();
+    const audio = new AudioFile();
     audio.context.identifier = await FileReaderUtil.calcSHA256Async(arrayBuffer);
     audio.context.name = name;
     audio.context.blob = new Blob([arrayBuffer], { type: blob.type });

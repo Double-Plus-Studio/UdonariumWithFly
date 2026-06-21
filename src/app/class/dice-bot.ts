@@ -44,7 +44,7 @@ interface DiceRollResult {
 }
 
 let loader: BCDiceLoader;
-let queue: PromiseQueue = initializeDiceBotQueue();
+const queue: PromiseQueue = initializeDiceBotQueue();
 
 @SyncObject('dice-bot')
 export class DiceBot extends GameObject {
@@ -261,7 +261,7 @@ export class DiceBot extends GameObject {
         const diceRollTableRows = diceRollTable.parseText();
         for (let i = 0; i < repeat && i < 32; i++) {
           let rollResultNumber = null;
-          let rollResult = await DiceBot.diceRollAsync(isFixedRef ? `C(${modStr.substring(1)})` : StringUtil.toHalfWidth(diceRollTable.dice).trim().replace(/[ⅮÐ]/g, 'D').replace(/×/g, '*').replace(/÷/g, '/').replace(/[―ー—‐]/g, '-'), 'DiceBot', 1);
+          const rollResult = await DiceBot.diceRollAsync(isFixedRef ? `C(${modStr.substring(1)})` : StringUtil.toHalfWidth(diceRollTable.dice).trim().replace(/[ⅮÐ]/g, 'D').replace(/×/g, '*').replace(/÷/g, '/').replace(/[―ー—‐]/g, '-'), 'DiceBot', 1);
           finalResult.isEmptyDice = finalResult.isEmptyDice && rollResult.isEmptyDice;
           let match = null;
           if (rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
@@ -308,7 +308,8 @@ export class DiceBot extends GameObject {
       let isChoice = false;
       //ToDO 版本調べる
       let choiceMatch;
-      if (choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*)([ 　]+|[\\￥][sｓ])([^\n]*)/ig.exec(rollText.trim())) {
+      choiceMatch = /^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*)([ 　]+|[\\￥][sｓ])([^\n]*)/ig.exec(rollText.trim());
+      if (choiceMatch) {
         //if (choiceMatch[2] && choiceMatch[2] !== '' && !DiceRollTableList.instance.diceRollTables.map(diceRollTable => diceRollTable.command).some(command => command != null && command.trim().toUpperCase() === choiceMatch[1].toUpperCase())) {
           rollText = StringUtil.toHalfWidth(choiceMatch[1] + StringUtil.cr(choiceMatch[2])) ;
           if (choiceMatch[2] != null) {
@@ -355,7 +356,7 @@ export class DiceBot extends GameObject {
         const gameSystem = await DiceBot.loadGameSystemAsync(gameType);
         if (!gameSystem.COMMAND_PATTERN.test(rollText)) return;
         for (let i = 0; i < repeat && i < 32; i++) {
-          let rollResult = await DiceBot.diceRollAsync(rollText, gameType, repeat);
+          const rollResult = await DiceBot.diceRollAsync(rollText, gameType, repeat);
           if (rollResult.result.length < 1) break;
           finalResult.id = rollResult.id;
           finalResult.result += rollResult.result;
@@ -401,8 +402,8 @@ export class DiceBot extends GameObject {
   }
 
   private sendResultMessage(rollResult: DiceRollResult, originalMessage: ChatMessage) {
-    let id: string = rollResult.id.split(':')[0];
-    let result: string = rollResult.result;
+    const id: string = rollResult.id.split(':')[0];
+    const result: string = rollResult.result;
     const isSecret: boolean = rollResult.isSecret;
     const isEmptyDice: boolean = rollResult.isEmptyDice;
     const isSuccess: boolean = rollResult.isSuccess;
@@ -421,7 +422,7 @@ export class DiceBot extends GameObject {
     if (isCritical) tag += ' critical';
     if (isFumble) tag += ' fumble';
 
-    let diceBotMessage: ChatMessageContext = {
+    const diceBotMessage: ChatMessageContext = {
       identifier: '',
       tabIdentifier: originalMessage.tabIdentifier,
       originFrom: originalMessage.from,
@@ -563,19 +564,19 @@ export class DiceBot extends GameObject {
       }
       return Promise.all(promisise)
         .then(results => { return results.reduce((ac, cv) => {
-          let result = ac.result + cv.result;
-          let isSecret = ac.isSecret || cv.isSecret;
-          let isEmptyDice = ac.isEmptyDice && cv.isEmptyDice;
-          let isSuccess = ac.isSuccess || cv.isSuccess;
-          let isFailure = ac.isFailure && cv.isFailure;
-          let isCritical = ac.isCritical || cv.isCritical;
-          let isFumble = ac.isFumble || cv.isFumble;
+          const result = ac.result + cv.result;
+          const isSecret = ac.isSecret || cv.isSecret;
+          const isEmptyDice = ac.isEmptyDice && cv.isEmptyDice;
+          const isSuccess = ac.isSuccess || cv.isSuccess;
+          const isFailure = ac.isFailure && cv.isFailure;
+          const isCritical = ac.isCritical || cv.isCritical;
+          const isFumble = ac.isFumble || cv.isFumble;
           return { id: gameType, result, isSecret: isSecret, isEmptyDice: isEmptyDice,
             isSuccess: isSuccess, isFailure: isFailure, isCritical: isCritical, isFumble: isFumble };
         }, { id: gameType, result: '', isSecret: false, isEmptyDice: true, isSuccess: false, isFailure: true, isCritical: false, isFumble: false }) });
     } else {
       try {
-        let gameSystem = await DiceBot.loadGameSystemAsync(gameType);
+        const gameSystem = await DiceBot.loadGameSystemAsync(gameType);
         const result = gameSystem.eval(message);
         if (!result) return { id: gameType, result: '', isSecret: false, isEmptyDice: true };
         console.log('diceRoll!!!', result);
@@ -622,7 +623,7 @@ export class DiceBot extends GameObject {
       try {
         help = [DiceBot.translateDiceBotHelp((await DiceBot.loadGameSystemAsync('DiceBot')).HELP_MESSAGE)];
         if (gameType && gameType != '' && gameType != 'DiceBot') {
-          let gameSystem = await DiceBot.loadGameSystemAsync(gameType);
+          const gameSystem = await DiceBot.loadGameSystemAsync(gameType);
           if (gameSystem && gameSystem.ID != 'DiceBot' && gameSystem.HELP_MESSAGE) {
             help.push(gameSystem.HELP_MESSAGE.replace('部屋のシステム名', '聊天面板等的系統名稱'));
           } else {
@@ -736,7 +737,8 @@ export class DiceBot extends GameObject {
                   const {diceArrayString} = diceArrayInfo.groups;
                   placeString = diceArrayString.split(',').map(die => DiceBot.isPass(die, sign, criteria) ? `${die}` : `~~~${die}~~~`).join(',');
                 } else if (rerollDiceInfos.length) {
-                  let {rerollSign, rerollCriteria, sign, criteria} = rerollDiceInfos[0].groups;
+                  let {rerollSign, rerollCriteria} = rerollDiceInfos[0].groups;
+                  const {sign, criteria} = rerollDiceInfos[0].groups;
                   if (!rerollSign) rerollSign = sign;
                   if (!rerollCriteria) rerollCriteria = criteria;
                   const {diceArrayString} = diceArrayInfo.groups;
@@ -758,7 +760,7 @@ export class DiceBot extends GameObject {
                       .join(',') + ']';
                       if (!DiceBot.isPass((+total) + (modifier ? +modifier : 0), sign, criteria)) placeString = `~~~${placeString}~~~`;
                     } else {
-                      let tmp = placeString;
+                      const tmp = placeString;
                       placeString = DiceBot.isPass(dieString, '>=', rerollCriteria) ? `###${dieString}###` : dieString;
                       if (!DiceBot.isPass((+tmp) + (modifier ? +modifier : 0), sign, criteria)) placeString = `~~~${placeString}~~~`;
                     }
@@ -778,7 +780,7 @@ export class DiceBot extends GameObject {
           if (match) {
             const {deficult, critical, fumble} = match.groups;
             resultFragment = resultFragment.split(',').map(diceStr => {
-              let diceNum = parseInt(diceStr.trim());
+              const diceNum = parseInt(diceStr.trim());
               if (diceNum === 1) {
                 return `###${diceNum}###`;
               } else if (diceNum >= parseInt(fumble)) {
@@ -797,7 +799,7 @@ export class DiceBot extends GameObject {
             const isBonus = (coc7thBonusDiceCount - (coc7thFARCount > 0 ? (coc7thFARCount - 1) : 0) >= 0);
             let minMax = (isBonus ? 101 : -1);
             const diceNumbers = diceAry.split(',').map(str => {
-              let num = +str.trim();
+              const num = +str.trim();
               if (isBonus && minMax > num) minMax = num;
               if (!isBonus && minMax < num) minMax = num;
               return num;
@@ -872,7 +874,7 @@ export class DiceBot extends GameObject {
 
   private static isPass(num: string|number, sign: string, criteria: string|number, _default=true): boolean {
     if (num == null) return _default;
-    let match = num.toString().match(/(\d+)/);
+    const match = num.toString().match(/(\d+)/);
     if (match) num = match[1];
     let isPass = _default;
     switch (sign) {
@@ -921,7 +923,7 @@ export class DiceBot extends GameObject {
 
 function initializeDiceBotQueue(): PromiseQueue {
   const langSortOrder = ['English', '正體中文', '简体中文', '한국어', 'Other'];
-  let queue = new PromiseQueue('DiceBotQueue');
+  const queue = new PromiseQueue('DiceBotQueue');
   queue.add(async () => {
     loader = new (await import(
       /* webpackChunkName: "lib/bcdice/bcdice-loader" */
@@ -959,7 +961,7 @@ function initializeDiceBotQueue(): PromiseQueue {
     });
     DiceBot.diceBotInfos.forEach((info) => {
       let normalize = info.sort_key.normalize('NFKD');
-      for (let replaceData of DiceBot.replaceData) {
+      for (const replaceData of DiceBot.replaceData) {
         if (replaceData[2] && info.game === replaceData[0]) {
           normalize = replaceData[1];
           info.game = replaceData[2];
@@ -994,7 +996,7 @@ function initializeDiceBotQueue(): PromiseQueue {
     });
     let sentinel = DiceBot.diceBotInfos[0].sort_key[0];
     let group = { index: sentinel, infos: [] };
-    for (let info of DiceBot.diceBotInfos) {
+    for (const info of DiceBot.diceBotInfos) {
       if ((info.lang ? info.lang : info.sort_key[0]) !== sentinel) {
         sentinel = info.lang ? info.lang : info.sort_key[0];
         DiceBot.diceBotInfosIndexed.push(group);

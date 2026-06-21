@@ -98,7 +98,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
   //private minMessageHeight: number = 26;
   private get minMessageHeight(): number {
     if (this.compact) return 26; 
-    let chatMessage = this.chatTab.chatMessages[this.chatTab.chatMessages.length - 1]
+    const chatMessage = this.chatTab.chatMessages[this.chatTab.chatMessages.length - 1]
     return (chatMessage && chatMessage.isOperationLog) ? 26 : 61;
   }
 
@@ -110,7 +110,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
     if (!this.chatTab) return [];
     if (this.needUpdate) {
       this.needUpdate = false;
-      let chatMessages = this.chatTab ? this.chatTab.chatMessages : [];
+      const chatMessages = this.chatTab ? this.chatTab.chatMessages : [];
       this.adjustIndex();
 
       this._chatMessages = chatMessages.slice(this.topIndex, this.bottomIndex + 1);
@@ -144,7 +144,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
   private callbackOnScrollToBottom: any = () => this.resetMessages();
 
   @Input() chatTab: ChatTab;
-  @Output() onAddMessage: EventEmitter<null> = new EventEmitter();
+  @Output() addMessage: EventEmitter<null> = new EventEmitter();
 
   constructor(
     private chatMessageService: ChatMessageService,
@@ -156,7 +156,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
   ngOnInit() {
     EventSystem.register(this)
       .on('MESSAGE_ADDED', event => {
-        let message = ObjectStore.instance.get<ChatMessage>(event.data.messageIdentifier);
+        const message = ObjectStore.instance.get<ChatMessage>(event.data.messageIdentifier);
         if (!message || !this.chatTab.contains(message)) return;
 
         if (this.topTimestamp <= message.timestamp) {
@@ -166,7 +166,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
         }
       })
       .on(`UPDATE_GAME_OBJECT/aliasName/${ChatMessage.aliasName}`, event => {
-        let message = ObjectStore.instance.get<ChatMessage>(event.data.identifier);
+        const message = ObjectStore.instance.get<ChatMessage>(event.data.identifier);
         if (message
           && this.topTimestamp <= message.timestamp && message.timestamp <= this.botomTimestamp
           && this.chatTab.contains(message)) {
@@ -211,13 +211,13 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
     this.ngZone.runOutsideAngular(() => {
       this.addMessageEventTimer = setTimeout(() => {
         this.addMessageEventTimer = null;
-        this.ngZone.run(() => this.onAddMessage.emit());
+        this.ngZone.run(() => this.addMessage.emit());
       }, 0);
     });
   }
 
   resetMessages() {
-    let lastIndex = this.chatTab.chatMessages.length - 1;
+    const lastIndex = this.chatTab.chatMessages.length - 1;
     this.topIndex = lastIndex - Math.floor(this.panelService.scrollablePanel.clientHeight / this.minMessageHeight);
     this.bottomIndex = lastIndex;
     this.needUpdate = true;
@@ -238,8 +238,8 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
   }
 
   private adjustIndex() {
-    let chatMessages = this.chatTab ? this.chatTab.chatMessages : [];
-    let lastIndex = 0 < chatMessages.length ? chatMessages.length - 1 : 0;
+    const chatMessages = this.chatTab ? this.chatTab.chatMessages : [];
+    const lastIndex = 0 < chatMessages.length ? chatMessages.length - 1 : 0;
 
     if (this.topIndex < 0) {
       this.topIndex = 0;
@@ -256,22 +256,22 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
 
   private getScrollPosition(): ScrollPosition {
     let top = this.panelService.scrollablePanel.scrollTop;
-    let clientHeight = this.panelService.scrollablePanel.clientHeight;
-    let scrollHeight = this.panelService.scrollablePanel.scrollHeight;
+    const clientHeight = this.panelService.scrollablePanel.clientHeight;
+    const scrollHeight = this.panelService.scrollablePanel.scrollHeight;
     if (top < 0) top = 0;
     if (scrollHeight - clientHeight < top)
       top = scrollHeight - clientHeight;
-    let bottom = top + clientHeight;
+    const bottom = top + clientHeight;
     return { top, bottom, clientHeight, scrollHeight };
   }
 
   private adjustScrollPosition() {
     if (!this.topElm || !this.bottomElm) return;
 
-    let hasTopElm = this.logContainerRef.nativeElement.contains(this.topElm);
-    let hasBotomElm = this.logContainerRef.nativeElement.contains(this.bottomElm);
+    const hasTopElm = this.logContainerRef.nativeElement.contains(this.topElm);
+    const hasBotomElm = this.logContainerRef.nativeElement.contains(this.bottomElm);
 
-    let { hasTopBlank, hasBotomBlank } = this.checkBlank(hasTopElm, hasBotomElm);
+    const { hasTopBlank, hasBotomBlank } = this.checkBlank(hasTopElm, hasBotomElm);
 
     this.topElm = this.bottomElm = null;
 
@@ -303,13 +303,13 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
       this.panelService.scrollablePanel.scrollTop -= diff;
     }
 
-    let logBox: DOMRect = this.logContainerRef.nativeElement.getBoundingClientRect();
-    let messageBox: DOMRect = this.messageContainerRef.nativeElement.getBoundingClientRect();
+    const logBox: DOMRect = this.logContainerRef.nativeElement.getBoundingClientRect();
+    const messageBox: DOMRect = this.messageContainerRef.nativeElement.getBoundingClientRect();
 
-    let messageBoxTop = messageBox.top - logBox.top;
-    let messageBoxBottom = messageBoxTop + messageBox.height;
+    const messageBoxTop = messageBox.top - logBox.top;
+    const messageBoxBottom = messageBoxTop + messageBox.height;
 
-    let scrollPosition = this.getScrollPosition();
+    const scrollPosition = this.getScrollPosition();
 
     hasTopBlank = scrollPosition.top < messageBoxTop;
     hasBotomBlank = messageBoxBottom < scrollPosition.bottom && scrollPosition.bottom < scrollPosition.scrollHeight;
@@ -320,7 +320,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
   private markForReadIfNeeded() {
     if (!this.chatTab.hasUnread) return;
 
-    let scrollPosition = this.getScrollPosition();
+    const scrollPosition = this.getScrollPosition();
     if (scrollPosition.scrollHeight <= scrollPosition.bottom + 100) {
       setZeroTimeout(() => {
         this.chatTab.markForRead();
@@ -341,20 +341,20 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
     this.scrollEventShortTimer.stop();
     this.scrollEventLongTimer.stop();
 
-    let chatMessageElements = this.messageContainerRef.nativeElement.querySelectorAll<HTMLElement>('chat-message');
+    const chatMessageElements = this.messageContainerRef.nativeElement.querySelectorAll<HTMLElement>('chat-message');
 
-    let messageBoxTop = this.messageContainerRef.nativeElement.offsetTop;
-    let messageBoxBottom = messageBoxTop + this.messageContainerRef.nativeElement.clientHeight;
+    const messageBoxTop = this.messageContainerRef.nativeElement.offsetTop;
+    const messageBoxBottom = messageBoxTop + this.messageContainerRef.nativeElement.clientHeight;
 
-    let preTopIndex = this.topIndex;
-    let preBottomIndex = this.bottomIndex;
+    const preTopIndex = this.topIndex;
+    const preBottomIndex = this.bottomIndex;
 
-    let scrollPosition = this.getScrollPosition();
+    const scrollPosition = this.getScrollPosition();
     this.scrollSpeed = scrollPosition.top - this.preScrollTop;
     this.preScrollTop = scrollPosition.top;
 
-    let hasTopBlank = scrollPosition.top < messageBoxTop;
-    let hasBotomBlank = messageBoxBottom < scrollPosition.bottom && scrollPosition.bottom < scrollPosition.scrollHeight;
+    const hasTopBlank = scrollPosition.top < messageBoxTop;
+    const hasBotomBlank = messageBoxBottom < scrollPosition.bottom && scrollPosition.bottom < scrollPosition.scrollHeight;
 
     if (!isNormalUpdate) {
       this.scrollEventShortTimer.reset();
@@ -364,13 +364,13 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
       return;
     }
 
-    let scrollWideTop = scrollPosition.top - (!isNormalUpdate && hasTopBlank ? 100 : 1200);
-    let scrollWideBottom = scrollPosition.bottom + (!isNormalUpdate && hasBotomBlank ? 100 : 1200);
+    const scrollWideTop = scrollPosition.top - (!isNormalUpdate && hasTopBlank ? 100 : 1200);
+    const scrollWideBottom = scrollPosition.bottom + (!isNormalUpdate && hasBotomBlank ? 100 : 1200);
 
     this.markForReadIfNeeded();
     this.calcItemIndexRange(messageBoxTop, messageBoxBottom, scrollWideTop, scrollWideBottom, scrollPosition, chatMessageElements);
 
-    let isChangedIndex = this.topIndex != preTopIndex || this.bottomIndex != preBottomIndex;
+    const isChangedIndex = this.topIndex != preTopIndex || this.bottomIndex != preBottomIndex;
     if (!isChangedIndex) return;
 
     this.needUpdate = true;
@@ -381,7 +381,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
     this.bottomElmBox = this.bottomElm.getBoundingClientRect();
 
     setZeroTimeout(() => {
-      let scrollPosition = this.getScrollPosition();
+      const scrollPosition = this.getScrollPosition();
       this.scrollSpeed = scrollPosition.top - this.preScrollTop;
       this.preScrollTop = scrollPosition.top;
       this.changeDetector.markForCheck();
@@ -392,7 +392,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
   private calcElementMaxHeight(chatMessageElements: NodeListOf<HTMLElement>): number {
     let maxHeight = this.minMessageHeight;
     for (let i = chatMessageElements.length - 1; 0 <= i; i--) {
-      let height = chatMessageElements[i].clientHeight;
+      const height = chatMessageElements[i].clientHeight;
       if (maxHeight < height) maxHeight = height;
     }
     return maxHeight;
@@ -400,8 +400,8 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
 
   private calcItemIndexRange(messageBoxTop: number, messageBoxBottom: number, scrollWideTop: number, scrollWideBottom: number, scrollPosition: ScrollPosition, chatMessageElements: NodeListOf<HTMLElement>) {
     if (scrollWideTop >= messageBoxBottom || messageBoxTop >= scrollWideBottom) {
-      let lastIndex = this.chatTab.chatMessages.length - 1;
-      let scrollBottomHeight = scrollPosition.scrollHeight - scrollPosition.top - scrollPosition.clientHeight;
+      const lastIndex = this.chatTab.chatMessages.length - 1;
+      const scrollBottomHeight = scrollPosition.scrollHeight - scrollPosition.top - scrollPosition.clientHeight;
 
       this.bottomIndex = lastIndex - Math.floor(scrollBottomHeight / this.minMessageHeight);
       this.topIndex = this.bottomIndex - Math.floor(scrollPosition.clientHeight / this.minMessageHeight);
@@ -409,7 +409,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
       this.bottomIndex += 1;
       this.topIndex -= 1;
     } else {
-      let maxHeight = this.calcElementMaxHeight(chatMessageElements);
+      const maxHeight = this.calcElementMaxHeight(chatMessageElements);
       if (scrollWideTop < messageBoxTop) {
         this.topIndex -= Math.floor((messageBoxTop - scrollWideTop) / maxHeight) + 1;
       } else if (scrollWideTop > messageBoxTop) {
@@ -426,7 +426,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
   }
 
   private makeSampleMessage(from: string, to: string, name: string, toName: string, text: string, tag='mine'): ChatMessage {
-    let message = new ChatMessage();
+    const message = new ChatMessage();
     message.from = from;
     message.to = to;
     message.name = name;

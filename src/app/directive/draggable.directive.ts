@@ -10,16 +10,26 @@ import { InputHandler } from './input-handler';
     standalone: false
 })
 export class DraggableDirective implements AfterViewInit, OnDestroy {
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('draggable.disable') isDisable: boolean = false;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('draggable.bounds') boundsSelector: string = 'body';
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('draggable.handle') handleSelector: string = '';
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('draggable.unhandle') unhandleSelector: string = 'input,textarea,button,select,option,span,label,li';
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('draggable.stack') stackSelector: string = '';
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('draggable.opacity') opacity: number = 0.7;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('draggable.allowOverHalf') allowOverHalf: boolean = false;
 
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('draggable.start') onstart: EventEmitter<MouseEvent | TouchEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('draggable.move') onmove: EventEmitter<MouseEvent | TouchEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('draggable.end') onend: EventEmitter<MouseEvent | TouchEvent> = new EventEmitter();
 
   private callbackOnResize = this.adjustPosition.bind(this);
@@ -74,9 +84,9 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
     this.startPointer = this.input.pointer;
     this.prevTrans = { x: 0, y: 0, z: 0 };
 
-    let isHandle = this.isHandleElement(e.target as HTMLElement);
-    let isUnhandle = this.isUnhandleElement(e.target as HTMLElement);
-    let isScrollable = (e as TouchEvent).touches != null ? this.isScrollableElement(e.target as HTMLElement) : false;
+    const isHandle = this.isHandleElement(e.target as HTMLElement);
+    const isUnhandle = this.isUnhandleElement(e.target as HTMLElement);
+    const isScrollable = (e as TouchEvent).touches != null ? this.isScrollableElement(e.target as HTMLElement) : false;
 
     if (!isHandle || isUnhandle || isScrollable) {
       this.cancel();
@@ -90,19 +100,19 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   }
 
   private onInputMove(e: MouseEvent | TouchEvent) {
-    let trans = {
+    const trans = {
       x: this.input.pointer.x - this.startPointer.x,
       y: this.input.pointer.y - this.startPointer.y,
       z: this.input.pointer.z - this.startPointer.z
     };
 
-    let diff = {
+    const diff = {
       x: trans.x - this.prevTrans.x,
       y: trans.y - this.prevTrans.y,
       z: trans.z - this.prevTrans.z
     };
 
-    let correction = this.calcCorrectionPosition(diff);
+    const correction = this.calcCorrectionPosition(diff);
     trans.x += correction.x;
     trans.y += correction.y;
     trans.z += correction.z;
@@ -142,11 +152,11 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   private preventClickIfNeeded(e: MouseEvent | TouchEvent) {
     if ((e as TouchEvent).touches != null) return;
 
-    let distance = MathUtil.sqrMagnitude(this.input.pointer, this.startPointer);
+    const distance = MathUtil.sqrMagnitude(this.input.pointer, this.startPointer);
 
     if (15 ** 2 > distance) return;
 
-    let callback = (e: Event) => {
+    const callback = (e: Event) => {
       if (e.cancelable) e.preventDefault();
       e.stopPropagation();
     };
@@ -156,8 +166,8 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   }
 
   private adjustPosition() {
-    let current = this.calcElementPosition(this.elementRef.nativeElement);
-    let correction = this.calcCorrectionPosition();
+    const current = this.calcElementPosition(this.elementRef.nativeElement);
+    const correction = this.calcCorrectionPosition();
     this.elementRef.nativeElement.style.left = correction.x + current.x + 'px';
     this.elementRef.nativeElement.style.top = correction.y + current.y + 'px';
   }
@@ -173,7 +183,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   }
 
   private isContainsElement(target: HTMLElement, selectors: string): boolean {
-    let elms = this.elementRef.nativeElement.querySelectorAll<HTMLElement>(selectors);
+    const elms = this.elementRef.nativeElement.querySelectorAll<HTMLElement>(selectors);
     for (let i = 0; i < elms.length; i++) {
       if (elms[i].contains(target)) return true;
     }
@@ -181,12 +191,12 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   }
 
   private isScrollableElement(target: HTMLElement) {
-    let boundsElm = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector);
+    const boundsElm = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector);
     let node = target;
-    let overflowType = ['scroll', 'auto'];
-    let positionType = ['fixed', 'sticky', '-webkit-sticky'];
+    const overflowType = ['scroll', 'auto'];
+    const positionType = ['fixed', 'sticky', '-webkit-sticky'];
     while (node && boundsElm !== node && this.elementRef.nativeElement !== node) {
-      let css: CSSStyleDeclaration = window.getComputedStyle(node);
+      const css: CSSStyleDeclaration = window.getComputedStyle(node);
       if (0 <= overflowType.indexOf(css.overflowY) && node.offsetHeight < node.scrollHeight) return true;
       if (0 <= positionType.indexOf(css.position)) return false;
       node = node.parentElement;
@@ -195,9 +205,9 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   }
 
   private calcCorrectionPosition(diff: PointerCoordinate = { x: 0, y: 0, z: 0 }): PointerCoordinate {
-    let correction: PointerCoordinate = { x: 0, y: 0, z: 0 };
-    let box = this.elementRef.nativeElement.getBoundingClientRect();
-    let bounds = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector).getBoundingClientRect();
+    const correction: PointerCoordinate = { x: 0, y: 0, z: 0 };
+    const box = this.elementRef.nativeElement.getBoundingClientRect();
+    const bounds = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector).getBoundingClientRect();
 
     if (this.allowOverHalf) {
       const boxWidth = box.right - box.left;
@@ -232,7 +242,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   }
 
   private calcElementPosition(target: HTMLElement): PointerCoordinate {
-    let css: CSSStyleDeclaration = window.getComputedStyle(target);
+    const css: CSSStyleDeclaration = window.getComputedStyle(target);
     return {
       x: CSSNumber.relation(css.left, target.parentElement.offsetWidth, target.parentElement.offsetWidth * 0.5),
       y: CSSNumber.relation(css.top, target.parentElement.offsetHeight, target.parentElement.offsetHeight * 0.5),
@@ -242,11 +252,11 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
 
   private setForeground() {
     if (this.stackSelector.length < 1) return;
-    let stacks = this.elementRef.nativeElement.ownerDocument.querySelectorAll<HTMLElement>(this.stackSelector);
+    const stacks = this.elementRef.nativeElement.ownerDocument.querySelectorAll<HTMLElement>(this.stackSelector);
     let topZindex: number = 0;
     let bottomZindex: number = 99999;
     stacks.forEach(elm => {
-      let zIndex = parseInt(elm.style.zIndex);
+      const zIndex = parseInt(elm.style.zIndex);
       if (topZindex < zIndex) topZindex = zIndex;
       if (zIndex < bottomZindex) bottomZindex = zIndex;
     });
@@ -260,7 +270,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   }
 
   private removeSelectionRanges() {
-    let selection = window.getSelection();
+    const selection = window.getSelection();
     if (!selection.isCollapsed) {
       selection.removeAllRanges();
     }

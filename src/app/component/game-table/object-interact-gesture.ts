@@ -20,7 +20,7 @@ export class ObjectInteractGesture {
   }
 
   private initializeHammer() {
-    let tap2 = new Hammer.Tap({ event: 'tap2', taps: 2 });
+    const tap2 = new Hammer.Tap({ event: 'tap2', taps: 2 });
     this.hammer.add([tap2]);
     this.hammer.on('hammer.input', this.onHammer.bind(this));
     this.hammer.on('tap2', this.onInteract.bind(this));
@@ -28,7 +28,7 @@ export class ObjectInteractGesture {
 
   private onHammer(ev: HammerInput) {
     if (!ev.isFirst) return;
-    let isSubButton = ev.srcEvent instanceof MouseEvent && (ev.srcEvent.button !== 0 || ev.srcEvent.ctrlKey || ev.srcEvent.shiftKey);
+    const isSubButton = ev.srcEvent instanceof MouseEvent && (ev.srcEvent.button !== 0 || ev.srcEvent.ctrlKey || ev.srcEvent.shiftKey);
     this.isEnable = !isSubButton;
     if (this.isEnable && this.onstart) this.onstart(ev.srcEvent);
   }

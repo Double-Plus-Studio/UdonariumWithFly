@@ -33,7 +33,7 @@ export class TabletopService {
   private _emptyTable: GameTable = new GameTable('');
   get tableSelecter(): TableSelecter { return TableSelecter.instance; }
   get currentTable(): GameTable {
-    let table = this.tableSelecter.viewTable;
+    const table = this.tableSelecter.viewTable;
     return table ? table : this._emptyTable;
   }
 
@@ -44,12 +44,12 @@ export class TabletopService {
   private cardCache = new TabletopCache<Card>(() => ObjectStore.instance.getObjects(Card).filter(obj => obj.isVisibleOnTable));
   private cardStackCache = new TabletopCache<CardStack>(() => ObjectStore.instance.getObjects(CardStack).filter(obj => obj.isVisibleOnTable));
   private tableMaskCache = new TabletopCache<GameTableMask>(() => {
-    let viewTable = this.tableSelecter.viewTable;
+    const viewTable = this.tableSelecter.viewTable;
     return viewTable ? viewTable.masks : [];
   });
   private rangeCache = new TabletopCache<RangeArea>(() => ObjectStore.instance.getObjects(RangeArea).filter(obj => obj.isVisibleOnTable));
   private terrainCache = new TabletopCache<Terrain>(() => {
-    let viewTable = this.tableSelecter.viewTable;
+    const viewTable = this.tableSelecter.viewTable;
     return viewTable ? viewTable.terrains : [];
   });
   private textNoteCache = new TabletopCache<TextNote>(() => ObjectStore.instance.getObjects(TextNote));
@@ -81,7 +81,7 @@ export class TabletopService {
           return;
         }
 
-        let object = ObjectStore.instance.get(event.data.identifier);
+        const object = ObjectStore.instance.get(event.data.identifier);
         if (!object || !(object instanceof TabletopObject)) {
           this.refreshCache(event.data.aliasName);
         } else if (this.shouldRefreshCache(object)) {
@@ -90,7 +90,7 @@ export class TabletopService {
         }
       })
       .on('DELETE_GAME_OBJECT', event => {
-        let aliasName = event.data.aliasName;
+        const aliasName = event.data.aliasName;
         if (!aliasName) {
           this.refreshCacheAll();
         } else {
@@ -98,11 +98,11 @@ export class TabletopService {
         }
       })
       .on('XML_LOADED', event => {
-        let xmlElement: Element = event.data.xmlElement;
+        const xmlElement: Element = event.data.xmlElement;
         // todo:立体地形の上にドロップした時の挙動
-        let gameObject = ObjectSerializer.instance.parseXml(xmlElement);
+        const gameObject = ObjectSerializer.instance.parseXml(xmlElement);
         if (gameObject instanceof TabletopObject) {
-          let pointer = this.coordinateService.calcTabletopLocalCoordinate();
+          const pointer = this.coordinateService.calcTabletopLocalCoordinate();
           gameObject.location.x = pointer.x - 25;
           gameObject.location.y = pointer.y - 25;
           gameObject.posZ = pointer.z;
@@ -149,7 +149,7 @@ export class TabletopService {
   }
 
   private refreshCache(aliasName: string) {
-    let cache = this.findCache(aliasName);
+    const cache = this.findCache(aliasName);
     if (cache) cache.refresh();
   }
 
@@ -186,11 +186,12 @@ export class TabletopService {
   private placeToTabletop(gameObject: TabletopObject) {
     switch (gameObject.aliasName) {
       case GameTableMask.aliasName:
-        if (gameObject instanceof GameTableMask) { 
+        if (gameObject instanceof GameTableMask) {
           gameObject.isLock = false;
           gameObject.isPreview = false;
         }
         // フォールスルー
+        // falls through
       case Terrain.aliasName:
         if (gameObject instanceof Terrain) gameObject.isLocked = false;
         if (!this.tableSelecter || !this.tableSelecter.viewTable) return;
@@ -202,6 +203,7 @@ export class TabletopService {
       case TextNote.aliasName:
         if (gameObject instanceof Card || gameObject instanceof CardStack || gameObject instanceof RangeArea || gameObject instanceof TextNote) gameObject.isLocked = false;
         if (gameObject instanceof RangeArea) gameObject.followingCharctorIdentifier = null;
+        // falls through
       default:
         gameObject.setLocation('table');
         break;

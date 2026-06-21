@@ -49,21 +49,25 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     return chatTab && chatTab.isUseStandImage;
   }
 
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('gameType') _gameType: string = '';
   @Output() gameTypeChange = new EventEmitter<string>();
   get gameType(): string { return this._gameType };
   set gameType(gameType: string) { this._gameType = gameType; this.gameTypeChange.emit(gameType); }
 
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('sendFrom') _sendFrom: string = this.myPeer ? this.myPeer.identifier : '';
   @Output() sendFromChange = new EventEmitter<string>();
   get sendFrom(): string { return this._sendFrom };
   set sendFrom(sendFrom: string) { this._sendFrom = sendFrom; this.sendFromChange.emit(sendFrom); }
 
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('sendTo') _sendTo: string = '';
   @Output() sendToChange = new EventEmitter<string>();
   get sendTo(): string { return this._sendTo };
   set sendTo(sendTo: string) { this._sendTo = sendTo; this.sendToChange.emit(sendTo); }
 
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('text') _text: string = '';
   @Output() textChange = new EventEmitter<string>();
   get text(): string { return this._text };
@@ -74,6 +78,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   }
 
   isFilterTextUpdate = false;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('filterText') _filterText: string = '';
   @Output() filterTextChange = new EventEmitter<string>();
   get filterText(): string { return this._filterText };
@@ -101,13 +106,13 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   isUseStandImage: boolean = true;
   isUseChatBalloon: boolean = true;
   
-  static history: string[] = new Array();
+  static history: string[] = [];
   private currentHistoryIndex: number = -1;
   private static MAX_HISTORY_NUM = 1000;
   private tmpText;
 
   get character(): GameCharacter {
-    let object = ObjectStore.instance.get(this.sendFrom);
+    const object = ObjectStore.instance.get(this.sendFrom);
     if (object instanceof GameCharacter) {
       return object;
     }
@@ -121,9 +126,9 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
   get standNameList(): string[] {
     if (!this.hasStand) return [];
-    let ret: string[] = [];
-    for (let standElement of this.character.standList.standElements) {
-      let nameElement = standElement.getFirstElementByName('name');
+    const ret: string[] = [];
+    for (const standElement of this.character.standList.standElements) {
+      const nameElement = standElement.getFirstElementByName('name');
       if (nameElement && nameElement.value != null && nameElement.value.toString().trim() != '' && ret.indexOf(nameElement.value.toString()) < 0) {
         ret.push(nameElement.value.toString());
       }
@@ -139,7 +144,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   // 未使用
   get standListWithGroup(): StandGroup[] {
     if (!this.hasStand) return [];
-    let ret = {};
+    const ret = {};
     const nameElements = this.character.standList.standElements.map((standElement) => standElement.getFirstElementByName('name')).filter(e => e);
     nameElements.sort((a, b) => a.currentValue === b.currentValue ? 0 : a.currentValue > b.currentValue ? -1 : 1);
     for (const nameElement of nameElements) {
@@ -155,7 +160,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   }
 
   get imageFile(): ImageFile {
-    let object = ObjectStore.instance.get(this.sendFrom);
+    const object = ObjectStore.instance.get(this.sendFrom);
     let image: ImageFile = null;
     if (object instanceof GameCharacter) {
       image = object.imageFile;
@@ -195,7 +200,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   }
 
   get sendToColor(): string {
-    let object = ObjectStore.instance.get(this.sendTo);
+    const object = ObjectStore.instance.get(this.sendTo);
     if (object instanceof PeerCursor) {
       return object.color;
     }
@@ -245,9 +250,9 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     EventSystem.register(this)
       .on('MESSAGE_ADDED', event => {
         if (event.data.tabIdentifier !== this.chatTabidentifier) return;
-        let message = ObjectStore.instance.get<ChatMessage>(event.data.messageIdentifier);
-        let peerCursor = ObjectStore.instance.getObjects<PeerCursor>(PeerCursor).find(obj => obj.userId === message.from);
-        let sendFrom = peerCursor ? peerCursor.peerId : '?';
+        const message = ObjectStore.instance.get<ChatMessage>(event.data.messageIdentifier);
+        const peerCursor = ObjectStore.instance.getObjects<PeerCursor>(PeerCursor).find(obj => obj.userId === message.from);
+        const sendFrom = peerCursor ? peerCursor.peerId : '?';
         if (this.writingPeers.has(sendFrom)) {
           this.writingPeers.get(sendFrom).stop();
           this.writingPeers.delete(sendFrom);
@@ -275,7 +280,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         }
       })
       .on('DISCONNECT_PEER', event => {
-        let object = ObjectStore.instance.get(this.sendTo);
+        const object = ObjectStore.instance.get(this.sendTo);
         if (object instanceof PeerCursor && object.peerId === event.data.peerId) {
           this.sendTo = '';
         }
@@ -305,7 +310,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
   private updateWritingPeerNameAndColors() {
     this.writingPeerNameAndColors = Array.from(this.writingPeers.keys()).map(peerId => {
-      let peer = PeerCursor.findByPeerId(peerId);
+      const peer = PeerCursor.findByPeerId(peerId);
       return {
         name: (peer ? peer.name : ''),
         color: (peer ? peer.color : PeerCursor.CHAT_TRANSPARENT_COLOR),
@@ -326,9 +331,9 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     if (this.writingEventInterval === null && this.previousWritingLength <= this.text.length) {
       let sendTo: string = null;
       if (this.isDirect) {
-        let object = ObjectStore.instance.get(this.sendTo);
+        const object = ObjectStore.instance.get(this.sendTo);
         if (object instanceof PeerCursor) {
-          let peer = PeerContext.parse(object.peerId);
+          const peer = PeerContext.parse(object.peerId);
           if (peer) sendTo = peer.peerId;
         }
       }
@@ -364,7 +369,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
     this.text = histText;
     this.previousWritingLength = this.text.length;
-    let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
+    const textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
     textArea.value = histText;
     this.calcFitHeight();
   }
@@ -416,7 +421,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     if (!this.sendFrom.length) this.sendFrom = this.myPeer.identifier;
     
     let text = this.text;
-    let targetCharacter = this.character;
+    const targetCharacter = this.character;
     const gameType = this.gameType;
     const sendFrom = this.sendFrom;
     const sendTo = this.sendTo;
@@ -471,37 +476,38 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   const targetName = targetCharacter.chatPalette.evaluate(command.targetName, targetCharacter.rootDataElement, delayRefs);
                   const operator = StringUtil.toHalfWidth(command.operator);
                   const operateValue = targetCharacter.chatPalette.evaluate(command.value, targetCharacter.rootDataElement, delayRefs);
-                  let oldValue: string;
                   let target: DataElement;
                   let delayRef: string;
                   let isOperateNumber = false;
                   let isOperateMaxValue = false;
 
-                  if (target = targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName)) {
+                  target = targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName);
+                  if (target) {
                     if (target.isNumberResource || target.isSimpleNumber || target.isAbilityScore) isOperateNumber = true;
-                  } else if (
+                  } else {
                     target = targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^最大/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^Max[\:\_\-\s]*/i)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^初期|^初始/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /初期値$|初始值$/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /最大値$|最大值$/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^基本/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^原/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /\^$/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /基本値$|基本值$/)
-                    || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /原点$|原點$/)
-                  ) {
-                    if (target.isNumberResource || target.isAbilityScore) {
-                      isOperateNumber = true;
-                      isOperateMaxValue = true;
-                    } else {
-                      target = null;
+                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^Max[\:\_\-\s]*/i)
+                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^初期|^初始/)
+                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /初期値$|初始值$/)
+                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /最大値$|最大值$/)
+                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^基本/)
+                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^原/)
+                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /\^$/)
+                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /基本値$|基本值$/)
+                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /原点$|原點$/);
+                    if (target) {
+                      if (target.isNumberResource || target.isAbilityScore) {
+                        isOperateNumber = true;
+                        isOperateMaxValue = true;
+                      } else {
+                        target = null;
+                      }
                     }
                   }
                   
                   if (!target) throw `→ コマンドエラー：${(StringUtil.cr(targetName).trim() == '') ? '(無名變數)' : StringUtil.cr(targetName).trim()} 找不到`;
 
-                  oldValue = target.loggingValue;
+                  const oldValue = target.loggingValue;
                   let value = null;
                   if (command.isEscapeRoll || operator === '>') {
                     value = operateValue;
@@ -741,7 +747,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         // const dialogRegExp = /(?:^|[^\￥])「([\s\S]+?[^\￥])」/gm; 
         //ToDO ちゃんとパースする
         let match;
-        let dialog = [];
+        const dialog = [];
         if ((match = dialogRegExp.exec(dialogText)) !== null) {
           dialog.push(match[1]);
         }
@@ -806,7 +812,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   }
 
   calcFitHeight() {
-    let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
+    const textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
     textArea.style.height = '';
     if (textArea.scrollHeight >= textArea.offsetHeight) {
       textArea.style.height = textArea.scrollHeight + 'px';
@@ -825,16 +831,16 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       this.gameHelp = help;
 
       let gameName: string = '骰子機器人';
-      for (let diceBotInfo of DiceBot.diceBotInfos) {
+      for (const diceBotInfo of DiceBot.diceBotInfos) {
         if (diceBotInfo.id === this.gameType) {
           gameName = '骰子機器人〈' + diceBotInfo.game + '〉'
         }
       }
       gameName += '使用法';
 
-      let coordinate = this.pointerDeviceService.pointers[0];
-      let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 500 };
-      let textView = this.panelService.open(TextViewComponent, option);
+      const coordinate = this.pointerDeviceService.pointers[0];
+      const option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 500 };
+      const textView = this.panelService.open(TextViewComponent, option);
       textView.title = gameName;
       textView.text = this.gameHelp;
     });
@@ -846,7 +852,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu || !this.isAllowsChat) return;
 
-    let position = this.pointerDeviceService.pointers[0];
+    const position = this.pointerDeviceService.pointers[0];
     if (!this.character) {
       this.contextMenuService.open(
         position, 
@@ -863,10 +869,10 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       return;
     }
     
-    let contextMenuActions: ContextMenuAction[] = [
+    const contextMenuActions: ContextMenuAction[] = [
       { name: '輸入「」', 
         action: () => {
-          let textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
+          const textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
           let text = this.text.trim();
           if (text.slice(0, 1) != '「') text = '「' + text;
           if (text.slice(-1) != '」') text = text + '」';
@@ -1013,25 +1019,25 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   }
 
   private showDetail(gameObject: GameCharacter) {
-    let coordinate = this.pointerDeviceService.pointers[0];
+    const coordinate = this.pointerDeviceService.pointers[0];
     let title = '角色卡';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
-    let option: PanelOption = { title: title, left: coordinate.x - 400, top: coordinate.y - 300, width: 800, height: 600 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x - 400, top: coordinate.y - 300, width: 800, height: 600 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 
   private showChatPalette(gameObject: GameCharacter) {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 620, height: 350 };
-    let component = this.panelService.open<ChatPaletteComponent>(ChatPaletteComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 620, height: 350 };
+    const component = this.panelService.open<ChatPaletteComponent>(ChatPaletteComponent, option);
     component.character = gameObject;
   }
 
   private showStandSetting(gameObject: GameCharacter) {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 400, top: coordinate.y - 175, width: 730, height: 572 };
-    let component = this.panelService.open<StandSettingComponent>(StandSettingComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 400, top: coordinate.y - 175, width: 730, height: 572 };
+    const component = this.panelService.open<StandSettingComponent>(StandSettingComponent, option);
     component.character = gameObject;
   }
 

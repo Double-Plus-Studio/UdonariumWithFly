@@ -94,7 +94,7 @@ export class AudioPlayer {
   private static _masterGainNode: GainNode
   private static get masterGainNode(): GainNode {
     if (!AudioPlayer._masterGainNode) {
-      let masterGain = AudioPlayer.audioContext.createGain();
+      const masterGain = AudioPlayer.audioContext.createGain();
       masterGain.gain.setValueAtTime(AudioPlayer._volume, AudioPlayer.audioContext.currentTime);
       masterGain.connect(AudioPlayer.audioContext.destination);
       AudioPlayer._masterGainNode = masterGain;
@@ -105,7 +105,7 @@ export class AudioPlayer {
   private static _auditionGainNode: GainNode
   private static get auditionGainNode(): GainNode {
     if (!AudioPlayer._auditionGainNode) {
-      let auditionGain = AudioPlayer.audioContext.createGain();
+      const auditionGain = AudioPlayer.audioContext.createGain();
       auditionGain.gain.setValueAtTime(AudioPlayer._auditionVolume, AudioPlayer.audioContext.currentTime);
       auditionGain.connect(AudioPlayer.audioContext.destination);
       AudioPlayer._auditionGainNode = auditionGain;
@@ -116,7 +116,7 @@ export class AudioPlayer {
   private static _soundEffectGainNode: GainNode
   private static get soundEffectGainNode(): GainNode {
     if (!AudioPlayer._soundEffectGainNode) {
-      let soundEffectGain = AudioPlayer.audioContext.createGain();
+      const soundEffectGain = AudioPlayer.audioContext.createGain();
       soundEffectGain.gain.setValueAtTime(AudioPlayer._soundEffectVolume, AudioPlayer.audioContext.currentTime);
       soundEffectGain.connect(AudioPlayer.audioContext.destination);
       AudioPlayer._soundEffectGainNode = soundEffectGain;
@@ -127,7 +127,7 @@ export class AudioPlayer {
   private static _noticeGainNode: GainNode
   private static get noticeGainNode(): GainNode {
     if (!AudioPlayer._noticeGainNode) {
-      let noticeGain = AudioPlayer.audioContext.createGain();
+      const noticeGain = AudioPlayer.audioContext.createGain();
       noticeGain.gain.setValueAtTime(AudioPlayer._noticeVolume, AudioPlayer.audioContext.currentTime);
       noticeGain.connect(AudioPlayer.audioContext.destination);
       AudioPlayer._noticeGainNode = noticeGain;
@@ -251,10 +251,10 @@ export class AudioPlayer {
   }
 
   private static async playBufferAsyncBase(audioNode: AudioNode, audio: AudioFile, volume: number = 1.0) {
-    let source = await AudioPlayer.createBufferSourceAsync(audio);
+    const source = await AudioPlayer.createBufferSourceAsync(audio);
     if (!source) return;
 
-    let gain = AudioPlayer.audioContext.createGain();
+    const gain = AudioPlayer.audioContext.createGain();
     gain.gain.setValueAtTime(volume, AudioPlayer.audioContext.currentTime);
 
     gain.connect(audioNode);
@@ -278,13 +278,13 @@ export class AudioPlayer {
         if (AudioPlayer.cacheMap.has(audio.identifier)) {
           blob = AudioPlayer.cacheMap.get(audio.identifier).blob;
         } else {
-          let cache = await AudioPlayer.createCacheAsync(audio);
+          const cache = await AudioPlayer.createCacheAsync(audio);
           blob = cache && cache.blob ? cache.blob : null;
         }
       }
       if (!blob) return null;
-      let decodedData = await this.decodeAudioDataAsync(blob);
-      let source = AudioPlayer.audioContext.createBufferSource();
+      const decodedData = await this.decodeAudioDataAsync(blob);
+      const source = AudioPlayer.audioContext.createBufferSource();
       source.buffer = decodedData;
       return source;
     } catch (reason) {
@@ -294,11 +294,13 @@ export class AudioPlayer {
   }
 
   private static decodeAudioDataAsync(blob: Blob): Promise<AudioBuffer> {
-    return new Promise(async (resolve, reject) => {
-      AudioPlayer.audioContext.decodeAudioData(
-        await FileReaderUtil.readAsArrayBufferAsync(blob),
-        decodedData => resolve(decodedData),
-        error => reject(error));
+    return FileReaderUtil.readAsArrayBufferAsync(blob).then(arrayBuffer => {
+      return new Promise<AudioBuffer>((resolve, reject) => {
+        AudioPlayer.audioContext.decodeAudioData(
+          arrayBuffer,
+          decodedData => resolve(decodedData),
+          error => reject(error));
+      });
     });
   }
 
@@ -307,9 +309,9 @@ export class AudioPlayer {
     if (audio.url.length < 1) throw new Error('えっ なにそれ怖い');
 
     try {
-      let response = await fetch(audio.url);
+      const response = await fetch(audio.url);
       if (!response.ok) throw new Error('Network response was not ok.');
-      let blob = await response.blob();
+      const blob = await response.blob();
       return blob;
     } catch (error) {
       console.warn('There has been a problem with your fetch operation: ', error.message);
@@ -318,7 +320,7 @@ export class AudioPlayer {
   }
 
   private static async createCacheAsync(audio: AudioFile): Promise<AudioCache> {
-    let cache = { url: audio.url, blob: null };
+    const cache = { url: audio.url, blob: null };
     try {
       cache.blob = await AudioPlayer.getBlobAsync(audio);
     } catch (e) {
@@ -337,7 +339,7 @@ export class AudioPlayer {
 
   static resumeAudioContext() {
     AudioPlayer.audioContext.resume();
-    let callback = () => {
+    const callback = () => {
       AudioPlayer.audioContext.resume();
       document.removeEventListener('touchstart', callback, true);
       document.removeEventListener('mousedown', callback, true);

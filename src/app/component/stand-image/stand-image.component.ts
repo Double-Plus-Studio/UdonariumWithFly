@@ -144,7 +144,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
     if (!isEmote) {
       text = text.replace(/[。、]{3}/g, '…').replace(/[。、]{2}/g, '‥').replace(/(。|[\r\n]{2,})/g, "$1                            ").trimEnd(); //改行や。のあと時間を置くためのダーティハック
       while ((ary = re.exec(text)) !== null) {
-        let offset = ary.index - (count * 3);
+        const offset = ary.index - (count * 3);
         rubys.push({base: ary[1], ruby: ary[2], start: offset - rubyLength, end: offset + ary[1].length - rubyLength - 1});
         count++;
         rubyLength += ary[2].length;
@@ -175,8 +175,8 @@ export class StandImageComponent implements OnInit, OnDestroy {
     }  else {
       const charAry = Array.from(text.replace(/[\|｜]([^\|｜\s]+?)《.+?》/g, '$1'));
       this._chatIntervalId = setInterval(() => {
-        let c = charAry[count];
-        let isMulti = c.length > 1;
+        const c = charAry[count];
+        const isMulti = c.length > 1;
         if (c) {
             if (!isOpenRuby && carrentRuby && countLength >= carrentRuby.start) {
                 tmpText += '<ruby>';
@@ -186,7 +186,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
             tmpText += StringUtil.escapeHtml(c);
             if (isOpenRuby) {
                 rubyCount += 1;
-                let rt = carrentRuby.ruby;
+                const rt = carrentRuby.ruby;
                 rubyText = '<rt>' + StringUtil.escapeHtml(Array.from(rt).slice(0, Math.ceil(Array.from(rt).length * (rubyCount / Array.from(carrentRuby.base).length))).join('')) + '</rt>'
             }
             if (isOpenRuby && carrentRuby && countLength >= carrentRuby.end - (isMulti ? 1 : 0)) {
@@ -213,7 +213,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
 
   get dialogText(): string {
     if (!this.gameCharacter || !this.gameCharacter.text) return '';
-    return this.gameCharacter.text.replace(/[\r\n]{2,}/g, "\n\n").replace(/                            /g, '').trim();
+    return this.gameCharacter.text.replace(/[\r\n]{2,}/g, "\n\n").replace(/ {28}/g, '').trim();
     //const ary = this.gameCharacter.text.replace(/。/g, "。\n\n").split(/[\r\n]{2,}/g).filter(str => str.trim());
     //return ary.length > 0 ? ary.reverse()[0].trim() : '';
   }
@@ -238,7 +238,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
   */
   get isSpeakable(): boolean {
     if (!this.standElement) return false;
-    let elm = this.standElement.getFirstElementByName('speakingImageIdentifier');
+    const elm = this.standElement.getFirstElementByName('speakingImageIdentifier');
     return elm && elm.value && elm.value !== ImageFile.Empty.identifier;
   }
 
@@ -338,7 +338,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
 
   get group(): string {
     if (!this.gameCharacter) return '';
-    let elm = this.standElement.getFirstElementByName('name');
+    const elm = this.standElement.getFirstElementByName('name');
     return elm.currentValue && elm.currentValue.toString().length > 0 ? elm.currentValue.toString() : '';
   }
 
@@ -347,7 +347,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
     let hash = 0;
     const str = this.group;
     for (let i = 0; i < str.length; i++) {
-      let chr = str.charCodeAt(i);
+      const chr = str.charCodeAt(i);
       hash = ((hash << 5) - hash) + chr;
       hash |= 0;
     }
@@ -356,20 +356,20 @@ export class StandImageComponent implements OnInit, OnDestroy {
 
   get position(): number {
     if (!this.gameCharacter) return 0;
-    let elm = this.standElement.getFirstElementByName('position');
+    const elm = this.standElement.getFirstElementByName('position');
     return elm && elm.currentValue ? +elm.value :this.gameCharacter.standList.position;
   }
 
   get adjustY(): number {
     if (!this.gameCharacter) return 0;
-    let elm = this.standElement.getFirstElementByName('height');
+    const elm = this.standElement.getFirstElementByName('height');
     const posYPercent = (elm && elm.currentValue) ? +elm.currentValue : 0;
     return this.imageHeight * posYPercent / 100;
   }
 
   get height(): number {
     if (!this.gameCharacter || !this.standElement) return 0;
-    let elm = this.standElement.getFirstElementByName('height');
+    const elm = this.standElement.getFirstElementByName('height');
     if ((!elm || +elm.value == 0) && this.gameCharacter.standList) {
       return this.gameCharacter.standList.height;
     } 
@@ -426,7 +426,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
 
   get isApplyImageEffect(): boolean {
     if (!this.standElement || !this.gameCharacter) return false;
-    let elm = this.standElement.getFirstElementByName('applyImageEffect');
+    const elm = this.standElement.getFirstElementByName('applyImageEffect');
     // 真偽判定のもっといい方法ない？
     if (elm && elm.value) {
       return true;
@@ -436,7 +436,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
 
   get isApplyRoll(): boolean {
     if (!this.standElement || !this.gameCharacter) return false;
-    let elm = this.standElement.getFirstElementByName('applyRoll');
+    const elm = this.standElement.getFirstElementByName('applyRoll');
     if (elm && elm.value) {
       return true;
     }
@@ -445,7 +445,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
 
   get isApplyDialog(): boolean {
     if (!this.standElement || !this.gameCharacter) return false;
-    let elm = this.standElement.getFirstElementByName('applyDialog');
+    const elm = this.standElement.getFirstElementByName('applyDialog');
     if (elm && elm.value) {
       return true;
     }
@@ -454,7 +454,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
 
   private get isShowName(): boolean {
     if (!this.standElement || !this.gameCharacter) return false;
-    let elm = this.standElement.getFirstElementByName('showName');
+    const elm = this.standElement.getFirstElementByName('showName');
     if (elm && elm.value) {
       return true;
     }

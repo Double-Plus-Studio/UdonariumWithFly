@@ -7,8 +7,8 @@ export class RotableSelectionSynchronizer {
   private static readonly rotablesMap: Map<TabletopObject, Set<RotableDirective>> = new Map();
 
   private get selectedRotables(): Set<RotableDirective> {
-    let selected: Set<RotableDirective> = new Set();
-    for (let object of this.selection.objects) {
+    const selected: Set<RotableDirective> = new Set();
+    for (const object of this.selection.objects) {
       RotableSelectionSynchronizer.rotablesMap.get(object)?.forEach(r => selected.add(r));
     }
     return selected;
@@ -34,7 +34,7 @@ export class RotableSelectionSynchronizer {
 
   prepareRotate() {
     if (1 < this.selection.size && this.rotable.state !== SelectionState.NONE) {
-      for (let rotable of this.selectedRotables) {
+      for (const rotable of this.selectedRotables) {
         if (rotable === this.rotable) continue;
         if (!rotable.isDisable) rotable.setAnimatedTransition(false);
       }
@@ -45,7 +45,7 @@ export class RotableSelectionSynchronizer {
 
   updateRotate() {
     if (this.selection.size <= 1 || this.rotable.state === SelectionState.NONE) return;
-    for (let rotable of this.selectedRotables) {
+    for (const rotable of this.selectedRotables) {
       if (rotable === this.rotable) continue;
       if (!rotable.isDisable
         && rotable.tabletopObject.aliasName === this.rotable.tabletopObject.aliasName
@@ -57,7 +57,7 @@ export class RotableSelectionSynchronizer {
 
   finishRotate() {
     if (this.selection.size <= 1 || this.rotable.state === SelectionState.NONE) return;
-    for (let rotable of this.selectedRotables) {
+    for (const rotable of this.selectedRotables) {
       if (rotable === this.rotable) continue;
       if (!rotable.isDisable
         && rotable.tabletopObject.aliasName === this.rotable.tabletopObject.aliasName
@@ -69,13 +69,13 @@ export class RotableSelectionSynchronizer {
   }
 
   register() {
-    let rotableSet = RotableSelectionSynchronizer.rotablesMap.get(this.rotable.tabletopObject) ?? new Set();
+    const rotableSet = RotableSelectionSynchronizer.rotablesMap.get(this.rotable.tabletopObject) ?? new Set();
     rotableSet.add(this.rotable);
     RotableSelectionSynchronizer.rotablesMap.set(this.rotable.tabletopObject, rotableSet);
   }
 
   unregister() {
-    let objectSet = RotableSelectionSynchronizer.rotablesMap.get(this.rotable.tabletopObject);
+    const objectSet = RotableSelectionSynchronizer.rotablesMap.get(this.rotable.tabletopObject);
     if (!objectSet) return;
     objectSet.delete(this.rotable);
     if (objectSet.size < 1) RotableSelectionSynchronizer.rotablesMap.delete(this.rotable.tabletopObject);

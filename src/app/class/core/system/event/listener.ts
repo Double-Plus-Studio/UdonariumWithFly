@@ -46,7 +46,7 @@ export class Listener implements Observer {
   once<T>(eventName: string, callback: Callback<T>): Listener
   once<T>(eventName: string, priority: number, callback: Callback<T>): Listener
   once(...args: any[]): Listener {
-    let listener = this.on.apply(this, args);
+    const listener = this.on(...args);
     this._isOnlyOnce = true;
     return listener;
   }
@@ -77,9 +77,9 @@ export class Listener implements Observer {
   }
 
   isEqual(key: any, eventName: string, callback: Callback<any>) {
-    let matchTarget = (key == null || key === this.key);
-    let matchEventName = (eventName == null || eventName === this.eventName);
-    let matchCallback = (callback == null || callback === this.callback);
+    const matchTarget = (key == null || key === this.key);
+    const matchEventName = (eventName == null || eventName === this.eventName);
+    const matchCallback = (callback == null || callback === this.callback);
 
     return matchTarget && matchEventName && matchCallback;
   }

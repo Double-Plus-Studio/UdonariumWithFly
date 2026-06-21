@@ -16,16 +16,25 @@ interface BoxSize {
     standalone: false
 })
 export class ResizableDirective implements AfterViewInit, OnDestroy {
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('resizable.bounds') boundsSelector: string = 'body';
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('resizable.stack') stackSelector: string = '';
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('resizable.minWidth') minWidth: number = 100;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('resizable.minHeight') minHeight: number = 100;
 
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('resizable.disable') set isDisable(isDisable: boolean) { this._isDisable = isDisable; this.initialize(); };
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('resizable.align') set align(align: string) { this._align = align; this.initialize(); };
-  
+
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('resizable.start') ostart: EventEmitter<MouseEvent | TouchEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('resizable.move') onmove: EventEmitter<MouseEvent | TouchEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('resizable.end') onend: EventEmitter<MouseEvent | TouchEvent> = new EventEmitter();
 
   private handleMap = new Map<HandleType, ResizeHandler>();
@@ -83,7 +92,7 @@ export class ResizableDirective implements AfterViewInit, OnDestroy {
       this.handleMap.forEach(handle => handle.destroy());
       this.handleMap.clear();
       this.handleTypes.forEach(type => {
-        let handle = new ResizeHandler(this.elementRef.nativeElement, type);
+        const handle = new ResizeHandler(this.elementRef.nativeElement, type);
         this.handleMap.set(type, handle);
         handle.input.onStart = ev => this.onResizeStart(ev, handle);
         handle.input.onMove = ev => this.onResizeMove(ev, handle);
@@ -120,7 +129,7 @@ export class ResizableDirective implements AfterViewInit, OnDestroy {
   }
 
   private onResizeMove(e: MouseEvent | TouchEvent, handle: ResizeHandler) {
-    let trans: BoxSize = {
+    const trans: BoxSize = {
       left: 0,
       top: 0,
       width: handle.input.pointer.x - this.startPointer.x,
@@ -171,14 +180,14 @@ export class ResizableDirective implements AfterViewInit, OnDestroy {
       trans.top = trans.top !== 0 ? -trans.height : trans.top;
     }
 
-    let diff: BoxSize = {
+    const diff: BoxSize = {
       left: trans.left - this.prevTrans.left,
       top: trans.top - this.prevTrans.top,
       width: trans.width - this.prevTrans.width,
       height: trans.height - this.prevTrans.height
     };
 
-    let correction = this.calcCorrectionPosition(diff);
+    const correction = this.calcCorrectionPosition(diff);
     trans.left += correction.left;
     trans.top += correction.top;
     trans.width += correction.width;
@@ -207,9 +216,9 @@ export class ResizableDirective implements AfterViewInit, OnDestroy {
   }
 
   private calcCorrectionPosition(diff: BoxSize = { left: 0, top: 0, width: 0, height: 0 }): BoxSize {
-    let correction: BoxSize = { left: 0, top: 0, width: 0, height: 0 };
-    let box = this.elementRef.nativeElement.getBoundingClientRect();
-    let bounds = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector).getBoundingClientRect();
+    const correction: BoxSize = { left: 0, top: 0, width: 0, height: 0 };
+    const box = this.elementRef.nativeElement.getBoundingClientRect();
+    const bounds = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector).getBoundingClientRect();
 
     if (bounds.right < box.right + diff.left + diff.width) {
       correction.width += bounds.right - (box.right + diff.left + diff.width);
@@ -231,7 +240,7 @@ export class ResizableDirective implements AfterViewInit, OnDestroy {
   }
 
   private calcElementPosition(target: HTMLElement): BoxSize {
-    let css: CSSStyleDeclaration = window.getComputedStyle(target);
+    const css: CSSStyleDeclaration = window.getComputedStyle(target);
     return {
       left: CSSNumber.relation(css.left, target.parentElement.offsetWidth, target.parentElement.offsetWidth * 0.5),
       top: CSSNumber.relation(css.top, target.parentElement.offsetHeight, target.parentElement.offsetHeight * 0.5),
@@ -242,11 +251,11 @@ export class ResizableDirective implements AfterViewInit, OnDestroy {
 
   private setForeground() {
     if (this.stackSelector.length < 1) return;
-    let stacks = this.elementRef.nativeElement.ownerDocument.querySelectorAll<HTMLElement>(this.stackSelector);
+    const stacks = this.elementRef.nativeElement.ownerDocument.querySelectorAll<HTMLElement>(this.stackSelector);
     let topZindex: number = 0;
     let bottomZindex: number = 99999;
     stacks.forEach(elm => {
-      let zIndex = parseInt(elm.style.zIndex);
+      const zIndex = parseInt(elm.style.zIndex);
       if (topZindex < zIndex) topZindex = zIndex;
       if (zIndex < bottomZindex) bottomZindex = zIndex;
     });
@@ -260,7 +269,7 @@ export class ResizableDirective implements AfterViewInit, OnDestroy {
   }
 
   private removeSelectionRanges() {
-    let selection = window.getSelection();
+    const selection = window.getSelection();
     if (!selection.isCollapsed) {
       selection.removeAllRanges();
     }

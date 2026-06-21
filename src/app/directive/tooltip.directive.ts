@@ -24,7 +24,7 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
   private static activeTooltips: ComponentRef<OverviewPanelComponent>[] = [];
 
   @Input('appTooltip') tabletopObject: TabletopObject;
-  @Input('cardState') cardState: CardState;
+  @Input() cardState: CardState;
 
   private callbackOnMouseEnter = (e) => this.onMouseEnter(e);
   private callbackOnMouseLeave = (e) => this.onMouseLeave(e);
@@ -71,11 +71,11 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
   }
 
   private startOpenTimer() {
-    let prevPointer = this.pointerDeviceService.pointer;
+    const prevPointer = this.pointerDeviceService.pointer;
 
     this.openTooltipTimer = setTimeout(() => {
       this.openTooltipTimer = null;
-      let magnitude = MathUtil.sqrMagnitude(prevPointer, this.pointerDeviceService.pointer);
+      const magnitude = MathUtil.sqrMagnitude(prevPointer, this.pointerDeviceService.pointer);
       if (4 < magnitude) {
         this.startOpenTimer();
       } else {
@@ -105,7 +105,7 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
     this.closeAll();
     if (this.pointerDeviceService.isDragging || this.pointerDeviceService.isTablePickGesture) return;
 
-    let parentViewContainerRef = ContextMenuService.defaultParentViewContainerRef;
+    const parentViewContainerRef = ContextMenuService.defaultParentViewContainerRef;
 
     const injector = parentViewContainerRef.injector;
     this.tooltipComponentRef = parentViewContainerRef.createComponent(OverviewPanelComponent, { index: parentViewContainerRef.length, injector: injector });
@@ -148,7 +148,7 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
     });
     TooltipDirective.activeTooltips.push(this.tooltipComponentRef);
 
-    let onChanges = this.tooltipComponentRef.instance as OnChanges;
+    const onChanges = this.tooltipComponentRef.instance as OnChanges;
     if (onChanges?.ngOnChanges != null) {
       queueMicrotask(() => {
         if (this.tooltipComponentRef.instance) onChanges?.ngOnChanges({});
@@ -158,7 +158,7 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
 
   private close() {
     if (!this.tooltipComponentRef) return;
-    let index = TooltipDirective.activeTooltips.indexOf(this.tooltipComponentRef);
+    const index = TooltipDirective.activeTooltips.indexOf(this.tooltipComponentRef);
     if (0 <= index) TooltipDirective.activeTooltips.splice(index, 1);
 
     this.tooltipComponentRef.destroy();

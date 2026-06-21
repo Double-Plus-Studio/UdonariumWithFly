@@ -139,16 +139,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
 
     this.ngZone.runOutsideAngular(() => {
-      EventSystem;
-      Network;
+      void EventSystem;
+      void Network;
       FileArchiver.instance.initialize();
       ImageSharingSystem.instance.initialize();
-      ImageStorage.instance;
+      void ImageStorage.instance;
       AudioSharingSystem.instance.initialize();
-      AudioStorage.instance;
-      ObjectFactory.instance;
-      ObjectSerializer.instance;
-      ObjectStore.instance;
+      void AudioStorage.instance;
+      void ObjectFactory.instance;
+      void ObjectSerializer.instance;
+      void ObjectStore.instance;
       ObjectSynchronizer.instance.initialize();
     });
     this.appConfigService.initialize();
@@ -158,23 +158,23 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     ChatTabList.instance.initialize();
     DataSummarySetting.instance.initialize();
 
-    let diceBot: DiceBot = new DiceBot('DiceBot', this.chatMessageService);
+    const diceBot: DiceBot = new DiceBot('DiceBot', this.chatMessageService);
     diceBot.initialize();
     DiceBot.getHelpMessage('').then(() => this.lazyNgZoneUpdate(true));
 
-    let jukebox: Jukebox = new Jukebox('Jukebox');
+    const jukebox: Jukebox = new Jukebox('Jukebox');
     jukebox.initialize();
 
-    let soundEffect: SoundEffect = new SoundEffect('SoundEffect');
+    const soundEffect: SoundEffect = new SoundEffect('SoundEffect');
     soundEffect.initialize();
 
     ChatTabList.instance.addChatTab('主分頁', 'MainTab');
-    let subTab = ChatTabList.instance.addChatTab('副分頁', 'SubTab');
+    const subTab = ChatTabList.instance.addChatTab('副分頁', 'SubTab');
     subTab.recieveOperationLogLevel = 1;
 
     CutInList.instance.initialize();
 
-    let sampleDiceRollTable = new DiceRollTable('SampleDiceRollTable');
+    const sampleDiceRollTable = new DiceRollTable('SampleDiceRollTable');
     sampleDiceRollTable.initialize();
     sampleDiceRollTable.name = '範例骰子機器人表'
     sampleDiceRollTable.command = 'SAMPLE'
@@ -184,12 +184,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let fileContext = ImageFile.createEmpty('none_icon').toContext();
     fileContext.url = './assets/images/ic_account_circle_black_24dp_2x.png';
-    let noneIconImage = ImageStorage.instance.add(fileContext);
+    const noneIconImage = ImageStorage.instance.add(fileContext);
     ImageTag.create(noneIconImage.identifier).tag = '*default 圖示';
 
     fileContext = ImageFile.createEmpty('stand_no_image').toContext();
     fileContext.url = './assets/images/nc96424.png';
-    let standNoIconImage = ImageStorage.instance.add(fileContext);
+    const standNoIconImage = ImageStorage.instance.add(fileContext);
     ImageTag.create(standNoIconImage.identifier).tag = '*default 立繪';
 
     try {
@@ -280,15 +280,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           fetch(event.data.dice.url + (API_VERSION == 1 ? '/v1/names' : '/v2/game_system'), {mode: 'cors'})
             .then(response => { return response.json() })
             .then(infos => {
-              let apiUrl = event.data.dice.url;
+              const apiUrl = event.data.dice.url;
               DiceBot.apiUrl = apiUrl.endsWith('/') ? apiUrl.substring(0, apiUrl.length - 1) : apiUrl;
               DiceBot.apiVersion = API_VERSION;
               DiceBot.diceBotInfos = [];
-              let tempInfos = (API_VERSION == 1 ? infos.names : infos.game_system)
+              const tempInfos = (API_VERSION == 1 ? infos.names : infos.game_system)
                 .filter(info => (API_VERSION == 1 ? info.system : info.id) != 'DiceBot')
                 .map(info => {
                   let normalize = (info.sort_key && info.sort_key.indexOf('国際化') < 0) ? info.sort_key : info.name.normalize('NFKD');
-                  for (let replaceData of DiceBot.replaceData) {
+                  for (const replaceData of DiceBot.replaceData) {
                     if (replaceData[2] && info.name === replaceData[0]) {
                       normalize = replaceData[1];
                       info.name = replaceData[2];
@@ -324,8 +324,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               if (tempInfos.length > 0) {
                 let sentinel = tempInfos[0].normalize.substring(0, 1);
                 let group = { index: tempInfos[0].normalize.substring(0, 1), infos: [] };
-                for (let info of tempInfos) {
-                  let index = info.lang == 'Other' ? 'Other' 
+                for (const info of tempInfos) {
+                  const index = info.lang == 'Other' ? 'Other' 
                     : info.lang == 'ChineseTraditional' ? '正體中文'
                     : info.lang == 'Korean' ? '한국어'
                     : info.lang == 'English' ? 'English'
@@ -358,13 +358,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .on('NETWORK_ERROR', event => {
         console.log('NETWORK_ERROR', event.data.peerId);
-        let errorType: string = event.data.errorType;
-        let errorMessage: string = event.data.errorMessage;
+        const errorType: string = event.data.errorType;
+        const errorMessage: string = event.data.errorMessage;
 
         this.ngZone.run(async () => {
           //SKyWayエラーハンドリング
-          let quietErrorTypes = ['peer-unavailable'];
-          let reconnectErrorTypes = ['disconnected', 'socket-error', 'unavailable-id', 'authentication', 'server-error'];
+          const quietErrorTypes = ['peer-unavailable'];
+          const reconnectErrorTypes = ['disconnected', 'socket-error', 'unavailable-id', 'authentication', 'server-error'];
 
           if (quietErrorTypes.includes(errorType)) return;
           await this.modalService.open(TextViewComponent, { title: '網路錯誤', text: errorMessage });
@@ -433,15 +433,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       })
       .on('PLAY_CUT_IN', -1000, event => {
-        let cutIn = ObjectStore.instance.get<CutIn>(event.data.identifier);
+        const cutIn = ObjectStore.instance.get<CutIn>(event.data.identifier);
         this.cutInService.play(cutIn, event.data.secret ? event.data.secret : false, event.data.test ? event.data.test : false, event.data.sender);
       })
       .on('STOP_CUT_IN', -1000, event => {
         this.cutInService.stop(event.data.identifier);
       })
       .on('POPUP_STAND_IMAGE', -1000, event => {
-        let standElement = ObjectStore.instance.get<DataElement>(event.data.standIdentifier);
-        let gameCharacter = ObjectStore.instance.get<GameCharacter>(event.data.characterIdentifier);
+        const standElement = ObjectStore.instance.get<DataElement>(event.data.standIdentifier);
+        const gameCharacter = ObjectStore.instance.get<GameCharacter>(event.data.characterIdentifier);
         this.standImageService.show(gameCharacter, standElement, event.data.color ? event.data.color : null, event.data.secret);
       })
       .on('FAREWELL_STAND_IMAGE', -1000, event => {
@@ -587,7 +587,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isSaveing) return;
     this.isSaveing = true;
     this.progresPercent = 0;
-    let roomName = 0 < Network.peer.roomName.length
+    const roomName = 0 < Network.peer.roomName.length
       ? Network.peer.roomName
       : 'fly_房間資料';
     await this.saveDataService.saveRoomAsync(roomName, percent => {
@@ -601,8 +601,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleFileSelect(event: Event) {
-    let input = <HTMLInputElement>event.target;
-    let files = input.files;
+    const input = <HTMLInputElement>event.target;
+    const files = input.files;
     if (files.length) FileArchiver.instance.load(files);
     input.value = '';
   }
@@ -815,10 +815,10 @@ ModalService.ModalComponentClass = ModalComponent;
 function workaroundForMobileSafari() {
   // Mobile Safari (iOS 16.4)で確認した問題のworkaround.
   // chrome-smooth-image-trickがCSSアニメーション（keyframes）の挙動に悪影響を与えるので修正用CSSで上書きする.
-  let ua = window.navigator.userAgent.toLowerCase();
-  let isiOS = ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1 || ua.indexOf('macintosh') > -1 && 'ontouchend' in document;
+  const ua = window.navigator.userAgent.toLowerCase();
+  const isiOS = ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1 || ua.indexOf('macintosh') > -1 && 'ontouchend' in document;
   if (isiOS) {
-    let style = document.createElement('style');
+    const style = document.createElement('style');
     style.innerHTML = `
       .chrome-smooth-image-trick {
         transform-style: flat;

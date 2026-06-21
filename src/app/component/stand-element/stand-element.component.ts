@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
 import { EventSystem } from '@udonarium/core/system';
@@ -15,7 +15,7 @@ import { ModalService } from 'service/modal.service';
     styleUrls: ['./stand-element.component.css'],
     standalone: false
 })
-export class StandElementComponent implements OnInit {
+export class StandElementComponent {
   @Input() standElement: DataElement = null;
   @Input() imageList: ImageFile[] = [];
   @Input() gameCharacter: GameCharacter = null;
@@ -29,9 +29,6 @@ export class StandElementComponent implements OnInit {
   constructor(
     private modalService: ModalService
   ) { }
-
-  ngOnInit(): void {
-  }
 
   get standImage(): ImageFile {
     if (!this.standElement) return this._imageFile;
@@ -47,11 +44,11 @@ export class StandElementComponent implements OnInit {
     }
     if (elm) {
       if (this._imageFile.identifier !== elm.value) { 
-        let file: ImageFile = ImageStorage.instance.get(<string>elm.value);
+        const file: ImageFile = ImageStorage.instance.get(<string>elm.value);
         this._imageFile = file ? file : ImageFile.Empty;
       }
     } else {
-      let fileContext = ImageFile.createEmpty('stand_no_image').toContext();
+      const fileContext = ImageFile.createEmpty('stand_no_image').toContext();
       fileContext.url = './assets/images/nc96424.png';
       this._imageFile = ImageStorage.instance.add(fileContext);
       this.standElement.appendChild(DataElement.create('imageIdentifier', this._imageFile.identifier, { type: 'image' }, 'imageIdentifier_' + this.standElement.identifier));
@@ -61,60 +58,60 @@ export class StandElementComponent implements OnInit {
 
   get nameElement(): DataElement {
     if (!this.standElement) return null;
-    let elm = this.standElement.getFirstElementByName('name');
+    const elm = this.standElement.getFirstElementByName('name');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('name', '', { }, 'name_' + this.standElement.identifier));
   }
 
   get heightElement(): DataElement {
     if (!this.standElement) return null;
-    let elm = this.standElement.getFirstElementByName('height');
+    const elm = this.standElement.getFirstElementByName('height');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('height', 0, { 'currentValue': 0 }, 'height_' + this.standElement.identifier));
   }
 
   get conditionTypeElement(): DataElement {
     if (!this.standElement) return null;
-    let elm = this.standElement.getFirstElementByName('conditionType');
+    const elm = this.standElement.getFirstElementByName('conditionType');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('conditionType', StandConditionType.Default, { }, 'conditionType_' + this.standElement.identifier));
   }
 
   get postfixElement(): DataElement {
     if (!this.standElement) return null;
-    let elm = this.standElement.getFirstElementByName('postfix');
+    const elm = this.standElement.getFirstElementByName('postfix');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('postfix', '', { }, 'postfix_' + this.standElement.identifier));
   }
  
   get applyImageEffectElement() {
     if (!this.standElement) return null;
-    let elm = this.standElement.getFirstElementByName('applyImageEffect');
+    const elm = this.standElement.getFirstElementByName('applyImageEffect');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('applyImageEffect', '', { }, 'applyImageEffect_' + this.standElement.identifier));
   }
 
   get applyRollElement() {
     if (!this.standElement) return null;
-    let elm = this.standElement.getFirstElementByName('applyRoll');
+    const elm = this.standElement.getFirstElementByName('applyRoll');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('applyRoll', '', { }, 'applyRoll_' + this.standElement.identifier));
   }
 
   get applyDialogElement() {
     if (!this.standElement) return null;
-    let elm = this.standElement.getFirstElementByName('applyDialog');
+    const elm = this.standElement.getFirstElementByName('applyDialog');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('applyDialog', 'applyDialog', { }, 'applyDialog_' + this.standElement.identifier));
   }
 
   get showNameElement() {
     if (!this.standElement) return null;
-    let elm = this.standElement.getFirstElementByName('showName');
+    const elm = this.standElement.getFirstElementByName('showName');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('showName', 'showName', { }, 'showName_' + this.standElement.identifier));
   }
 
   get positionElement(): DataElement {
     if (!this.standElement) return null;
-    let elm = this.standElement.getFirstElementByName('position');
+    const elm = this.standElement.getFirstElementByName('position');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('position', 0, { 'currentValue': '' }, 'position_' + this.standElement.identifier));
   }
 
   get isApplyImageEffect(): boolean {
-    let elm = this.applyImageEffectElement;
+    const elm = this.applyImageEffectElement;
     if (elm && elm.value) {
       return true;
     }
@@ -122,7 +119,7 @@ export class StandElementComponent implements OnInit {
   }
 
   get isApplyRoll(): boolean {
-    let elm = this.applyRollElement;
+    const elm = this.applyRollElement;
     if (elm && elm.value) {
       return true;
     }
@@ -130,7 +127,7 @@ export class StandElementComponent implements OnInit {
   }
 
   get isApplyDialog(): boolean {
-    let elm = this.applyDialogElement;
+    const elm = this.applyDialogElement;
     if (elm && elm.value) {
       return true;
     }
@@ -138,7 +135,7 @@ export class StandElementComponent implements OnInit {
   }
 
   get isShowName(): boolean {
-    let elm = this.showNameElement;
+    const elm = this.showNameElement;
     if (elm && elm.value) {
       return true;
     }
@@ -178,9 +175,9 @@ export class StandElementComponent implements OnInit {
   selectImage(identifier) {
     if (!this.standElement) return;
     let isSelected = false;
-    for (let elm of this.standElement.getElementsByName('targetImageIdentifier')) {
+    for (const elm of this.standElement.getElementsByName('targetImageIdentifier')) {
       let isNothing = true;
-      for (let image of this.imageList) {
+      for (const image of this.imageList) {
         if (image.identifier == elm.value) {
           isNothing = false;
           break;
@@ -199,8 +196,8 @@ export class StandElementComponent implements OnInit {
   }
 
   isSelectedImage(identifier) {
-    let elms = this.standElement.getElementsByName('targetImageIdentifier');
-    for (let elm of elms) {
+    const elms = this.standElement.getElementsByName('targetImageIdentifier');
+    for (const elm of elms) {
       if (elm.value == identifier) return true;
     }
     return false;

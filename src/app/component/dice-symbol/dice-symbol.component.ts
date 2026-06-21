@@ -171,7 +171,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   viewRotateZ = 10;
 
   get nameTagRotate(): number {
-    let x = (this.viewRotateX % 360) - 90;
+    const x = (this.viewRotateX % 360) - 90;
     let z = (this.viewRotateZ + this.rotate) % 360;
     z = (z > 0 ? z : 360 + z);
     return (x > 0 ? x : 360 + x) * (this.isFlip ? 1 : -1);
@@ -208,7 +208,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
         }
       })
       .on(`UPDATE_GAME_OBJECT/aliasName/${PeerCursor.aliasName}`, event => {
-        let object = ObjectStore.instance.get<PeerCursor>(event.data.identifier);
+        const object = ObjectStore.instance.get<PeerCursor>(event.data.identifier);
         if (this.diceSymbol && object && object.userId === this.diceSymbol.owner) {
           this.changeDetector.markForCheck();
         }
@@ -246,7 +246,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
         this.changeDetector.markForCheck();
       })
       .on('DISCONNECT_PEER', event => {
-        let cursor = PeerCursor.findByPeerId(event.data.peerId);
+        const cursor = PeerCursor.findByPeerId(event.data.peerId);
         if (!cursor || this.diceSymbol.owner === cursor.userId) this.changeDetector.markForCheck();
       });
     this.movableOption = {
@@ -299,7 +299,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
     e.preventDefault();
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
-    let position = this.pointerDeviceService.pointers[0];
+    const position = this.pointerDeviceService.pointers[0];
 
     let actions: ContextMenuAction[] = [];
 
@@ -313,9 +313,9 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   private makeSelectionContextMenu(): ContextMenuAction[] {
     if (this.selectionService.objects.length < 1) return [];
 
-    let actions: ContextMenuAction[] = [];
+    const actions: ContextMenuAction[] = [];
 
-    let objectPosition = {
+    const objectPosition = {
       x: this.diceSymbol.location.x + (this.diceSymbol.size * this.gridSize) / 2,
       y: this.diceSymbol.location.y + (this.diceSymbol.size * this.gridSize) / 2,
       z: this.diceSymbol.posZ
@@ -323,7 +323,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
-      let selectedDiceSymbols = () => this.selectionService.objects.filter(object => object.aliasName === this.diceSymbol.aliasName) as DiceSymbol[];
+      const selectedDiceSymbols = () => this.selectionService.objects.filter(object => object.aliasName === this.diceSymbol.aliasName) as DiceSymbol[];
       const isContainCoin = selectedDiceSymbols().some(diceSymbol => diceSymbol.isCoin);
       const isContainDice = selectedDiceSymbols().some(diceSymbol => !diceSymbol.isCoin);
       actions.push(
@@ -341,7 +341,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
                     isContainCoin = isContainCoin || diceSymbol.isCoin;
                     isContainDice = isContainDice || !diceSymbol.isCoin;
                     EventSystem.call('ROLL_DICE_SYMBOL', { identifier: diceSymbol.identifier });
-                    let face = diceSymbol.diceRoll();
+                    const face = diceSymbol.diceRoll();
                     let message = `${diceSymbol.name == '' ? '(無名的' + (diceSymbol.isCoin ? '硬幣' : '骰子') + ')' : diceSymbol.name} ${diceSymbol.isCoin ? '拋擲' : '擲骰'}`;
                     if (diceSymbol.owner === '') message += ` → ${face}`;
                     messages.push(message);
@@ -392,7 +392,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   }
 
   private makeContextMenu(): ContextMenuAction[] {
-    let actions: ContextMenuAction[] = [];
+    const actions: ContextMenuAction[] = [];
 
     //if (this.isVisible) {
       actions.push({
@@ -439,8 +439,8 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
         checkBox: 'check'
       }));
     if (this.isVisible) {
-      let subActions: ContextMenuAction[] = [];
-      let nothingFaces = this.nothingFaces;
+      const subActions: ContextMenuAction[] = [];
+      const nothingFaces = this.nothingFaces;
       if (nothingFaces.length > 0) {
         nothingFaces.forEach(face => {
           subActions.push({
@@ -507,7 +507,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
     }
     actions.push({
       name: '建立副本', action: () => {
-        let cloneObject = this.diceSymbol.clone();
+        const cloneObject = this.diceSymbol.clone();
         cloneObject.location.x += this.gridSize;
         cloneObject.location.y += this.gridSize;
         cloneObject.update();
@@ -541,7 +541,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
         SoundEffect.play(PresetSound.diceRoll1);
       }
     //}
-    let face = this.diceSymbol.diceRoll();
+    const face = this.diceSymbol.diceRoll();
     let message = `${this.diceSymbol.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol.name} ${this.isCoin ? '拋擲' : '擲骰'}`;
     if (this.owner === '') message += ` → ${face}`;
     this.chatMessageService.sendOperationLog(message);
@@ -550,11 +550,11 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
 
   showDetail(gameObject: DiceSymbol) {
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName });
-    let coordinate = this.pointerDeviceService.pointers[0];
+    const coordinate = this.pointerDeviceService.pointers[0];
     let title = '骰子符號設定';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
-    let option: PanelOption = { title: title, left: coordinate.x - 300, top: coordinate.y - 300, width: 600, height: 490 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x - 300, top: coordinate.y - 300, width: 600, height: 490 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 

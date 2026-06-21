@@ -21,7 +21,7 @@
           }
           <div [style.display]="isEditing ? 'none' : 'block'">
             <span style="display: inline-block">
-              <span [style.color]="!chatMessage.isSpecialColor && chatMessage.color && chatMessage.color != '#ffffff' ? chatMessage.color : ''"
+              <span [style.color]="!chatMessage.isSpecialColor && chatMessage.color && chatMessage.color !== '#ffffff' ? chatMessage.color : ''"
               [innerHTML]="htmlEscapedText | safe: 'html'" (click)="onLinkClick($event)"></span>
               @if (!isEditing && chatMessage.isEdited) {
                 <span class="is-edited"><b style="white-space: nowrap">編集済</b> {{chatMessage.lastUpdate | date:'M/d H:mm'}}</span>
@@ -50,10 +50,10 @@
   </div>
 </div>
 <ng-template #image>
-  <div class="image" [ngClass]="{inverse: chatMessage.isInverseIcon == 1, hollow: chatMessage.isHollowIcon == 1}">
-    <span class="aura" [ngClass]="{black: chatMessage.aura == 0, blue: chatMessage.aura == 1, green: chatMessage.aura == 2, cyan: chatMessage.aura == 3, red: chatMessage.aura == 4, magenta: chatMessage.aura == 5, yellow: chatMessage.aura == 6, white: chatMessage.aura == 7}">
+  <div class="image" [ngClass]="{inverse: chatMessage.isInverseIcon === 1, hollow: chatMessage.isHollowIcon === 1}">
+    <span class="aura" [ngClass]="{black: chatMessage.aura === 0, blue: chatMessage.aura === 1, green: chatMessage.aura === 2, cyan: chatMessage.aura === 3, red: chatMessage.aura === 4, magenta: chatMessage.aura === 5, yellow: chatMessage.aura === 6, white: chatMessage.aura === 7}">
       @if (0 < imageFile?.url?.length) {
-        <img draggable="false" [src]="imageFile?.url | safe: 'resourceUrl'" [ngClass]="{'black-paint': chatMessage.isBlackPaint == 1, 'face-icon': chatMessage.isFaceIcon }" />
+        <img draggable="false" [src]="imageFile?.url | safe: 'resourceUrl'" [ngClass]="{'black-paint': chatMessage.isBlackPaint === 1, 'face-icon': chatMessage.isFaceIcon }" />
       }
     </span>
   </div>
@@ -68,18 +68,18 @@
         @if (0 < toImageFile?.url?.length) {
           <img draggable="false" class="mini-icon" [src]="toImageFile?.url | safe: 'resourceUrl'"
             />
-          }<span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor != '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}@if (chatMessage.isSendToMe) {
+          }<span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor !== '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}@if (chatMessage.isSendToMe) {
           （你）
         }</span>
         <span style="display: inline-block; margin: 0px 6px; user-select: none; transform: rotateY(180deg)">➡</span>
       }
-      <span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.color && chatMessage.color != '#ffffff' ? chatMessage.color : ''">{{chatMessage.name}}</span>
+      <span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.color && chatMessage.color !== '#ffffff' ? chatMessage.color : ''">{{chatMessage.name}}</span>
       @if (isMine && chatMessage.toColor) {
         <span style="display: inline-block; margin: 0px 6px; user-select: none">➡</span>
         @if (0 < toImageFile?.url?.length) {
           <img draggable="false" class="mini-icon" [src]="toImageFile?.url | safe: 'resourceUrl'"
             />
-          }<span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor != '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}@if (chatMessage.isSendToMe) {
+          }<span [ngClass]="{grow: (chatMessage.isDirect || chatMessage.isSecret)}" [style.color]="chatMessage.toColor && chatMessage.toColor !== '#ffffff' ? chatMessage.toColor : ''">{{chatMessage.toName}}@if (chatMessage.isSendToMe) {
           （你）
         }</span>
       }
@@ -104,7 +104,7 @@
             <button class="edit-button" aria-hidden="true" style="visibility: hidden"><i class="material-icons small-font">clear</i></button>
           }
           @if (isEditing) {
-            <button class="edit-button" [disabled]="editingText.trim().length == 0" (click)="editEnd()" title="確定"><i class="material-icons small-font">done</i></button>
+            <button class="edit-button" [disabled]="editingText.trim().length === 0" (click)="editEnd()" title="確定"><i class="material-icons small-font">done</i></button>
           }
           @if (isEditing) {
             <button class="edit-button" (click)="editCancel()" title="取消"><i class="material-icons small-font">clear</i></button>
@@ -123,7 +123,7 @@
       <button class="edit-button" aria-hidden="true" style="visibility: hidden"><i class="material-icons small-font">clear</i></button>
     }
     @if (isEditing) {
-      <button class="edit-button" [disabled]="editingText.trim().length == 0" (click)="editEnd()" title="確定"><i class="material-icons small-font">done</i></button>
+      <button class="edit-button" [disabled]="editingText.trim().length === 0" (click)="editEnd()" title="確定"><i class="material-icons small-font">done</i></button>
     }
     @if (isEditing) {
       <button class="edit-button" (click)="editCancel()" title="取消"><i class="material-icons small-font">clear</i></button>

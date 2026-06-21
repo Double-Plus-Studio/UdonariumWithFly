@@ -38,7 +38,7 @@ export class Transform {
 
     this.element = element;
 
-    let style = window.getComputedStyle(element);
+    const style = window.getComputedStyle(element);
 
     let parentWidth = 0;
     let parentHeight = 0;
@@ -65,24 +65,24 @@ export class Transform {
   }
 
   globalToLocal(x: number, y: number, z: number = 0): IPoint3D {
-    let ret: IPoint3D = { x: x, y: y, z: z, w: 1 };
+    const ret: IPoint3D = { x: x, y: y, z: z, w: 1 };
     this.inverseSceneTransform.unproject(ret, ret);
     this.fromBorderBox(ret);
     return ret;
   }
 
   localToGlobal(x: number, y: number, z: number = 0): IPoint3D {
-    let ret: IPoint3D = { x: x, y: y, z: z, w: 1 };
+    const ret: IPoint3D = { x: x, y: y, z: z, w: 1 };
     this.sceneTransform.project(ret, ret);
     this.fromBorderBox(ret);
     return ret;
   }
 
   localToLocal(x: number, y: number, z: number, to: HTMLElement): IPoint3D {
-    let local: IPoint3D = { x: x, y: y, z: z, w: 1 };
-    let transformer: Transform = new Transform(to);
-    let matrix = Matrix3D.multiply(this.sceneTransform, transformer.inverseSceneTransform);
-    let ret: IPoint3D = { x: 0, y: 0, z: 0, w: 1 };
+    const local: IPoint3D = { x: x, y: y, z: z, w: 1 };
+    const transformer: Transform = new Transform(to);
+    const matrix = Matrix3D.multiply(this.sceneTransform, transformer.inverseSceneTransform);
+    const ret: IPoint3D = { x: 0, y: 0, z: 0, w: 1 };
 
     ret.x = local.x * matrix.m11 + local.y * matrix.m21 + local.z * matrix.m31 + local.w * matrix.m41;
     ret.y = local.x * matrix.m12 + local.y * matrix.m22 + local.z * matrix.m32 + local.w * matrix.m42;
@@ -95,7 +95,7 @@ export class Transform {
   }
 
   private extract(transform: Transform, matrix: Matrix3D): void {
-    let element = transform.element;
+    const element = transform.element;
     let node = element;
 
     while (node) {
@@ -114,34 +114,34 @@ export class Transform {
     if (!node)
       return matrix;
 
-    let element: HTMLElement = node;
-    let style: CSSStyleDeclaration = window.getComputedStyle(node);
+    const element: HTMLElement = node;
+    const style: CSSStyleDeclaration = window.getComputedStyle(node);
 
     if (style.transform != 'none') {
-      let origin = style.transformOrigin ? style.transformOrigin.split(' ') : [];
-      let originX = CSSNumber.relation(origin[0], element.offsetWidth, element.offsetWidth * 0.5);
-      let originY = CSSNumber.relation(origin[1], element.offsetHeight, element.offsetHeight * 0.5);
-      let originZ = CSSNumber.relation(origin[2], 0, 0);
+      const origin = style.transformOrigin ? style.transformOrigin.split(' ') : [];
+      const originX = CSSNumber.relation(origin[0], element.offsetWidth, element.offsetWidth * 0.5);
+      const originY = CSSNumber.relation(origin[1], element.offsetHeight, element.offsetHeight * 0.5);
+      const originZ = CSSNumber.relation(origin[2], 0, 0);
 
       matrix.appendPosition(-originX, -originY, -originZ);
       matrix.appendCSS(style.transform);
       matrix.appendPosition(originX, originY, originZ);
     }
 
-    let position = this.getPosition(node);
+    const position = this.getPosition(node);
     matrix.appendPosition(position.x, position.y, 0);
 
     let perspective = 0;
     if (node.parentElement) {
-      let parentStyle: CSSStyleDeclaration = window.getComputedStyle(node.parentElement);
+      const parentStyle: CSSStyleDeclaration = window.getComputedStyle(node.parentElement);
       perspective = CSSNumber.parse(parentStyle.perspective);
     }
 
     if (node.parentElement && perspective) {
-      let parentStyle: CSSStyleDeclaration = window.getComputedStyle(node.parentElement);
-      let perspectiveOrigin = parentStyle.perspectiveOrigin.split(' ');
-      let perspectiveOriginX = CSSNumber.relation(perspectiveOrigin[0], element.parentElement.offsetWidth);
-      let perspectiveOriginY = CSSNumber.relation(perspectiveOrigin[1], element.parentElement.offsetHeight);
+      const parentStyle: CSSStyleDeclaration = window.getComputedStyle(node.parentElement);
+      const perspectiveOrigin = parentStyle.perspectiveOrigin.split(' ');
+      const perspectiveOriginX = CSSNumber.relation(perspectiveOrigin[0], element.parentElement.offsetWidth);
+      const perspectiveOriginY = CSSNumber.relation(perspectiveOrigin[1], element.parentElement.offsetHeight);
 
       matrix.appendPosition(-perspectiveOriginX, -perspectiveOriginY, 0);
       matrix.appendPerspective(perspective);
@@ -152,7 +152,7 @@ export class Transform {
   }
 
   private getPosition(node: HTMLElement): IPoint2D {
-    let ret: IPoint2D = { x: 0, y: 0 };
+    const ret: IPoint2D = { x: 0, y: 0 };
     ret.x = !node.offsetParent ? node.offsetLeft : node.parentElement === node.offsetParent ? node.offsetLeft : node.parentElement.offsetParent === node.offsetParent ? node.offsetLeft - node.parentElement.offsetLeft : 0;
     ret.y = !node.offsetParent ? node.offsetTop : node.parentElement === node.offsetParent ? node.offsetTop : node.parentElement.offsetParent === node.offsetParent ? node.offsetTop - node.parentElement.offsetTop : 0;
 

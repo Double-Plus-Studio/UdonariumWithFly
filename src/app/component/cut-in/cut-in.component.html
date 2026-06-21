@@ -1,4 +1,4 @@
-@if (isVisible && animationType == -1) {
+@if (isVisible && animationType === -1) {
   <div appDraggable [draggable.allowOverHalf]="true" [draggable.unhandle]="'input,textarea,button,select,option,span,img'"
     #cutInContainerElement class="container"
     @cutInNone (@cutInNone.done)="isVisible ? null : end()"
@@ -19,7 +19,7 @@
     <ng-container *ngTemplateOutlet="image"></ng-container>
   </div>
 }
-@if (isVisible && animationType == 0) {
+@if (isVisible && animationType === 0) {
   <div appDraggable [draggable.allowOverHalf]="true" [draggable.unhandle]="'input,textarea,button,select,option,span,img'"
     #cutInContainerElement class="container"
     @cutInFadeInOut (@cutInFadeInOut.done)="isVisible ? null : end()"
@@ -40,7 +40,7 @@
     <ng-container *ngTemplateOutlet="image"></ng-container>
   </div>
 }
-@if (isVisible && animationType == 1) {
+@if (isVisible && animationType === 1) {
   <div appDraggable [draggable.allowOverHalf]="true" [draggable.unhandle]="'input,textarea,button,select,option,span,img'"
     #cutInContainerElement class="container"
     @cutInBounceInOut (@cutInBounceInOut.done)="isVisible ? null : end()"
@@ -61,7 +61,7 @@
     <ng-container *ngTemplateOutlet="image"></ng-container>
   </div>
 }
-@if (isVisible && animationType == 2) {
+@if (isVisible && animationType === 2) {
   <div appDraggable [draggable.allowOverHalf]="true" [draggable.unhandle]="'input,textarea,button,select,option,span,img'"
     #cutInContainerElement class="container"
     @cutInOpenInOut (@cutInOpenInOut.done)="isVisible ? null : end()"
@@ -82,7 +82,7 @@
     <ng-container *ngTemplateOutlet="image"></ng-container>
   </div>
 }
-@if (isVisible && animationType == 3) {
+@if (isVisible && animationType === 3) {
   <div appDraggable [draggable.allowOverHalf]="true" [draggable.unhandle]="'input,textarea,button,select,option,span,img'"
     #cutInContainerElement class="container"
     @cutInOpenInOut2 (@cutInOpenInOut2.done)="isVisible ? null : end()"

@@ -1,7 +1,7 @@
 import { ComponentRef, Injectable, OnChanges, ViewContainerRef } from '@angular/core';
 
-declare var Type: FunctionConstructor;
-interface Type<T> extends Function {
+declare const Type: FunctionConstructor;
+interface Type<T> {
   new(...args: any[]): T;
 }
 
@@ -65,8 +65,8 @@ export class PanelService {
       bodyComponentRef = null;
     });
 
-    let panelOnChanges = panelComponentRef.instance as OnChanges;
-    let bodyOnChanges = bodyComponentRef.instance as OnChanges;
+    const panelOnChanges = panelComponentRef.instance as OnChanges;
+    const bodyOnChanges = bodyComponentRef.instance as OnChanges;
     if (panelOnChanges?.ngOnChanges != null || bodyOnChanges?.ngOnChanges != null) {
       queueMicrotask(() => {
         if (bodyComponentRef && bodyOnChanges?.ngOnChanges != null) bodyOnChanges?.ngOnChanges({});

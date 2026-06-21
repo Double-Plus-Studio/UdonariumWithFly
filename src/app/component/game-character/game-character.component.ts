@@ -174,7 +174,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
     if (!isEmote) {
       text = text.replace(/[。、]{3}/g, '…').replace(/[。、]{2}/g, '‥').replace(/(。|[\r\n]{2,})/g, "$1                            ").trimEnd(); //改行や。のあと時間を置くためのダーティハック
       while ((ary = re.exec(text)) !== null) {
-        let offset = ary.index - (count * 3);
+        const offset = ary.index - (count * 3);
         rubys.push({base: ary[1], ruby: ary[2], start: offset - rubyLength, end: offset + ary[1].length - rubyLength - 1});
         count++;
         rubyLength += ary[2].length;
@@ -205,8 +205,8 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
     }  else {
       const charAry = Array.from(text.replace(/[\|｜]([^\|｜\s]+?)《.+?》/g, '$1'));
       this.chatIntervalId = setInterval(() => {
-        let c = charAry[count];
-        let isMulti = c.length > 1;
+        const c = charAry[count];
+        const isMulti = c.length > 1;
         if (c) {
             if (!isOpenRuby && carrentRuby && countLength >= carrentRuby.start) {
                 tmpText += '<ruby>';
@@ -216,7 +216,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
             tmpText += StringUtil.escapeHtml(c);
             if (isOpenRuby) {
                 rubyCount += 1;
-                let rt = carrentRuby.ruby;
+                const rt = carrentRuby.ruby;
                 rubyText = '<rt>' + StringUtil.escapeHtml(Array.from(rt).slice(0, Math.ceil(Array.from(rt).length * (rubyCount / Array.from(carrentRuby.base).length))).join('')) + '</rt>'
             }
             if (isOpenRuby && carrentRuby && countLength >= carrentRuby.end - (isMulti ? 1 : 0)) {
@@ -341,13 +341,13 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
     if (sin < 0.5) sin = 0.5;
     const altitude1 = (this.characterImageHeight + (this.name != '' ? 24 : 0)) * cos + 4;
     const altitude2 = (this.characterImageWidth / 2) * sin + 4 + this.characterImageWidth / 2;
-    let ret = altitude1 > altitude2 ? altitude1 : altitude2;
+    const ret = altitude1 > altitude2 ? altitude1 : altitude2;
     this.gameCharacter.chatBubbleAltitude = ret;
     return ret;
   }
 
   get elevationUnrerZeroIndicatorY(): number {
-    let ret = Math.max(this.characterImageWidth, this.chatBubbleAltitude) + 4;
+    const ret = Math.max(this.characterImageWidth, this.chatBubbleAltitude) + 4;
     if (Math.abs(this.altitude * this.gridSize) < ret) {
       return -this.altitude * this.gridSize - 4;
     }
@@ -363,7 +363,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   }
   */
   get nameTagRotate(): number {
-    let x = (this.viewRotateX % 360) - 90;
+    const x = (this.viewRotateX % 360) - 90;
     let z = (this.viewRotateZ + this.rotate) % 360;
     let roll = this.roll % 360;
     z = (z > 0 ? z : 360 + z);
@@ -537,7 +537,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
 
-    let position = this.pointerDeviceService.pointers[0];
+    const position = this.pointerDeviceService.pointers[0];
     let menuActions: ContextMenuAction[] = [];
     menuActions = menuActions.concat(this.makeSelectionContextMenu());
     menuActions = menuActions.concat(this.makeContextMenu());
@@ -568,9 +568,9 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   private makeSelectionContextMenu(): ContextMenuAction[] {
     if (this.selectionService.objects.length < 1) return [];
 
-    let actions: ContextMenuAction[] = [];
+    const actions: ContextMenuAction[] = [];
 
-    let objectPosition = {
+    const objectPosition = {
       x: this.gameCharacter.location.x + (this.gameCharacter.width * this.gridSize) / 2,
       y: this.gameCharacter.location.y + (this.gameCharacter.depth * this.gridSize) / 2,
       z: this.gameCharacter.posZ
@@ -578,7 +578,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
-      let selectedCharacter = () => this.selectionService.objects.filter(object => object.aliasName === this.gameCharacter.aliasName) as GameCharacter[];
+      const selectedCharacter = () => this.selectionService.objects.filter(object => object.aliasName === this.gameCharacter.aliasName) as GameCharacter[];
       actions.push(
         {
           name: '選取的角色', action: null, subActions: [
@@ -618,7 +618,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   private makeContextMenu(): ContextMenuAction[] {
-    let actions: ContextMenuAction[] = [
+    const actions: ContextMenuAction[] = [
       { 
         name: this.isHideIn ? '公開位置' : '只有自己看見位置（隱身）',
         action: () => {
@@ -879,7 +879,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
       ContextMenuSeparator,
       {
         name: '建立副本', action: () => {
-          let cloneObject = this.gameCharacter.clone();
+          const cloneObject = this.gameCharacter.clone();
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
           cloneObject.update();
@@ -899,7 +899,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           let maxIndex = 0;
           for (const character of ObjectStore.instance.getObjects(GameCharacter)) {
             if(!character.name.startsWith(baseName)) continue;
-            let index = character.name.match(/_(\d+)$/) ? +RegExp.$1 : 0;
+            const index = character.name.match(/_(\d+)$/) ? +RegExp.$1 : 0;
             if (index > maxIndex) maxIndex = index;
           }
           cloneObject.name = baseName + '_' + (maxIndex + 1);
@@ -924,26 +924,26 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   private showDetail(gameObject: GameCharacter) {
-    let coordinate = this.pointerDeviceService.pointers[0];
+    const coordinate = this.pointerDeviceService.pointers[0];
     let title = '角色卡';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
-    let option: PanelOption = { title: title, left: coordinate.x - 400, top: coordinate.y - 300, width: 800, height: 600 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x - 400, top: coordinate.y - 300, width: 800, height: 600 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 
   private showChatPalette(gameObject: GameCharacter) {
     if (!gameObject || !gameObject.isAllowsChat) return;
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 620, height: 350 };
-    let component = this.panelService.open<ChatPaletteComponent>(ChatPaletteComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 620, height: 350 };
+    const component = this.panelService.open<ChatPaletteComponent>(ChatPaletteComponent, option);
     component.character = gameObject;
   }
 
   private showStandSetting(gameObject: GameCharacter) {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 400, top: coordinate.y - 175, width: 730, height: 572 };
-    let component = this.panelService.open<StandSettingComponent>(StandSettingComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 400, top: coordinate.y - 175, width: 730, height: 572 };
+    const component = this.panelService.open<StandSettingComponent>(StandSettingComponent, option);
     component.character = gameObject;
   }
 

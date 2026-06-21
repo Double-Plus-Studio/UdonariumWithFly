@@ -31,7 +31,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   private callbackOnOutsideClick = (e) => this.onOutsideClick(e);
 
   get altitudeHande(): TabletopObject { 
-    for (let action of this.actions) {
+    for (const action of this.actions) {
       if (action && action.altitudeHande) return action.altitudeHande;
     }
     return null;
@@ -42,7 +42,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   get isIconsMenu(): boolean {
-    for (let action of this.actions) {
+    for (const action of this.actions) {
       if(!action || !action.icon) return false;
     }
     return true;
@@ -92,12 +92,12 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private adjustPositionRoot() {
-    let panel: HTMLElement = this.rootElementRef.nativeElement;
+    const panel: HTMLElement = this.rootElementRef.nativeElement;
 
     panel.style.left = this.contextMenuService.position.x + 'px';
     panel.style.top = this.contextMenuService.position.y + 'px';
 
-    let panelBox = panel.getBoundingClientRect();
+    const panelBox = panel.getBoundingClientRect();
 
     let diffLeft = 0;
     let diffTop = 0;
@@ -125,11 +125,11 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private adjustPositionSub() {
-    let parent: HTMLElement = this.elementRef.nativeElement.parentElement;
-    let submenu: HTMLElement = this.rootElementRef.nativeElement;
+    const parent: HTMLElement = this.elementRef.nativeElement.parentElement;
+    const submenu: HTMLElement = this.rootElementRef.nativeElement;
 
-    let parentBox = parent.getBoundingClientRect();
-    let submenuBox = submenu.getBoundingClientRect();
+    const parentBox = parent.getBoundingClientRect();
+    const submenuBox = submenu.getBoundingClientRect();
 
     let diffLeft = 0;
     let diffTop = 0;

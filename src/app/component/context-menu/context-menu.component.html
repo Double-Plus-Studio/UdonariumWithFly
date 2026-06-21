@@ -24,50 +24,50 @@
   </div>
 </div>
 <ng-template #actionMenu let-action="action">
-  <li [ngClass]="{'has-color': action.color, 'hasHighlight': !(action.disabled || action.icon || (action.altitudeHande && action.altitudeHande.altitude == 0)), 'disabled': (action.disabled || (action.altitudeHande && action.altitudeHande.altitude == 0))}"
+  <li [ngClass]="{'has-color': action.color, 'hasHighlight': !(action.disabled || action.icon || (action.altitudeHande && action.altitudeHande.altitude === 0)), 'disabled': (action.disabled || (action.altitudeHande && action.altitudeHande.altitude === 0))}"
     [style.padding-left.em]="action.icon ? 0 : (action.level ? (action.level + 1.5) : 1.5) - (altitudeHande ? 0.5 : 0)"
     [style.color]="action.color ? action.color : ''"
     [style.text-align]="action.center ? 'center': ''"
-    (click)="(action.disabled || (action.altitudeHande && action.altitudeHande.altitude == 0)) ? false : doAction(action)"
-    (mouseenter)="(action.disabled || (action.altitudeHande && action.altitudeHande.altitude == 0)) ? false : showSubMenu(action)">
+    (click)="(action.disabled || (action.altitudeHande && action.altitudeHande.altitude === 0)) ? false : doAction(action)"
+    (mouseenter)="(action.disabled || (action.altitudeHande && action.altitudeHande.altitude === 0)) ? false : showSubMenu(action)">
     <div class="menu-title" [ngClass]="{'icon-menu': action.icon, default: action.default}" style="width: 100%">
       @if (action.error) {
         <span title="{{action.error}}">⚠️</span>
       }
-      @if (action.name && action.checkBox == 'check' && action.name.indexOf('☑') == 0) {
+      @if (action.name && action.checkBox === 'check' && action.name.indexOf('☑') === 0) {
         <input type="checkbox" [disabled]="action.disabled" checked/>
       }
-      @if (action.name && action.checkBox == 'check' && action.name.indexOf('☐') == 0) {
+      @if (action.name && action.checkBox === 'check' && action.name.indexOf('☐') === 0) {
         <input type="checkbox" [disabled]="action.disabled" />
       }
-      @if (action.name && action.checkBox == 'radio' && action.name.indexOf('◉') == 0) {
+      @if (action.name && action.checkBox === 'radio' && action.name.indexOf('◉') === 0) {
         <input type="radio" [disabled]="action.disabled" checked />
       }
-      @if (action.name && action.checkBox == 'radio' && action.name.indexOf('○') == 0) {
+      @if (action.name && action.checkBox === 'radio' && action.name.indexOf('○') === 0) {
         <input type="radio" [disabled]="action.disabled" />
       }
-      @if (action.name && action.colorSample && action.name.indexOf('黑') == 2) {
+      @if (action.name && action.colorSample && action.name.indexOf('黑') === 2) {
         <span class="color-indicator" style="color: #000">■</span>
       }
-      @if (action.name && action.colorSample && action.name.indexOf('藍') == 2) {
+      @if (action.name && action.colorSample && action.name.indexOf('藍') === 2) {
         <span class="color-indicator" style="color: #00f">■</span>
       }
-      @if (action.name && action.colorSample && action.name.indexOf('綠') == 2) {
+      @if (action.name && action.colorSample && action.name.indexOf('綠') === 2) {
         <span class="color-indicator" style="color: #0f0">■</span>
       }
-      @if (action.name && action.colorSample && action.name.indexOf('青') == 2) {
+      @if (action.name && action.colorSample && action.name.indexOf('青') === 2) {
         <span class="color-indicator" style="color: #0ff">■</span>
       }
-      @if (action.name && action.colorSample && action.name.indexOf('紅') == 2) {
+      @if (action.name && action.colorSample && action.name.indexOf('紅') === 2) {
         <span class="color-indicator" style="color: #f00">■</span>
       }
-      @if (action.name && action.colorSample && action.name.indexOf('紫') == 2) {
+      @if (action.name && action.colorSample && action.name.indexOf('紫') === 2) {
         <span class="color-indicator" style="color: #f0f">■</span>
       }
-      @if (action.name && action.colorSample && action.name.indexOf('黃') == 2) {
+      @if (action.name && action.colorSample && action.name.indexOf('黃') === 2) {
         <span class="color-indicator" style="color: #ff0">■</span>
       }
-      @if (action.name && action.colorSample && action.name.indexOf('白') == 2) {
+      @if (action.name && action.colorSample && action.name.indexOf('白') === 2) {
         <span class="color-indicator" style="color: #fff">■</span>
       }
       @if (action.materialIcon) {
@@ -76,7 +76,7 @@
       <span [innerHTML]="actionNameHtmlEscape(action.name, action.checkBox) | safe: 'html'"></span>@if (action.selfOnly) {
       <sup class="self-only">*</sup>
     }
-    @if (action.hotkey != '') {
+    @if (action.hotkey !== '') {
       <span class="hotkey" [innerHtml]="action.hotkey"></span>
     }
     @if (action.icon && 0 < action.icon?.url.length) {

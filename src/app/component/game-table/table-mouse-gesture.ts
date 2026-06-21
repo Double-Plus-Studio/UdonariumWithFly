@@ -67,17 +67,17 @@ export class TableMouseGesture {
   }
 
   onInputMove(ev: any) {
-    let x = this.input.pointer.x;
-    let y = this.input.pointer.y;
-    let deltaX = x - this.currentPositionX;
-    let deltaY = y - this.currentPositionY;
+    const x = this.input.pointer.x;
+    const y = this.input.pointer.y;
+    const deltaX = x - this.currentPositionX;
+    const deltaY = y - this.currentPositionY;
 
     let transformX = 0;
     let transformY = 0;
-    let transformZ = 0;
+    const transformZ = 0;
 
     let rotateX = 0;
-    let rotateY = 0;
+    const rotateY = 0;
     let rotateZ = 0;
 
     let event = TableMouseGestureEvent.DRAG;
@@ -111,13 +111,13 @@ export class TableMouseGesture {
         break;
     }
 
-    let transformX = 0;
-    let transformY = 0;
+    const transformX = 0;
+    const transformY = 0;
     let transformZ = 0;
 
-    let rotateX = 0;
-    let rotateY = 0;
-    let rotateZ = 0;
+    const rotateX = 0;
+    const rotateY = 0;
+    const rotateZ = 0;
 
     transformZ = pixelDeltaY * -1.5;
     if (300 ** 2 < transformZ ** 2) transformZ = Math.min(Math.max(transformZ, -300), 300);
@@ -131,10 +131,10 @@ export class TableMouseGesture {
     let transformZ = 0;
 
     let rotateX = 0;
-    let rotateY = 0;
+    const rotateY = 0;
     let rotateZ = 0;
 
-    let key = this.getKeyName(ev);
+    const key = this.getKeyName(ev);
     switch (key) {
       case Keyboard.ArrowLeft:
         if (ev.shiftKey) {
@@ -169,7 +169,7 @@ export class TableMouseGesture {
         }
         break;
     }
-    let isArrowKey = Keyboard[key] != null;
+    const isArrowKey = Keyboard[key] != null;
     if (isArrowKey && this.ontransform) this.ontransform(transformX, transformY, transformZ, rotateX, rotateY, rotateZ, TableMouseGestureEvent.KEYBOARD, ev);
   }
 

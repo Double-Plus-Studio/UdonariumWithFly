@@ -75,19 +75,19 @@ export class CardStackListComponent implements OnChanges, OnDestroy {
   } 
 
   up(card: Card) {
-    let parent = card.parent;
-    let index: number = parent.children.indexOf(card);
+    const parent = card.parent;
+    const index: number = parent.children.indexOf(card);
     if (0 < index) {
-      let prev = parent.children[index - 1];
+      const prev = parent.children[index - 1];
       parent.insertBefore(card, prev);
     }
   }
 
   down(card: Card) {
-    let parent = card.parent;
-    let index: number = parent.children.indexOf(card);
+    const parent = card.parent;
+    const index: number = parent.children.indexOf(card);
     if (index < parent.children.length - 1) {
-      let next = parent.children[index + 1];
+      const next = parent.children[index + 1];
       parent.insertBefore(next, card);
     }
   }
@@ -102,14 +102,14 @@ export class CardStackListComponent implements OnChanges, OnDestroy {
   }
 
   showDetail(gameObject: Card) {
-    let coordinate = {
+    const coordinate = {
       x: this.panelService.left,
       y: this.panelService.top
     };
     let title = '牌設定';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
-    let option: PanelOption = { title: title, left: coordinate.x + 10, top: coordinate.y + 20, width: 600, height: 600 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x + 10, top: coordinate.y + 20, width: 600, height: 600 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 

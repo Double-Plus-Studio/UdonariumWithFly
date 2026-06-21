@@ -99,11 +99,11 @@ export class TablePickGesture {
     this.clearActivateTimer();
     this.pickCursor.update(this.input.pointer);
 
-    let isMainButton = (e instanceof MouseEvent && e.button === 0) || (e as TouchEvent).touches;
+    const isMainButton = (e instanceof MouseEvent && e.button === 0) || (e as TouchEvent).touches;
     if (!isMainButton) return this.cancel();
 
     this.isStrokeMode = (e instanceof MouseEvent && e.button === 0 && e.ctrlKey);
-    let isQuickActivate = (e instanceof MouseEvent && e.button === 0 && e.shiftKey);
+    const isQuickActivate = (e instanceof MouseEvent && e.button === 0 && e.shiftKey);
 
     if (this.isStrokeMode || isQuickActivate) {
       this.startQuickCursor(e);
@@ -113,8 +113,8 @@ export class TablePickGesture {
   }
 
   private onInputMove(e: MouseEvent | TouchEvent) {
-    let isMultiTouch = 1 < (e as TouchEvent).touches?.length;
-    let threshold = (e instanceof MouseEvent ? 3 : 12) ** 2;
+    const isMultiTouch = 1 < (e as TouchEvent).touches?.length;
+    const threshold = (e instanceof MouseEvent ? 3 : 12) ** 2;
 
     this.isObjectDragging = this.pointerDevice.isDragging;
     this.isPointerMoved = this.isPointerMoved || threshold < this.input.magnitude;
@@ -122,8 +122,8 @@ export class TablePickGesture {
 
     if (this.keydownTimer != null) return;
 
-    let isObjectGesture = this.target != null && this.isObjectDragging && this.isPointerMoved && !this.isMagneticMode;
-    let isTableGesture = this.activateTimer != null && this.isPointerMoved;
+    const isObjectGesture = this.target != null && this.isObjectDragging && this.isPointerMoved && !this.isMagneticMode;
+    const isTableGesture = this.activateTimer != null && this.isPointerMoved;
     if (isMultiTouch || isObjectGesture || isTableGesture) this.cancel();
 
     if (!this.isActive || (this.oncancelifneeded != null && this.oncancelifneeded())) return;
@@ -140,7 +140,7 @@ export class TablePickGesture {
   }
 
   private onInputEnd(e: MouseEvent | TouchEvent) {
-    let threshold = (e instanceof MouseEvent ? 3 : 12) ** 2;
+    const threshold = (e instanceof MouseEvent ? 3 : 12) ** 2;
 
     this.isObjectDragging = this.pointerDevice.isDragging;
     this.isPointerMoved = this.isPointerMoved || threshold < this.input.magnitude;
@@ -160,6 +160,7 @@ export class TablePickGesture {
     switch (e.key) {
       case 'Control':
         this.isStrokeMode = true;
+        // falls through
       case 'Shift':
         this.clearActivateTimer();
         this.clearKeyDownTimer();
@@ -203,7 +204,7 @@ export class TablePickGesture {
   }
 
   private startLongPressCursor(e: MouseEvent | TouchEvent) {
-    let target = e.target as HTMLElement;
+    const target = e.target as HTMLElement;
     if (!target.contains(this.gameObjectsElement)) {
       this.target = target;
     }
@@ -224,7 +225,7 @@ export class TablePickGesture {
   }
 
   private pickStart() {
-    let event = new CustomEvent('pickstart', {
+    const event = new CustomEvent('pickstart', {
       detail: {
         isMagnetic: this.isMagneticMode,
         isPickRegion: this.isPickRegionMode,
@@ -242,12 +243,12 @@ export class TablePickGesture {
   }
 
   private pickObject(srcEvent: Event) {
-    let target = srcEvent.target as HTMLElement;
+    const target = srcEvent.target as HTMLElement;
     if (target.contains(this.gameObjectsElement)) {
       this.selection.excludeElement = document.body;
     } else {
       this.isKeepSelection = true;
-      let event = new CustomEvent(
+      const event = new CustomEvent(
         'pickobject',
         {
           detail: { srcEvent: srcEvent, first: this.input.startPointer, last: this.input.pointer },
@@ -258,17 +259,17 @@ export class TablePickGesture {
   }
 
   private pickRegion(srcEvent: Event) {
-    let first = this.input.startPointer;
-    let last = this.input.pointer;
-    let x = Math.min(first.x, last.x);
-    let y = Math.min(first.y, last.y);
-    let width = Math.abs(first.x - last.x);
-    let height = Math.abs(first.y - last.y);
+    const first = this.input.startPointer;
+    const last = this.input.pointer;
+    const x = Math.min(first.x, last.x);
+    const y = Math.min(first.y, last.y);
+    const width = Math.abs(first.x - last.x);
+    const height = Math.abs(first.y - last.y);
 
     this.pickArea.update(x, y, width, height);
 
     this.selection.clear();
-    let event = new CustomEvent(
+    const event = new CustomEvent(
       'pickregion',
       {
         detail: { srcEvent: srcEvent, x: x, y: y, width: width, height: height },
@@ -346,7 +347,7 @@ class PickCursor {
   constructor(readonly targetElement: HTMLElement) {
     this.circleElement = this.targetElement.querySelector('circle');
     this.active();
-    let rect = this.targetElement.getBoundingClientRect();
+    const rect = this.targetElement.getBoundingClientRect();
     this.width = rect.width;
     this.height = rect.height;
     this.deactive();

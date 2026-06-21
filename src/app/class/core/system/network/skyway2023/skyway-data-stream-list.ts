@@ -6,7 +6,7 @@ export class SkyWayDataStreamList implements Iterable<SkyWayDataStream> {
   get length(): number { return this.streams.length; }
 
   [Symbol.iterator]() {
-    let streams = this.streams.concat();
+    const streams = this.streams.concat();
     let index = 0;
     return {
       next(): IteratorResult<SkyWayDataStream> {
@@ -35,8 +35,8 @@ export class SkyWayDataStreamList implements Iterable<SkyWayDataStream> {
   get peerIds(): string[] {
     if (this.needsRefreshPeerIds) {
       this.needsRefreshPeerIds = false;
-      let peerIds: string[] = [];
-      for (let stream of this.streams) {
+      const peerIds: string[] = [];
+      for (const stream of this.streams) {
         if (stream.open) peerIds.push(stream.peer.peerId);
       }
       peerIds.sort((a, b) => {
@@ -50,7 +50,7 @@ export class SkyWayDataStreamList implements Iterable<SkyWayDataStream> {
   }
 
   add(stream: SkyWayDataStream): SkyWayDataStream {
-    let existStream = this.find(stream.peer.peerId);
+    const existStream = this.find(stream.peer.peerId);
     if (existStream) {
       if (existStream !== stream) {
         if (existStream.sortKey < stream.sortKey) {
@@ -75,7 +75,7 @@ export class SkyWayDataStreamList implements Iterable<SkyWayDataStream> {
   }
 
   remove(stream: SkyWayDataStream): SkyWayDataStream {
-    let index = this.streams.indexOf(stream);
+    const index = this.streams.indexOf(stream);
     if (0 <= index) {
       console.log(stream.peer.peerId + ' is えんいー' + 'index:' + index + ' length:' + this.streams.length);
       this.streams.splice(index, 1);

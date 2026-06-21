@@ -8,7 +8,7 @@ export interface Stackable extends TabletopObject {
 }
 
 export function moveToTopmost(topmost: Stackable, otherRelatives: AliasName[] = []) {
-  let objects: Stackable[] = findStackables(topmost.aliasName, otherRelatives);
+  const objects: Stackable[] = findStackables(topmost.aliasName, otherRelatives);
 
   let maxZindex: number = -1;
   let hasConflict: boolean = false;
@@ -33,7 +33,7 @@ export function moveToTopmost(topmost: Stackable, otherRelatives: AliasName[] = 
 }
 
 export function moveToBackmost(backmost: Stackable, otherRelatives: AliasName[] = []) {
-  let objects: Stackable[] = findStackables(backmost.aliasName, otherRelatives);
+  const objects: Stackable[] = findStackables(backmost.aliasName, otherRelatives);
 
   let minZindex: number = Number.MAX_SAFE_INTEGER;
   let hasConflict: boolean = false;

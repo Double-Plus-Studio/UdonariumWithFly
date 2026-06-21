@@ -17,8 +17,8 @@ export class ConfirmationComponent implements OnInit, OnDestroy {
   helpHtml: string = '';
   materialIcon: string = '';
   type: ConfirmationType = ConfirmationType.OK;
-  action: Function = null;
-  cancelAction: Function = null;
+  action: (() => void) | null = null;
+  cancelAction: (() => void) | null = null;
 
   constructor(
     private panelService: PanelService,

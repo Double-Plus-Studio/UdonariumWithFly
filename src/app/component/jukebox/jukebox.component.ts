@@ -171,8 +171,8 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   }
 
   handleFileSelect(event: Event) {
-    let input = <HTMLInputElement>event.target;
-    let files = input.files;
+    const input = <HTMLInputElement>event.target;
+    const files = input.files;
     if (files.length) FileArchiver.instance.load(files);
     input.value = '';
   }

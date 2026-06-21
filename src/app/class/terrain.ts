@@ -44,7 +44,7 @@ export class Terrain extends TabletopObject {
   get hasFloor(): boolean { return this.mode & TerrainViewState.FLOOR ? true : false; }
 
   complement(): void {
-    let element = this.getElement('altitude', this.commonDataElement);
+    const element = this.getElement('altitude', this.commonDataElement);
     if (!element && this.commonDataElement) {
       this.commonDataElement.appendChild(DataElement.create('altitude', 0, {}, 'altitude_' + this.identifier));
     }

@@ -56,11 +56,11 @@ export class GameObjectInventoryService {
       .on('CONNECT_PEER', event => { this.refresh(); })
       .on('DISCONNECT_PEER', event => { this.refresh(); })
       .on('UPDATE_GAME_OBJECT', event => {
-        let object = ObjectStore.instance.get(event.data.identifier);
+        const object = ObjectStore.instance.get(event.data.identifier);
         if (!object) return;
 
         if (object instanceof GameCharacter) {
-          let prevLocation = this.locationMap.get(object.identifier);
+          const prevLocation = this.locationMap.get(object.identifier);
           if (object.location.name !== prevLocation) {
             this.locationMap.set(object.identifier, object.location.name);
             this.refresh();
@@ -68,7 +68,7 @@ export class GameObjectInventoryService {
         } else if (object instanceof DataElement) {
           if (!this.containsInGameCharacter(object)) return;
 
-          let prevName = this.tagNameMap.get(object.identifier);
+          const prevName = this.tagNameMap.get(object.identifier);
           if ((this.dataTags.includes(prevName) || this.dataTags.includes(object.name)) && object.name !== prevName) {
             this.tagNameMap.set(object.identifier, object.name);
             this.refreshDataElements();
@@ -100,7 +100,7 @@ export class GameObjectInventoryService {
 
   private containsInGameCharacter(element: DataElement): boolean {
     let parent = element.parent;
-    let aliasName = GameCharacter.aliasName;
+    const aliasName = GameCharacter.aliasName;
     while (parent) {
       if (parent.aliasName === aliasName) return true;
       parent = parent.parent;
@@ -144,7 +144,7 @@ export class GameObjectInventoryService {
 
   private isAnyLocation(location: string): boolean {
     if (location === 'table' || location === Network.peerId || location === 'graveyard') return true;
-    for (let peer of Network.peers) {
+    for (const peer of Network.peers) {
       if (peer.isOpen && location === peer.peerId) {
         return true;
       }
@@ -196,10 +196,10 @@ class ObjectInventory {
   get dataElementMap(): Map<ObjectIdentifier, DataElement[]> {
     if (this.needsRefreshElements) {
       this._dataElementMap.clear();
-      let caches = this.tabletopObjects;
-      for (let object of caches) {
+      const caches = this.tabletopObjects;
+      for (const object of caches) {
         if (!object.detailDataElement) continue;
-        let elements = this.dataTags.map(tag => (this.newLineString === StringUtil.toHalfWidth(tag)) ? this.newLineDataElement : object.detailDataElement.getFirstElementByNameUnsensitive(tag));
+        const elements = this.dataTags.map(tag => (this.newLineString === StringUtil.toHalfWidth(tag)) ? this.newLineDataElement : object.detailDataElement.getFirstElementByNameUnsensitive(tag));
         this._dataElementMap.set(object.identifier, elements);
       }
       this.needsRefreshElements = false;
@@ -228,28 +228,28 @@ class ObjectInventory {
   }
 
   private searchTabletopObjects(): TabletopObject[] {
-    let objects: TabletopObject[] = ObjectStore.instance.getObjects(GameCharacter);
-    let caches: TabletopObject[] = [];
-    for (let object of objects) {
+    const objects: TabletopObject[] = ObjectStore.instance.getObjects(GameCharacter);
+    const caches: TabletopObject[] = [];
+    for (const object of objects) {
       if (this.classifier(object)) caches.push(object);
     }
     return caches;
   }
 
   private sortTabletopObjects(objects: TabletopObject[]): TabletopObject[] {
-    let sortTag = this.sortTag.length ? this.sortTag.trim() : '';
-    let sortOrder = this.sortOrder === 'ASC' ? -1 : 1;
+    const sortTag = this.sortTag.length ? this.sortTag.trim() : '';
+    const sortOrder = this.sortOrder === 'ASC' ? -1 : 1;
     if (sortTag.length < 1) return objects;
 
     objects.sort((a, b) => {
-      let aElm = a.rootDataElement?.getFirstElementByName('name');
-      let bElm = b.rootDataElement?.getFirstElementByName('name');
+      const aElm = a.rootDataElement?.getFirstElementByName('name');
+      const bElm = b.rootDataElement?.getFirstElementByName('name');
       if (!aElm && !bElm) return 0;
       if (!bElm) return -1;
       if (!aElm) return 1;
 
-      let aValue = this.convertToSortableValue(aElm, a);
-      let bValue = this.convertToSortableValue(bElm, b);
+      const aValue = this.convertToSortableValue(aElm, a);
+      const bValue = this.convertToSortableValue(bElm, b);
       if (aValue < bValue) return -1;
       if (aValue > bValue) return 1;
       return 0;
@@ -263,14 +263,14 @@ class ObjectInventory {
       if (orderA == orderB) return 0;
       return (orderA - orderB) < 0 ? -1 : 1;
     }).sort((a, b) => {
-      let aElm = a.rootDataElement?.getFirstElementByNameUnsensitive(sortTag);
-      let bElm = b.rootDataElement?.getFirstElementByNameUnsensitive(sortTag);
+      const aElm = a.rootDataElement?.getFirstElementByNameUnsensitive(sortTag);
+      const bElm = b.rootDataElement?.getFirstElementByNameUnsensitive(sortTag);
       if (!aElm && !bElm) return 0;
       if (!bElm) return -1;
       if (!aElm) return 1;
 
-      let aValue = this.convertToSortableValue(aElm, a);
-      let bValue = this.convertToSortableValue(bElm, b);
+      const aValue = this.convertToSortableValue(aElm, a);
+      const bValue = this.convertToSortableValue(bElm, b);
       if (aValue < bValue) return sortOrder;
       if (aValue > bValue) return sortOrder * -1;
       return 0;
@@ -286,16 +286,16 @@ class ObjectInventory {
   private convertToSortableValue(dataElement: DataElement, tabletopObject: TabletopObject=null): number | string {
     //let value = dataElement.isNumberResource ? dataElement.currentValue : dataElement.value;
     //let resultStr = StringUtil.toHalfWidth((value + '').trim());
-    let value = this.evaluate(dataElement, tabletopObject);
-    let resultStr = StringUtil.toHalfWidth((value + '').replace(/[―ー—‐]/g, '-')).toLowerCase().trim();
-    let resultNum = +resultStr;
+    const value = this.evaluate(dataElement, tabletopObject);
+    const resultStr = StringUtil.toHalfWidth((value + '').replace(/[―ー—‐]/g, '-')).toLowerCase().trim();
+    const resultNum = +resultStr;
     return Number.isNaN(resultNum) ? resultStr : resultNum;
   }
 
   private evaluate(dataElement, tabletopObject: TabletopObject=null): string {
     let value;
     if (dataElement.isCheckProperty) {
-      let ary = dataElement.currentValue.toString().split(/[|｜]/, 2);
+      const ary = dataElement.currentValue.toString().split(/[|｜]/, 2);
       if (ary.length <= 1) return (dataElement.value == null || dataElement.value == '') ? '' : dataElement.currentValue.toString();
       value = (dataElement.value == null || dataElement.value == '') ? ary[1] : ary[0];
     } else if (dataElement.isAbilityScore) {
@@ -311,8 +311,8 @@ class ObjectInventory {
 }
 
 function createMockElement(name: string): DataElement {
-  let identifier = 'newLineString_DataElement';
-  let dataElement = new DataElement(identifier);
+  const identifier = 'newLineString_DataElement';
+  const dataElement = new DataElement(identifier);
   dataElement.name = name;
   return dataElement;
 }

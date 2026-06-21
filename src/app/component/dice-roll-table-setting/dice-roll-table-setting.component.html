@@ -5,7 +5,7 @@
     </div>
     <select #diceRollTableSelecter style="width: 14em;" size="15" (change)="onChangeDiceRollTable(diceRollTableSelecter.value)">
       @for (diceRollTable of diceRollTables; track diceRollTable) {
-        <option value="{{ diceRollTable.identifier }}" title="{{diceRollTable.name}}" [style.color]="diceRollTable.name == '' ? 'gray' : ''">{{ diceRollTable.name == '' ? '(無名骰子機器人表)' : diceRollTable.name }}</option>
+        <option value="{{ diceRollTable.identifier }}" title="{{diceRollTable.name}}" [style.color]="diceRollTable.name === '' ? 'gray' : ''">{{ diceRollTable.name === '' ? '(無名骰子機器人表)' : diceRollTable.name }}</option>
       }
     </select>
   </div>

@@ -90,7 +90,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   get cards(): Card[] { return this.cardStack.cards; }
   get isEmpty(): boolean { return this.cardStack.isEmpty; }
   get size(): number {
-    let card = this.cardStack.topCard;
+    const card = this.cardStack.topCard;
     return card ? MathUtil.clampMin(card.size) : 2;
   }
 
@@ -159,7 +159,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         }
       })
       .on('UPDATE_GAME_OBJECT', event => {
-        let object = ObjectStore.instance.get(event.data.identifier);
+        const object = ObjectStore.instance.get(event.data.identifier);
         if (!this.cardStack || !object) return;
         if ((this.cardStack === object)
           || (object instanceof ObjectNode && this.cardStack.contains(object))
@@ -177,7 +177,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         if (event.data.cardStackIdentifier === this.cardStack.identifier && this.cardStack) this.changeDetector.markForCheck();
       })
       .on(`UPDATE_GAME_OBJECT/aliasName/${PeerCursor.aliasName}`, event => {
-        let object = ObjectStore.instance.get<PeerCursor>(event.data.identifier);
+        const object = ObjectStore.instance.get<PeerCursor>(event.data.identifier);
         if (this.cardStack && object && object.userId === this.cardStack.owner) {
           this.changeDetector.markForCheck();
         }
@@ -198,7 +198,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         this.changeDetector.markForCheck();
       })
       .on('DISCONNECT_PEER', event => {
-        let cursor = PeerCursor.findByPeerId(event.data.peerId);
+        const cursor = PeerCursor.findByPeerId(event.data.peerId);
         if (!cursor || this.cardStack.owner === cursor.userId) this.changeDetector.markForCheck();
       });
     this.movableOption = {
@@ -243,15 +243,15 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
     e.preventDefault();
 
     if (e.detail instanceof Card) {
-      let card: Card = e.detail;
-      let distance: number = this.cardStack.calcSqrDistance(card);
+      const card: Card = e.detail;
+      const distance: number = this.cardStack.calcSqrDistance(card);
       if (distance < 50 ** 2) {
         this.chatMessageService.sendOperationLog(`${card.isFront ? (card.name == '' ? '(無名牌)' : card.name) : '蓋牌'} 放入 ${this.cardStack.name == '' ? '(無名牌堆)' : this.cardStack.name}`);
         this.cardStack.putOnTop(card);
       }
     } else if (e.detail instanceof CardStack) {
-      let cardStack: CardStack = e.detail;
-      let distance: number = this.cardStack.calcSqrDistance(cardStack);
+      const cardStack: CardStack = e.detail;
+      const distance: number = this.cardStack.calcSqrDistance(cardStack);
       if (distance < 25 ** 2) {
         this.chatMessageService.sendOperationLog(`${cardStack.name == '' ? '(無名牌堆)' : cardStack.name} 全部放入 ${this.cardStack.name == '' ? '(無名牌堆)' : this.cardStack.name}`);
         this.concatStack(cardStack);
@@ -303,7 +303,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
     e.preventDefault();
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
-    let position = this.pointerDeviceService.pointers[0];
+    const position = this.pointerDeviceService.pointers[0];
 
     let menuActions: ContextMenuAction[] = [];
     menuActions = menuActions.concat(this.makeSelectionContextMenu());
@@ -323,7 +323,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private drawCard(): Card {
-    let card = this.cardStack.drawCard();
+    const card = this.cardStack.drawCard();
     if (card) {
       card.location.x += 100 + (Math.random() * 50);
       card.location.y += 25 + (Math.random() * 50);
@@ -345,8 +345,8 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private breakStack() {
-    let cards = this.cardStack.drawCardAll().reverse();
-    for (let card of cards) {
+    const cards = this.cardStack.drawCardAll().reverse();
+    for (const card of cards) {
       card.location.x += 25 - (Math.random() * 50);
       card.location.y += 25 - (Math.random() * 50);
       card.toTopmost();
@@ -358,9 +358,9 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   private splitStack(split: number) {
     if (split < 2) return;
-    let cardStacks: CardStack[] = [];
+    const cardStacks: CardStack[] = [];
     for (let i = 0; i < split; i++) {
-      let cardStack = CardStack.create(`${this.cardStack.name}_${('0' + (i+1).toString()).slice(-2)}`);
+      const cardStack = CardStack.create(`${this.cardStack.name}_${('0' + (i+1).toString()).slice(-2)}`);
       cardStack.location.x = this.cardStack.location.x + 50 - (Math.random() * 100);
       cardStack.location.y = this.cardStack.location.y + 50 - (Math.random() * 100);
       cardStack.posZ = this.cardStack.posZ;
@@ -370,7 +370,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       cardStacks.push(cardStack);
     }
 
-    let cards = this.cardStack.drawCardAll();
+    const cards = this.cardStack.drawCardAll();
     this.cardStack.setLocation('graveyard');
     this.cardStack.destroy();
 
@@ -386,7 +386,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private concatStack(topStack: CardStack, bottomStack: CardStack = this.cardStack) {
-    let newCardStack = CardStack.create(bottomStack.name);
+    const newCardStack = CardStack.create(bottomStack.name);
     newCardStack.location.name = bottomStack.location.name;
     newCardStack.location.x = bottomStack.location.x;
     newCardStack.location.y = bottomStack.location.y;
@@ -394,9 +394,9 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
     newCardStack.zindex = topStack.zindex;
     newCardStack.rotate = bottomStack.rotate;
 
-    let bottomCards: Card[] = bottomStack.drawCardAll();
-    let topCards: Card[] = topStack.drawCardAll();
-    for (let card of topCards.concat(bottomCards)) newCardStack.putOnBottom(card);
+    const bottomCards: Card[] = bottomStack.drawCardAll();
+    const topCards: Card[] = topStack.drawCardAll();
+    for (const card of topCards.concat(bottomCards)) newCardStack.putOnBottom(card);
 
     bottomStack.setLocation('');
     bottomStack.destroy();
@@ -406,10 +406,10 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private dispatchCardDropEvent() {
-    let element: HTMLElement = this.elementRef.nativeElement;
-    let parent = element.parentElement;
-    let children = parent.children;
-    let event = new CustomEvent('carddrop', { detail: this.cardStack, bubbles: true });
+    const element: HTMLElement = this.elementRef.nativeElement;
+    const parent = element.parentElement;
+    const children = parent.children;
+    const event = new CustomEvent('carddrop', { detail: this.cardStack, bubbles: true });
     for (let i = 0; i < children.length; i++) {
       children[i].dispatchEvent(event);
     }
@@ -418,10 +418,10 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   private makeSelectionContextMenu(): ContextMenuAction[] {
     if (this.selectionService.objects.length < 1) return [];
 
-    let actions: ContextMenuAction[] = [];
+    const actions: ContextMenuAction[] = [];
 
-    let size = this.cardStack.topCard?.size ?? 2;
-    let objectPosition = {
+    const size = this.cardStack.topCard?.size ?? 2;
+    const objectPosition = {
       x: this.cardStack.location.x + (size * this.gridSize) / 2,
       y: this.cardStack.location.y + (size * this.gridSize) / 2,
       z: this.cardStack.posZ
@@ -429,7 +429,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
-      let selectedCardStacks = () => this.selectionService.objects.filter(object => object.aliasName === this.cardStack.aliasName) as CardStack[];
+      const selectedCardStacks = () => this.selectionService.objects.filter(object => object.aliasName === this.cardStack.aliasName) as CardStack[];
       actions.push(
         {
           name: '選取的牌堆', action: null, subActions: [
@@ -470,7 +470,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private makeContextMenu(): ContextMenuAction[] {
-    let actions: ContextMenuAction[] = [
+    const actions: ContextMenuAction[] = [
       (this.isLocked
         ? {
           name: '☑ 固定', action: () => {
@@ -666,7 +666,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       (this.cardStack.getUrls().length <= 0 ? null : ContextMenuSeparator),
       {
         name: '建立副本', action: () => {
-          let cloneObject = this.cardStack.clone();
+          const cloneObject = this.cardStack.clone();
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
           cloneObject.owner = '';
@@ -689,22 +689,22 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
 
   private showDetail(gameObject: CardStack) {
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName });
-    let coordinate = this.pointerDeviceService.pointers[0];
+    const coordinate = this.pointerDeviceService.pointers[0];
     let title = '山札設定';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
-    let option: PanelOption = { title: title, left: coordinate.x - 300, top: coordinate.y - 300, width: 600, height: 490 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x - 300, top: coordinate.y - 300, width: 600, height: 490 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 
   private showStackList(gameObject: CardStack) {
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName });
 
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 200, top: coordinate.y - 300, width: 400, height: 600 };
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 200, top: coordinate.y - 300, width: 400, height: 600 };
 
     this.cardStack.owner = Network.peer.userId;
-    let component = this.panelService.open<CardStackListComponent>(CardStackListComponent, option);
+    const component = this.panelService.open<CardStackListComponent>(CardStackListComponent, option);
     component.cardStack = gameObject;
   }
 

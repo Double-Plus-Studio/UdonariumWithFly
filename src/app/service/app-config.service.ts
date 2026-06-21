@@ -56,8 +56,8 @@ export class AppConfigService {
   private async initAppConfig() {
     try {
       console.log('YAML読み込み...');
-      let config = await this.loadYaml();
-      let obj = yaml.load(config);
+      const config = await this.loadYaml();
+      const obj = yaml.load(config);
       AppConfigService.applyConfig(obj);
     } catch (e) {
       console.warn(e);
@@ -66,28 +66,28 @@ export class AppConfigService {
   }
 
   private async loadYaml(): Promise<string> {
-    let config = document.querySelector('script[type$="yaml"]');
+    const config = document.querySelector('script[type$="yaml"]');
     if (!config) {
       console.warn('loadYaml element not found.');
       return '';
     }
 
-    let url = config.getAttribute('src');
+    const url = config.getAttribute('src');
 
     if (url == null) {
       console.warn('loadYaml url undefined.');
       return config.textContent;
     }
 
-    let response = await fetch(url);
+    const response = await fetch(url);
     return response.text();
   }
 
-  private static applyConfig(config: Object, root: Object = AppConfigService.appConfig): Object {
+  private static applyConfig(config: object, root: object = AppConfigService.appConfig): object {
     if (config == null) return root;
-    let keys = Object.getOwnPropertyNames(config);
-    for (let key of keys) {
-      let invalidPropertyKeys = Array.isArray(config) || Array.isArray(root) ? objectPropertyKeys.concat(arrayPropertyKeys) : objectPropertyKeys;
+    const keys = Object.getOwnPropertyNames(config);
+    for (const key of keys) {
+      const invalidPropertyKeys = Array.isArray(config) || Array.isArray(root) ? objectPropertyKeys.concat(arrayPropertyKeys) : objectPropertyKeys;
       if (invalidPropertyKeys.includes(key)) {
         console.log(`skip invalid key (${key})`);
         continue;

@@ -119,7 +119,7 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   get cutInImage(): ImageFile {
     if (!this.selectedCutIn) return ImageFile.Empty;
-    let file = ImageStorage.instance.get(this.selectedCutIn.imageIdentifier);
+    const file = ImageStorage.instance.get(this.selectedCutIn.imageIdentifier);
     return file ? file : ImageFile.Empty;
   }
   
@@ -151,7 +151,7 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   get sendToColor(): string {
-    let object = ObjectStore.instance.get(this.sendTo);
+    const object = ObjectStore.instance.get(this.sendTo);
     if (object instanceof PeerCursor) {
       return object.color;
     }
@@ -218,7 +218,7 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isSaveing = true;
     this.progresPercent = 0;
 
-    let fileName: string = 'fly_cutIn_' + this.selectedCutIn.name;
+    const fileName: string = 'fly_cutIn_' + this.selectedCutIn.name;
 
     await this.saveDataService.saveGameObjectAsync(this.selectedCutIn, fileName, percent => {
       this.progresPercent = percent;
@@ -243,7 +243,7 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   restore() {
     if (this.selectedCutIn && this.selectedCutInXml) {
-      let restoreCutIn = <CutIn>ObjectSerializer.instance.parseXml(this.selectedCutInXml);
+      const restoreCutIn = <CutIn>ObjectSerializer.instance.parseXml(this.selectedCutInXml);
       CutInList.instance.addCutIn(restoreCutIn);
       this.selectedCutInXml = '';
       queueMicrotask(() => {
@@ -261,20 +261,20 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   upTabIndex() {
     if (!this.selectedCutIn) return;
-    let parentElement = this.selectedCutIn.parent;
-    let index: number = parentElement.children.indexOf(this.selectedCutIn);
+    const parentElement = this.selectedCutIn.parent;
+    const index: number = parentElement.children.indexOf(this.selectedCutIn);
     if (0 < index) {
-      let prevElement = parentElement.children[index - 1];
+      const prevElement = parentElement.children[index - 1];
       parentElement.insertBefore(this.selectedCutIn, prevElement);
     }
   }
 
   downTabIndex() {
     if (!this.selectedCutIn) return;
-    let parentElement = this.selectedCutIn.parent;
-    let index: number = parentElement.children.indexOf(this.selectedCutIn);
+    const parentElement = this.selectedCutIn.parent;
+    const index: number = parentElement.children.indexOf(this.selectedCutIn);
     if (index < parentElement.children.length - 1) {
-      let nextElement = parentElement.children[index + 1];
+      const nextElement = parentElement.children[index + 1];
       parentElement.insertBefore(nextElement, this.selectedCutIn);
     }
   }
@@ -374,9 +374,9 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   helpCutIn() {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 680 };
-    let textView = this.panelService.open(TextViewComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 680 };
+    const textView = this.panelService.open(TextViewComponent, option);
     textView.title = '插圖說明';
     textView.text = 
 `　可設定插圖的名稱、顯示時間、位置與寬高（均以相對於畫面尺寸的比例指定）、以及聊天送出時顯示插圖的觸發條件。播放影片或勾選「防止截斷」時，位置與尺寸會自動調整以確保顯示在畫面內。

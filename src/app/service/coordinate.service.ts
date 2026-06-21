@@ -14,23 +14,23 @@ export class CoordinateService {
   ) { }
 
   convertToLocal(pointer: PointerCoordinate, element: HTMLElement = document.body): PointerCoordinate {
-    let transformer: Transform = new Transform(element);
-    let ray = transformer.globalToLocal(pointer.x, pointer.y, pointer.z ? pointer.z : 0);
+    const transformer: Transform = new Transform(element);
+    const ray = transformer.globalToLocal(pointer.x, pointer.y, pointer.z ? pointer.z : 0);
     transformer.clear();
     return { x: ray.x, y: ray.y, z: ray.z };
   }
 
   convertToGlobal(pointer: PointerCoordinate, element: HTMLElement = document.body): PointerCoordinate {
-    let transformer: Transform = new Transform(element);
-    let ray = transformer.localToGlobal(pointer.x, pointer.y, pointer.z ? pointer.z : 0);
+    const transformer: Transform = new Transform(element);
+    const ray = transformer.localToGlobal(pointer.x, pointer.y, pointer.z ? pointer.z : 0);
     transformer.clear();
     return { x: ray.x, y: ray.y, z: ray.z };
   }
 
   convertLocalToLocal(pointer: PointerCoordinate, from: HTMLElement, to: HTMLElement): PointerCoordinate {
-    let transformer: Transform = new Transform(from);
-    let local = transformer.globalToLocal(pointer.x, pointer.y, pointer.z ? pointer.z : 0);
-    let ray = transformer.localToLocal(local.x, local.y, 0, to);
+    const transformer: Transform = new Transform(from);
+    const local = transformer.globalToLocal(pointer.x, pointer.y, pointer.z ? pointer.z : 0);
+    const ray = transformer.localToLocal(local.x, local.y, 0, to);
     transformer.clear();
     return { x: ray.x, y: ray.y, z: ray.z };
   }

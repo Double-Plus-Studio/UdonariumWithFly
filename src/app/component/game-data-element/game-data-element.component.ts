@@ -14,7 +14,7 @@ import { ModalService } from 'service/modal.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
-export class GameDataElementComponent implements OnInit, OnDestroy {
+export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
   @Input() tabletopObject: TabletopObject = null;
   @Input() gameDataElement: DataElement = null;
   @Input() isEdit: boolean = false;
@@ -45,13 +45,13 @@ export class GameDataElementComponent implements OnInit, OnDestroy {
   }
 
   get tabletopObjectName() {
-    let element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
+    const element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
     return element ? <string>element.value : '';
   }
 
   get checkValue(): string {
     if (this.currentValue == null) return '';
-    let ary = this.currentValue.toString().split(/[|｜]/, 2);
+    const ary = this.currentValue.toString().split(/[|｜]/, 2);
     if (ary.length <= 1) return (this.value == null || this.value == '') ? '' : this.currentValue.toString();
     let ret = (this.value == null || this.value == '') ? ary[1] : ary[0];
     if (this.tabletopObject instanceof GameCharacter && this.tabletopObject.chatPalette) {
@@ -160,19 +160,19 @@ export class GameDataElementComponent implements OnInit, OnDestroy {
   }
 
   upElement() {
-    let parentElement = this.gameDataElement.parent;
-    let index: number = parentElement.children.indexOf(this.gameDataElement);
+    const parentElement = this.gameDataElement.parent;
+    const index: number = parentElement.children.indexOf(this.gameDataElement);
     if (0 < index) {
-      let prevElement = parentElement.children[index - 1];
+      const prevElement = parentElement.children[index - 1];
       parentElement.insertBefore(this.gameDataElement, prevElement);
     }
   }
 
   downElement() {
-    let parentElement = this.gameDataElement.parent;
-    let index: number = parentElement.children.indexOf(this.gameDataElement);
+    const parentElement = this.gameDataElement.parent;
+    const index: number = parentElement.children.indexOf(this.gameDataElement);
     if (index < parentElement.children.length - 1) {
-      let nextElement = parentElement.children[index + 1];
+      const nextElement = parentElement.children[index + 1];
       parentElement.insertBefore(nextElement, this.gameDataElement);
     }
   }

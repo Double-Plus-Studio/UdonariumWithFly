@@ -25,8 +25,8 @@ export class ChatTabList extends ObjectNode implements InnerXml {
     if (args[0] instanceof ChatTab) {
       chatTab = args[0];
     } else {
-      let tabName: string = args[0];
-      let identifier: string = args[1];
+      const tabName: string = args[0];
+      const identifier: string = args[1];
       chatTab = new ChatTab(identifier);
       chatTab.name = tabName;
       chatTab.initialize();
@@ -36,11 +36,11 @@ export class ChatTabList extends ObjectNode implements InnerXml {
 
   parseInnerXml(element: Element) {
     // XMLからの新規作成を許可せず、既存のオブジェクトを更新する
-    for (let child of ChatTabList.instance.children) {
+    for (const child of ChatTabList.instance.children) {
       child.destroy();
     }
 
-    let context = ChatTabList.instance.toContext();
+    const context = ChatTabList.instance.toContext();
     context.syncData = this.toContext().syncData;
     ChatTabList.instance.apply(context);
     ChatTabList.instance.update();
@@ -49,7 +49,7 @@ export class ChatTabList extends ObjectNode implements InnerXml {
     this.destroy();
   }
 
-  log(logFormat, dateFormat, isWriteOerationLog=true, imageDict?: {}, target?: ChatTab[]): string {
+  log(logFormat, dateFormat, isWriteOerationLog=true, imageDict?: Record<string, unknown>, target?: ChatTab[]): string {
     if (!this.chatTabs || (target && target.length == 0)) return '';
     if (target && target.length > 1 && target.map(tab => tab.identifier).sort().join() == this.chatTabs.map(tab => tab.identifier).sort().join()) target = null;
     const messages = (target ? target : this.chatTabs).reduce((ac, chatTab) => {

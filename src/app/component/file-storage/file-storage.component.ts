@@ -97,7 +97,7 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   get isSelected(): boolean {
-    let ret = this.selectedImageFiles.length > 0;
+    const ret = this.selectedImageFiles.length > 0;
     if (!ret) this.addingTagWord = '';
     return ret;
   }
@@ -195,8 +195,8 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   handleFileSelect(event: Event) {
-    let input = <HTMLInputElement>event.target;
-    let files = input.files;
+    const input = <HTMLInputElement>event.target;
+    const files = input.files;
     if (files.length) FileArchiver.instance.load(files);
     input.value = '';
   }
@@ -333,7 +333,7 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
       action: () => {
         if (word == null || word.trim() == '') return;
         for (const image of this.selectedImageFiles) {
-          let imageTag = ImageTag.get(image.identifier);
+          const imageTag = ImageTag.get(image.identifier);
           if (imageTag) imageTag.removeWords(word);
         }
         const allImagesOwnWords = this.allImagesOwnWords;

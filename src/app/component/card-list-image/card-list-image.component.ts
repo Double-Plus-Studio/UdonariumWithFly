@@ -1,5 +1,5 @@
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { Card, CardState } from '@udonarium/card';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 
@@ -36,7 +36,7 @@ import { StringUtil } from '@udonarium/core/system/util/string-util';
     ],
     standalone: false
 })
-export class CardListImageComponent implements OnInit {
+export class CardListImageComponent {
   @Input() card: Card = null;
   @ViewChild('cardImage', { static: true }) cardImageElement: ElementRef;
   
@@ -48,9 +48,6 @@ export class CardListImageComponent implements OnInit {
   naturalHeight = 0;
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
 
   onCardImageLoad() {
     if (!this.cardImageElement) return;

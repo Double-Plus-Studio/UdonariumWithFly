@@ -86,14 +86,14 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
   }
 
   static createPublication(skyWay: SkyWayFacade, peer: IPeerContext): SkyWayDataStream {
-    let instance = new SkyWayDataStream(skyWay, peer);
+    const instance = new SkyWayDataStream(skyWay, peer);
     instance.sortKey = instance.skyWay.peer.peerId;
     instance.isPublication = true;
     return instance;
   }
 
   static createSubscription(skyWay: SkyWayFacade, peer: IPeerContext): SkyWayDataStream {
-    let instance = new SkyWayDataStream(skyWay, peer);
+    const instance = new SkyWayDataStream(skyWay, peer);
     instance.sortKey = instance.peer.peerId;
     instance.isPublication = false;
     return instance;
@@ -147,8 +147,8 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
 
   private initializePublication() {
     //
-    let member = this.member;
-    let subscription = member?.subscriptions.find(subscription => subscription.publication.contentType === 'data'
+    const member = this.member;
+    const subscription = member?.subscriptions.find(subscription => subscription.publication.contentType === 'data'
       && subscription.publication.metadata === 'udonarium-data-stream'
       && subscription.publication.publisher.name === this.skyWay.peer.peerId) as Subscription<RemoteDataStream>;
 
@@ -172,14 +172,14 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
 
   private async initializeSubscription() {
     //
-    let member = this.member;
-    let publication = member.publications.find(publication => publication.contentType === 'data' && publication.metadata === 'udonarium-data-stream');
+    const member = this.member;
+    const publication = member.publications.find(publication => publication.contentType === 'data' && publication.metadata === 'udonarium-data-stream');
 
     //
     if (!publication) {
       this.onStreamPublished?.removeListener();
       this.onStreamPublished = this.skyWay.room.onStreamPublished.add(event => {
-        let isMatch = event.publication.contentType === 'data' && event.publication.metadata === 'udonarium-data-stream' && event.publication.publisher.name === this.peer.peerId;
+        const isMatch = event.publication.contentType === 'data' && event.publication.metadata === 'udonarium-data-stream' && event.publication.publisher.name === this.peer.peerId;
         if (!isMatch) return;
 
         console.log(`onStreamPublished: ${event.publication.publisher.name} <${event.publication.metadata}>`);
@@ -193,7 +193,7 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
     this.refresh();
     console.log(`initializeSubscription ready ${member.name}`);
     try {
-      let { subscription, stream } = await this.skyWay.roomPerson.subscribe<RemoteDataStream>(publication.id);
+      const { subscription, stream } = await this.skyWay.roomPerson.subscribe<RemoteDataStream>(publication.id);
 
       //
       this.onConnectionStateChanged?.removeListener();
@@ -239,17 +239,17 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
 
   private refresh() {
     // 現在のオブジェクトを取得
-    let member = this.member;
+    const member = this.member;
 
-    let p2pconnection = (member as any)?._getOrCreateConnection((this.skyWay.roomPerson as any)?._impl) as P2PConnection;
-    let publication = member?.publications.find(publication => publication.metadata === 'udonarium-data-stream');
+    const p2pconnection = (member as any)?._getOrCreateConnection((this.skyWay.roomPerson as any)?._impl) as P2PConnection;
+    const publication = member?.publications.find(publication => publication.metadata === 'udonarium-data-stream');
 
-    let dataChannel = this.isPublication
+    const dataChannel = this.isPublication
       ? p2pconnection?.sender.datachannels[this.skyWay.publication?.id]
       : (p2pconnection?.receiver.streams[publication?.id] as RemoteDataStream)?._datachannel;
 
     // 接続状況確認
-    let isOpen = dataChannel?.readyState === 'open';
+    const isOpen = dataChannel?.readyState === 'open';
     console.log(`refresh ${member?.name}, isPublication: ${this.isPublication}, isOpen: ${isOpen}, dataChannel: ${dataChannel?.readyState}`);
 
     // cancelまたはrejectされているときは接続解除
@@ -301,7 +301,7 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
     }
 
     // モニタリング制御
-    let peerConnection = this.getPeerConnection();
+    const peerConnection = this.getPeerConnection();
     this.stats = peerConnection ? new WebRTCStats(peerConnection) : null;
 
     if (isOpen) {
@@ -313,15 +313,15 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
   }
 
   send(data: any) {
-    let encodedData: Uint8Array = MessagePack.encode(data);
+    const encodedData: Uint8Array = MessagePack.encode(data);
 
-    let total = Math.ceil(encodedData.byteLength / this.chunkSize);
+    const total = Math.ceil(encodedData.byteLength / this.chunkSize);
     if (total <= 1) {
       this.addSendQueue(encodedData);
       return;
     }
 
-    let id = UUID.generateUuid();
+    const id = UUID.generateUuid();
 
     let sliceData: Uint8Array = null;
     let chank: DataChank = null;
@@ -343,7 +343,7 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
       this.isQueuing = false;
       return;
     }
-    for (let data of this.sendQueue) {
+    for (const data of this.sendQueue) {
       try {
         this.dataChannel.send(data as Uint8Array<ArrayBuffer>);
         this.sendQueue.delete(data);
@@ -378,10 +378,10 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
     await this.stats.updateAsync();
     this.candidateType = this.stats.candidateType;
 
-    let deltaTime = performance.now() - this.timestamp;
-    let healthRate = deltaTime <= 10000 ? 1 : 5000 / ((deltaTime - 10000) + 5000);
-    let ping = healthRate < 1 ? deltaTime : this.ping;
-    let pingRate = 500 / (ping + 500);
+    const deltaTime = performance.now() - this.timestamp;
+    const healthRate = deltaTime <= 10000 ? 1 : 5000 / ((deltaTime - 10000) + 5000);
+    const ping = healthRate < 1 ? deltaTime : this.ping;
+    const pingRate = 500 / (ping + 500);
 
     this.peer.session.health = healthRate;
     this.peer.session.ping = ping;
@@ -408,32 +408,32 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
   }
 
   sendPing() {
-    let encodedData: Uint8Array = MessagePack.encode({ from: this.skyWay.peer.peerId, ping: performance.now() });
+    const encodedData: Uint8Array = MessagePack.encode({ from: this.skyWay.peer.peerId, ping: performance.now() });
     this.addSendQueue(encodedData);
   }
 
   private receivePing(ping: Ping) {
     if (ping.from === this.skyWay.peer.peerId) {
-      let now = performance.now();
-      let rtt = now - ping.ping;
+      const now = performance.now();
+      const rtt = now - ping.ping;
       this.ping = rtt <= this.ping ? (this.ping * 0.5) + (rtt * 0.5) : rtt;
     } else {
-      let encodedData = MessagePack.encode(ping);
+      const encodedData = MessagePack.encode(ping);
       this.addSendQueue(encodedData);
     }
   }
 
   private onData(data: ArrayBuffer) {
     this.timestamp = performance.now();
-    let decoded: unknown = MessagePack.decode(new Uint8Array(data));
+    const decoded: unknown = MessagePack.decode(new Uint8Array(data));
 
-    let ping: Ping = decoded as Ping;
+    const ping: Ping = decoded as Ping;
     if (ping.ping != null) {
       this.receivePing(ping);
       return;
     }
 
-    let chank: DataChank = decoded as DataChank;
+    const chank: DataChank = decoded as DataChank;
     if (chank.id == null) {
       this.emit('data', decoded);
       return;
@@ -454,15 +454,15 @@ export class SkyWayDataStream extends EventEmitter implements WebRTCConnection {
     if (received.length < chank.total) return;
     this.receivedMap.delete(chank.id);
 
-    let uint8Array = new Uint8Array(received.byteLength);
+    const uint8Array = new Uint8Array(received.byteLength);
 
     let pos = 0;
-    for (let c of received.chanks) {
+    for (const c of received.chanks) {
       uint8Array.set(c, pos);
       pos += c.byteLength;
     }
 
-    let decodedChank = MessagePack.decode(uint8Array);
+    const decodedChank = MessagePack.decode(uint8Array);
     this.emit('data', decodedChank);
   }
 }

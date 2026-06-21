@@ -18,18 +18,18 @@ export class CardStack extends TabletopObject {
   
   get name(): string { return this.getCommonValue('name', ''); }
   get ownerName(): string {
-    let object = PeerCursor.findByUserId(this.owner);
+    const object = PeerCursor.findByUserId(this.owner);
     return object ? object.name : '';
   }
   get ownerColor(): string {
-    let object = PeerCursor.findByUserId(this.owner);
+    const object = PeerCursor.findByUserId(this.owner);
     return object ? object.color : '#444444';
   }
   get hasOwner(): boolean { return 0 < this.owner.length; }
   get ownerIsOnline(): boolean { return this.hasOwner && Network.peers.some(peer => peer.userId === this.owner && peer.isOpen); }
 
   private get cardRoot(): ObjectNode {
-    for (let node of this.children) {
+    for (const node of this.children) {
       if (node.getAttribute('name') === 'cardRoot') return node;
     }
     return null;
@@ -53,8 +53,8 @@ export class CardStack extends TabletopObject {
 
   shuffle(): Card[] {
     if (!this.cardRoot) return;
-    let length = this.cardRoot.children.length;
-    for (let card of this.cards) {
+    const length = this.cardRoot.children.length;
+    for (const card of this.cards) {
       card.index = Math.random() * length;
       card.rotate = Math.floor(Math.random() * 2) * 180;
       this.setSamePositionFor(card);
@@ -63,7 +63,7 @@ export class CardStack extends TabletopObject {
   }
 
   drawCard(): Card {
-    let card = this.topCard ? this.cardRoot.removeChild(this.topCard) : null;
+    const card = this.topCard ? this.cardRoot.removeChild(this.topCard) : null;
     if (card) {
       card.rotate += this.rotate;
       if (360 < card.rotate) card.rotate -= 360;
@@ -74,8 +74,8 @@ export class CardStack extends TabletopObject {
   }
 
   drawCardAll(): Card[] {
-    let cards = this.cards;
-    for (let card of cards) {
+    const cards = this.cards;
+    for (const card of cards) {
       this.cardRoot.removeChild(card);
       card.rotate += this.rotate;
       this.setSamePositionFor(card);
@@ -99,21 +99,21 @@ export class CardStack extends TabletopObject {
   }
 
   faceUpAll() {
-    for (let card of this.cards) {
+    for (const card of this.cards) {
       card.faceUp();
       this.setSamePositionFor(card);
     }
   }
 
   faceDownAll() {
-    for (let card of this.cards) {
+    for (const card of this.cards) {
       card.faceDown();
       this.setSamePositionFor(card);
     }
   }
 
   uprightAll() {
-    for (let card of this.cards) {
+    for (const card of this.cards) {
       card.rotate = 0;
       this.setSamePositionFor(card);
     }
@@ -122,12 +122,12 @@ export class CardStack extends TabletopObject {
   inverse() {
     const tmp: Card[] = [];
     while (true) {
-      let card = this.topCard ? <Card>this.cardRoot.removeChild(this.topCard) : null;
+      const card = this.topCard ? <Card>this.cardRoot.removeChild(this.topCard) : null;
       if (card == null) break;
       tmp.unshift(card);
       card.state = (card.state == CardState.FRONT ? CardState.BACK : CardState.FRONT);
     }
-    for (let card of tmp) {
+    for (const card of tmp) {
       this.putOnBottom(card);
     }
   }
@@ -172,8 +172,8 @@ export class CardStack extends TabletopObject {
   // override
   setLocation(location: string) {
     super.setLocation(location);
-    let cards = this.cards;
-    for (let card of cards) card.setLocation(location);
+    const cards = this.cards;
+    for (const card of cards) card.setLocation(location);
   }
 
   private setSamePositionFor(card: Card) {
@@ -193,7 +193,7 @@ export class CardStack extends TabletopObject {
     }
     object.createDataElements();
     object.commonDataElement.appendChild(DataElement.create('name', name, {}, 'name_' + object.identifier));
-    let cardRoot = new ObjectNode('cardRoot_' + object.identifier);
+    const cardRoot = new ObjectNode('cardRoot_' + object.identifier);
     cardRoot.setAttribute('name', 'cardRoot');
     cardRoot.initialize();
     object.appendChild(cardRoot);

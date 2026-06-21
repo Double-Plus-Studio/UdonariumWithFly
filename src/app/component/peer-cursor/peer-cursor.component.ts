@@ -45,14 +45,14 @@ export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get nameTagRotate(): number {
-    let x = (PeerCursorComponent.viewRotateX % 360) - 90;
+    const x = (PeerCursorComponent.viewRotateX % 360) - 90;
     //console.log(-(x > 0 ? x : 360 + x))
     const ret = -(x > 0 ? x : 360 + x);
     return ret;
   }
 
   get delayMs(): number {
-    let maxDelay = (Network.peerIds.length + 1) * 16.6;
+    const maxDelay = (Network.peerIds.length + 1) * 16.6;
     return maxDelay < 100 ? 100 : maxDelay;
   }
 
@@ -122,8 +122,8 @@ export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private onMouseMove(e: any) {
-    let x = e.touches ? e.changedTouches[0].pageX : e.pageX;
-    let y = e.touches ? e.changedTouches[0].pageY : e.pageY;
+    const x = e.touches ? e.changedTouches[0].pageX : e.pageX;
+    const y = e.touches ? e.changedTouches[0].pageY : e.pageY;
     if (x === this._x && y === this._y) return;
     this._x = x;
     this._y = y;

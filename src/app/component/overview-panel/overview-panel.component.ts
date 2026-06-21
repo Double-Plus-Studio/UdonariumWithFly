@@ -185,7 +185,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
 
   checkValue(dataElm): string {
     if (!dataElm || dataElm.currentValue == null) return '';
-    let ary = dataElm.currentValue.toString().split(/[|｜]/, 2);
+    const ary = dataElm.currentValue.toString().split(/[|｜]/, 2);
     if (ary.length <= 1) return (dataElm.value == null || dataElm.value == '') ? '' : dataElm.currentValue.toString();
     let ret = (dataElm.value == null || dataElm.value == '') ? ary[1] : ary[0];
     if (this.tabletopObject instanceof GameCharacter && this.tabletopObject.chatPalette) {
@@ -251,9 +251,9 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   private initPanelPosition() {
-    let panel: HTMLElement = this.draggablePanel.nativeElement;
-    let outerWidth = panel.offsetWidth;
-    let outerHeight = panel.offsetHeight;
+    const panel: HTMLElement = this.draggablePanel.nativeElement;
+    const outerWidth = panel.offsetWidth;
+    const outerHeight = panel.offsetHeight;
 
     let offsetLeft = this.left + 100;
     let offsetTop = this.top - outerHeight - 50;
@@ -283,9 +283,9 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   private adjustPositionRoot() {
-    let panel: HTMLElement = this.draggablePanel.nativeElement;
+    const panel: HTMLElement = this.draggablePanel.nativeElement;
 
-    let panelBox = panel.getBoundingClientRect();
+    const panelBox = panel.getBoundingClientRect();
 
     let diffLeft = 0;
     let diffTop = 0;
@@ -417,7 +417,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   get rangeElms(): DataElement[] {
-    let ret = []
+    const ret = []
     if (!this.tabletopObject || !(this.tabletopObject instanceof RangeArea) || !this.tabletopObject.commonDataElement) return ret;
     if (this.tabletopObject.commonDataElement.getFirstElementByName('length')) ret.push(this.tabletopObject.commonDataElement.getFirstElementByName('length'));
     if ((this.tabletopObject.type === 'CORN' || this.tabletopObject.type === 'LINE') && this.tabletopObject.commonDataElement.getFirstElementByName('width')) ret.push(this.tabletopObject.commonDataElement.getFirstElementByName('width'));

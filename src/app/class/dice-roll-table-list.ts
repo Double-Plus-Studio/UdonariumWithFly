@@ -23,8 +23,8 @@ export class DiceRollTableList extends ObjectNode implements InnerXml {
     if (args[0] instanceof DiceRollTable) {
       diceRollTable = args[0];
     } else {
-      let name: string = args[0];
-      let identifier: string = args[1];
+      const name: string = args[0];
+      const identifier: string = args[1];
       diceRollTable = new DiceRollTable(identifier);
       diceRollTable.name = name;
       diceRollTable.initialize();
@@ -34,11 +34,11 @@ export class DiceRollTableList extends ObjectNode implements InnerXml {
 
   parseInnerXml(element: Element) {
     // XMLからの新規作成を許可せず、既存のオブジェクトを更新する
-    for (let child of DiceRollTableList.instance.children) {
+    for (const child of DiceRollTableList.instance.children) {
       child.destroy();
     }
 
-    let context = DiceRollTableList.instance.toContext();
+    const context = DiceRollTableList.instance.toContext();
     context.syncData = this.toContext().syncData;
     DiceRollTableList.instance.apply(context);
     DiceRollTableList.instance.update();

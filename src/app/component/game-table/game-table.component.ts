@@ -156,7 +156,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
   private _currentBackgroundImageCss = '';
   get backgroundImageCss(): string {
     if (this._currentBackgroundImageCss && ((this.backgroundImageUrl && !this.isBackgroundImageLoaded) || (this.backgroundImageUrl2 && !this.isBackgroundImageLoaded2))) return this._currentBackgroundImageCss;
-    let ret: string[] = [];
+    const ret: string[] = [];
     if (this.backgroundImageUrl) ret.push(`url(${this.backgroundImageUrl})`);
     if (this.backgroundImageUrl2 && (!this.backgroundImageUrl || (this.backgroundImageUrl && this.isBackgroundImageLoaded))) ret.push(`url(${this.backgroundImageUrl2})`);
     this._currentBackgroundImageCss = ret.join(',');
@@ -186,7 +186,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
       .on('DRAG_LOCKED_OBJECT', event => {
         this.isTableTransformMode = true;
         this.pointerDeviceService.isDragging = false;
-        let opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
+        const opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
         this.gridCanvas.nativeElement.style.opacity = opacity + '';
       })
       .on('RESET_POINT_OF_VIEW', event => {
@@ -223,19 +223,19 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
           https://opensource.org/licenses/mit-license.php
           */
           // 座標変換
-          let centerX = this.gridCanvas.nativeElement.clientWidth / 2;
-          let centerY = this.gridCanvas.nativeElement.clientHeight / 2;
-          let movedX = event.data.x - centerX;
-          let movedY = event.data.y - centerY;
-          let movedZ = event.data.z;
+          const centerX = this.gridCanvas.nativeElement.clientWidth / 2;
+          const centerY = this.gridCanvas.nativeElement.clientHeight / 2;
+          const movedX = event.data.x - centerX;
+          const movedY = event.data.y - centerY;
+          const movedZ = event.data.z;
           // z軸回転
-          let rotateZRad = this.viewRotateZ / 180 * Math.PI;
-          let rotatedMovedX = movedX * Math.cos(rotateZRad) - movedY * Math.sin(rotateZRad);
-          let zRotatedMovedY = movedX * Math.sin(rotateZRad) + movedY * Math.cos(rotateZRad);
+          const rotateZRad = this.viewRotateZ / 180 * Math.PI;
+          const rotatedMovedX = movedX * Math.cos(rotateZRad) - movedY * Math.sin(rotateZRad);
+          const zRotatedMovedY = movedX * Math.sin(rotateZRad) + movedY * Math.cos(rotateZRad);
           // x軸回転
-          let rotateXRad = this.viewRotateX / 180 * Math.PI;
-          let rotatedMovedY = zRotatedMovedY * Math.cos(rotateXRad);
-          let rotatedMovedZ = zRotatedMovedY * Math.sin(rotateXRad) + movedZ;
+          const rotateXRad = this.viewRotateX / 180 * Math.PI;
+          const rotatedMovedY = zRotatedMovedY * Math.cos(rotateXRad);
+          const rotatedMovedZ = zRotatedMovedY * Math.sin(rotateXRad) + movedZ;
           // 移動
           this.setTransform(
             100 - rotatedMovedX - this.viewPotisonX, -rotatedMovedY - this.viewPotisonY, -rotatedMovedZ - this.viewPotisonZ, 0, 0, 0
@@ -334,7 +334,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     if (srcEvent.cancelable) srcEvent.preventDefault();
 
     //
-    let scale = (1000 + Math.abs(this.viewPotisonZ)) / 1000;
+    const scale = (1000 + Math.abs(this.viewPotisonZ)) / 1000;
     transformX *= scale;
     transformY *= scale;
     if (80 < rotateX + this.viewRotateX) rotateX += 80 - (rotateX + this.viewRotateX);
@@ -374,7 +374,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     if (srcEvent.cancelable) srcEvent.preventDefault();
 
     //
-    let scale = (1000 + Math.abs(this.viewPotisonZ)) / 1000;
+    const scale = (1000 + Math.abs(this.viewPotisonZ)) / 1000;
     transformX *= scale;
     transformY *= scale;
 
@@ -387,7 +387,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     SoundEffect.playLocal(PresetSound.selectionStart);
 
     if (!this.pickGesture.isMagneticMode) {
-      let opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
+      const opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
       this.gridCanvas.nativeElement.style.opacity = opacity + '';
     }
   }
@@ -415,7 +415,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.mouseGesture.cancel();
     this.isTableTransformMode = true;
     this.pointerDeviceService.isDragging = false;
-    let opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
+    const opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
     this.gridCanvas.nativeElement.style.opacity = opacity + '';
   }
 
@@ -426,9 +426,9 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
 
-    let menuPosition = this.pointerDeviceService.pointers[0];
-    let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
-    let menuActions: ContextMenuAction[] = [];
+    const menuPosition = this.pointerDeviceService.pointers[0];
+    const objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
+    const menuActions: ContextMenuAction[] = [];
 
     if (0 < this.selectionService.size) {
       menuActions.push({
@@ -499,15 +499,15 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.gameTable.nativeElement.style.width = width * gridSize + 'px';
     this.gameTable.nativeElement.style.height = height * gridSize + 'px';
 
-    let render = new GridLineRender(this.gridCanvas.nativeElement);
+    const render = new GridLineRender(this.gridCanvas.nativeElement);
     render.render(width, height, gridSize, gridType, gridColor, isShowNumber);
 
-    let opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
+    const opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
     this.gridCanvas.nativeElement.style.opacity = opacity + '';
   }
 
   private removeSelectionRanges() {
-    let selection = window.getSelection();
+    const selection = window.getSelection();
     if (!selection.isCollapsed) {
       selection.removeAllRanges();
     }
@@ -525,7 +525,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   isCursorHidIn(cursor: PeerCursor): boolean {
     if (cursor.isGMMode) return true;
-    for (let character of this.characters) {
+    for (const character of this.characters) {
       if (character.isHideIn && character.location.name === 'table' && character.owner === cursor.userId) return true;
     }
     return false;

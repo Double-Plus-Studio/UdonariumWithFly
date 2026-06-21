@@ -9,25 +9,25 @@ export namespace CanvasUtil {
    * @param {boolean} resize_canvas if true, canvas will be resized. Optional.
    */
   export function resize(canvas: HTMLCanvasElement, width: number, height: number, resize_canvas?: boolean) {
-    let width_source = canvas.width;
-    let height_source = canvas.height;
+    const width_source = canvas.width;
+    const height_source = canvas.height;
     width = Math.round(width);
     height = Math.round(height);
 
-    let ratio_w = width_source / width;
-    let ratio_h = height_source / height;
-    let ratio_w_half = Math.ceil(ratio_w / 2);
-    let ratio_h_half = Math.ceil(ratio_h / 2);
+    const ratio_w = width_source / width;
+    const ratio_h = height_source / height;
+    const ratio_w_half = Math.ceil(ratio_w / 2);
+    const ratio_h_half = Math.ceil(ratio_h / 2);
 
-    let ctx = canvas.getContext('2d');
-    let img = ctx.getImageData(0, 0, width_source, height_source);
-    let img2 = ctx.createImageData(width, height);
-    let data = img.data;
-    let data2 = img2.data;
+    const ctx = canvas.getContext('2d');
+    const img = ctx.getImageData(0, 0, width_source, height_source);
+    const img2 = ctx.createImageData(width, height);
+    const data = img.data;
+    const data2 = img2.data;
 
     for (let j = 0; j < height; j++) {
       for (let i = 0; i < width; i++) {
-        let x2 = (i + j * width) * 4;
+        const x2 = (i + j * width) * 4;
         let weight = 0;
         let weights = 0;
         let weights_alpha = 0;
@@ -35,25 +35,25 @@ export namespace CanvasUtil {
         let gx_g = 0;
         let gx_b = 0;
         let gx_a = 0;
-        let center_y = (j + 0.5) * ratio_h;
-        let yy_start = Math.floor(j * ratio_h);
-        let yy_stop = Math.ceil((j + 1) * ratio_h);
+        const center_y = (j + 0.5) * ratio_h;
+        const yy_start = Math.floor(j * ratio_h);
+        const yy_stop = Math.ceil((j + 1) * ratio_h);
         for (let yy = yy_start; yy < yy_stop; yy++) {
-          let dy = Math.abs(center_y - (yy + 0.5)) / ratio_h_half;
-          let center_x = (i + 0.5) * ratio_w;
-          let w0 = dy * dy; //pre-calc part of w
-          let xx_start = Math.floor(i * ratio_w);
-          let xx_stop = Math.ceil((i + 1) * ratio_w);
+          const dy = Math.abs(center_y - (yy + 0.5)) / ratio_h_half;
+          const center_x = (i + 0.5) * ratio_w;
+          const w0 = dy * dy; //pre-calc part of w
+          const xx_start = Math.floor(i * ratio_w);
+          const xx_stop = Math.ceil((i + 1) * ratio_w);
           for (let xx = xx_start; xx < xx_stop; xx++) {
-            let dx = Math.abs(center_x - (xx + 0.5)) / ratio_w_half;
-            let w = Math.sqrt(w0 + dx * dx);
+            const dx = Math.abs(center_x - (xx + 0.5)) / ratio_w_half;
+            const w = Math.sqrt(w0 + dx * dx);
             if (w >= 1) {
               //pixel too far
               continue;
             }
             //hermite filter
             weight = 2 * w * w * w - 3 * w * w + 1;
-            let pos_x = 4 * (xx + yy * width_source);
+            const pos_x = 4 * (xx + yy * width_source);
             //alpha
             gx_a += weight * data[pos_x + 3];
             weights_alpha += weight;

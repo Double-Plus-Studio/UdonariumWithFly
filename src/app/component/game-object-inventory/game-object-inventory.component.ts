@@ -197,16 +197,16 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       position = this.pointerDeviceService.pointers[0];
     }
 
-    let actions: ContextMenuAction[] = [];
+    const actions: ContextMenuAction[] = [];
     if (this.checkSelected(gameObject)) {
-      let selectedCharacter = () => this.selectionService.objects.filter(object => object.aliasName === gameObject.aliasName) as GameCharacter[];
-      let subActions: ContextMenuAction[] = [];
+      const selectedCharacter = () => this.selectionService.objects.filter(object => object.aliasName === gameObject.aliasName) as GameCharacter[];
+      const subActions: ContextMenuAction[] = [];
       if (this.selectTab != 'table') {
         subActions.push({
           name: '全部移動到桌面', action: () => {
             selectedCharacter().forEach(gameCharacter => {
               EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: gameCharacter.identifier });
-              let isStealthMode = GameCharacter.isStealthMode;
+              const isStealthMode = GameCharacter.isStealthMode;
               gameCharacter.setLocation('table');
               this.selectionService.remove(gameCharacter);
               if (gameCharacter.isHideIn && gameCharacter.isVisible && !isStealthMode && !PeerCursor.myCursor.isGMMode) {
@@ -283,7 +283,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       actions.push({
         name: '移動到桌面',
         action: () => {
-          let isStealthMode = GameCharacter.isStealthMode;
+          const isStealthMode = GameCharacter.isStealthMode;
           EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: gameObject.identifier });
           gameObject.setLocation('table');
           this.selectionService.remove(gameObject);
@@ -555,7 +555,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         },
         checkBox: 'check'
       });
-    let locations = [
+    const locations = [
       { name: 'table', alias: '桌面' },
       { name: 'common', alias: '共有物品欄' },
       { name: Network.peerId, alias: '個人物品欄' },
@@ -570,7 +570,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
           return {
             name: `${location.alias}`,
             action: () => {
-              let isStealthMode = GameCharacter.isStealthMode;
+              const isStealthMode = GameCharacter.isStealthMode;
               EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: gameObject.identifier });
               gameObject.setLocation(location.name);
               this.selectionService.remove(gameObject);
@@ -626,7 +626,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         let maxIndex = 0;
         for (const character of ObjectStore.instance.getObjects(GameCharacter)) {
           if(!character.name.startsWith(baseName)) continue;
-          let index = character.name.match(/_(\d+)$/) ? +RegExp.$1 : 0;
+          const index = character.name.match(/_(\d+)$/) ? +RegExp.$1 : 0;
           if (index > maxIndex) maxIndex = index;
         }
         cloneObject.name = baseName + '_' + (maxIndex + 1);
@@ -663,8 +663,8 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
   }
 
   cleanInventory() {
-    let tabTitle = this.getTabTitle(this.selectTab);
-    let gameObjects = this.getGameObjects(this.selectTab);
+    const tabTitle = this.getTabTitle(this.selectTab);
+    const gameObjects = this.getGameObjects(this.selectTab);
     this.modalService.open(ConfirmationComponent, {
       title: '清空墓地',
       text: '確定要完全刪除角色嗎？',
@@ -686,18 +686,18 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
 
   private showDetail(gameObject: GameCharacter) {
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName });
-    let coordinate = this.pointerDeviceService.pointers[0];
+    const coordinate = this.pointerDeviceService.pointers[0];
     let title = '角色卡';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
-    let option: PanelOption = { title: title, left: coordinate.x - 800, top: coordinate.y - 300, width: 800, height: 600 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x - 800, top: coordinate.y - 300, width: 800, height: 600 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 
   private showChatPalette(gameObject: GameCharacter) {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 620, height: 350 };
-    let component = this.panelService.open<ChatPaletteComponent>(ChatPaletteComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 620, height: 350 };
+    const component = this.panelService.open<ChatPaletteComponent>(ChatPaletteComponent, option);
     component.character = gameObject;
   }
 
@@ -733,9 +733,9 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
   }
 
   private showStandSetting(gameObject: GameCharacter) {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 400, top: coordinate.y - 175, width: 730, height: 572 };
-    let component = this.panelService.open<StandSettingComponent>(StandSettingComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 400, top: coordinate.y - 175, width: 730, height: 572 };
+    const component = this.panelService.open<StandSettingComponent>(StandSettingComponent, option);
     component.character = gameObject;
   }
 

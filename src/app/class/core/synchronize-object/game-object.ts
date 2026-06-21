@@ -8,7 +8,7 @@ export interface ObjectContext {
   identifier: string;
   majorVersion: number;
   minorVersion: number;
-  syncData: Object;
+  syncData: object;
 }
 
 export class GameObject {
@@ -84,12 +84,12 @@ export class GameObject {
   }
 }
 
-function deepCopy(obj: Object): Object {
+function deepCopy(obj: object): object {
   if (obj == null) return obj;
-  let clone = Array.isArray(obj) ? [] : {};
-  let keys = Object.getOwnPropertyNames(obj);
-  for (let key of keys) {
-    let type = typeof obj[key];
+  const clone = Array.isArray(obj) ? [] : {};
+  const keys = Object.getOwnPropertyNames(obj);
+  for (const key of keys) {
+    const type = typeof obj[key];
     if (obj[key] != null && type === 'object') {
       clone[key] = deepCopy(obj[key]);
     } else if (type !== 'function') {

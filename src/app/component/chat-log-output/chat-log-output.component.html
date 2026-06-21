@@ -16,16 +16,16 @@
         </div>
         <div>
           形式：
-          <label><input name="{{panelId}}-log-output-format" type="radio" [(ngModel)]="logFormat" [checked]="logFormat == 0" [value]="0">文字</label>
-          <label><input name="{{panelId}}-log-output-format" type="radio" [(ngModel)]="logFormat" [checked]="logFormat == 1" [value]="1">HTML</label>
-          <label><input name="{{panelId}}-log-output-format" type="radio" [(ngModel)]="logFormat" [checked]="logFormat == 2" [value]="2">HTML (含圖片)</label>
+          <label><input name="{{panelId}}-log-output-format" type="radio" [(ngModel)]="logFormat" [checked]="logFormat === 0" [value]="0">文字</label>
+          <label><input name="{{panelId}}-log-output-format" type="radio" [(ngModel)]="logFormat" [checked]="logFormat === 1" [value]="1">HTML</label>
+          <label><input name="{{panelId}}-log-output-format" type="radio" [(ngModel)]="logFormat" [checked]="logFormat === 2" [value]="2">HTML (含圖片)</label>
           <div style="font-weight: normal; padding-left: 1em">※<b>HTML（含圖片）</b> 將輸出為ZIP檔案，<br>　請保留資料夾結構解壓縮。</div>
         </div>
         <div>
           時刻：
-          <label><input name="{{panelId}}-log-output-timestamp-type" type="radio" [(ngModel)]="dateFormat" [checked]="dateFormat == ''" [value]="''">無</label>
-          <label><input name="{{panelId}}-log-output-timestamp-type" type="radio" [(ngModel)]="dateFormat" [checked]="dateFormat == 'HH:mm'" [value]="'HH:mm'">時：分</label>
-          <label><input name="{{panelId}}-log-output-timestamp-type" type="radio" [(ngModel)]="dateFormat" [checked]="dateFormat == 'yyyy/MM/dd HH:mm'" [value]="'yyyy/MM/dd HH:mm'">日期時刻</label>
+          <label><input name="{{panelId}}-log-output-timestamp-type" type="radio" [(ngModel)]="dateFormat" [checked]="dateFormat === ''" [value]="''">無</label>
+          <label><input name="{{panelId}}-log-output-timestamp-type" type="radio" [(ngModel)]="dateFormat" [checked]="dateFormat === 'HH:mm'" [value]="'HH:mm'">時：分</label>
+          <label><input name="{{panelId}}-log-output-timestamp-type" type="radio" [(ngModel)]="dateFormat" [checked]="dateFormat === 'yyyy/MM/dd HH:mm'" [value]="'yyyy/MM/dd HH:mm'">日期時刻</label>
         </div>
       </div>
       <hr/>

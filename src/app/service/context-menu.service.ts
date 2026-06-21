@@ -21,7 +21,7 @@ export const ContextMenuSeparator: ContextMenuAction = {
 
 export interface ContextMenuAction {
   name: string,
-  action?: Function,
+  action?: (...args: unknown[]) => unknown,
   disabled?: boolean,
   type?: ContextMenuType,
   subActions?: ContextMenuAction[],
@@ -66,7 +66,7 @@ export class ContextMenuService {
     }
 
     const injector = parentViewContainerRef.injector;
-    let panelComponentRef: ComponentRef<any> = parentViewContainerRef.createComponent(ContextMenuService.ContextMenuComponentClass, { index: parentViewContainerRef.length, injector: injector });
+    const panelComponentRef: ComponentRef<any> = parentViewContainerRef.createComponent(ContextMenuService.ContextMenuComponentClass, { index: parentViewContainerRef.length, injector: injector });
 
     const childPanelService: ContextMenuService = panelComponentRef.injector.get(ContextMenuService);
 

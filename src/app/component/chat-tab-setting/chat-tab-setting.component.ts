@@ -38,7 +38,7 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
   get isEditable(): boolean { return !this.isEmpty && !this.isDeleted; }
 
   get roomName():string {
-    let roomName = Network.peer && 0 < Network.peer.roomName.length
+    const roomName = Network.peer && 0 < Network.peer.roomName.length
       ? Network.peer.roomName
       : '房間資料';
     return roomName;
@@ -60,7 +60,7 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
     EventSystem.register(this)
       .on('DELETE_GAME_OBJECT', 2000, event => {
         if (!this.selectedTab || event.data.identifier !== this.selectedTab.identifier) return;
-        let object = ObjectStore.instance.get(event.data.identifier);
+        const object = ObjectStore.instance.get(event.data.identifier);
         if (object !== null) {
           this.selectedTabXml = object.toXml();
         }
@@ -85,7 +85,7 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
     this.isSaveing = true;
     this.progresPercent = 0;
 
-    let fileName: string = 'fly_chat_' + this.selectedTab.name;
+    const fileName: string = 'fly_chat_' + this.selectedTab.name;
 
     await this.saveDataService.saveGameObjectAsync(this.selectedTab, fileName, percent => {
       this.progresPercent = percent;
@@ -106,7 +106,7 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
 
   restore() {
     if (this.selectedTab && this.selectedTabXml) {
-      let restoreTable = <ChatTab>ObjectSerializer.instance.parseXml(this.selectedTabXml);
+      const restoreTable = <ChatTab>ObjectSerializer.instance.parseXml(this.selectedTabXml);
       ChatTabList.instance.addChatTab(restoreTable);
       this.selectedTabXml = '';
     }
@@ -114,28 +114,28 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
 
   upTabIndex() {
     if (!this.selectedTab) return;
-    let parentElement = this.selectedTab.parent;
-    let index: number = parentElement.children.indexOf(this.selectedTab);
+    const parentElement = this.selectedTab.parent;
+    const index: number = parentElement.children.indexOf(this.selectedTab);
     if (0 < index) {
-      let prevElement = parentElement.children[index - 1];
+      const prevElement = parentElement.children[index - 1];
       parentElement.insertBefore(this.selectedTab, prevElement);
     }
   }
 
   downTabIndex() {
     if (!this.selectedTab) return;
-    let parentElement = this.selectedTab.parent;
-    let index: number = parentElement.children.indexOf(this.selectedTab);
+    const parentElement = this.selectedTab.parent;
+    const index: number = parentElement.children.indexOf(this.selectedTab);
     if (index < parentElement.children.length - 1) {
-      let nextElement = parentElement.children[index + 1];
+      const nextElement = parentElement.children[index + 1];
       parentElement.insertBefore(nextElement, this.selectedTab);
     }
   }
 
   showLogOutput() {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 540, height: 300 };
-    let component = this.panelService.open<ChatLogOutputComponent>(ChatLogOutputComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 540, height: 300 };
+    const component = this.panelService.open<ChatLogOutputComponent>(ChatLogOutputComponent, option);
     component.selectedTabs = [this.selectedTab];
     component.selectTabsApplay();
   }

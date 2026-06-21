@@ -24,7 +24,7 @@ export class EventSystem implements Subject {
   }
 
   register(key: any): Listener {
-    let listener: Listener = new Listener(this, key);
+    const listener: Listener = new Listener(this, key);
     return listener;
   }
 
@@ -53,12 +53,12 @@ export class EventSystem implements Subject {
     } else if (eventName != null) {
       listeners = this.getListenersByEventName(eventName);
     } else {
-      let listenersIterator = this.listenerMap.values();
-      for (let array of listenersIterator) {
+      const listenersIterator = this.listenerMap.values();
+      for (const array of listenersIterator) {
         listeners = listeners.concat(array);
       }
     }
-    for (let listener of listeners.concat()) {
+    for (const listener of listeners.concat()) {
       if (listener.isEqual(key, eventName, callback)) {
         listener.unregister();
       }
@@ -107,7 +107,7 @@ export class EventSystem implements Subject {
   }
 
   private _call(event: Event<any>, sendTo?: string) {
-    let context = event.toContext();
+    const context = event.toContext();
     Network.instance.send(context, sendTo);
   }
 
@@ -126,8 +126,8 @@ export class EventSystem implements Subject {
   }
 
   private _trigger<T>(event: Event<T>): Event<T> {
-    let listeners = this.getListenersByEventName(event.eventName).concat(this.getListenersByEventName('*'));
-    for (let listener of listeners) {
+    const listeners = this.getListenersByEventName(event.eventName).concat(this.getListenersByEventName('*'));
+    for (const listener of listeners) {
       listener.trigger(event);
     }
     return event;
@@ -142,7 +142,7 @@ export class EventSystem implements Subject {
   }
 
   private initializeNetworkEvent() {
-    let callback = Network.instance.callback;
+    const callback = Network.instance.callback;
 
     callback.onOpen = (peer) => {
       this.trigger('OPEN_NETWORK', { peerId: peer.peerId });
@@ -162,7 +162,7 @@ export class EventSystem implements Subject {
     }
 
     callback.onData = (peer, data: EventContext<never>[]) => {
-      for (let event of data) {
+      for (const event of data) {
         this.trigger(event);
       }
     }

@@ -54,7 +54,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
     EventSystem.register(this)
       .on('DELETE_GAME_OBJECT', 1000, event => {
         if (!this.selectedDiceRollTable || event.data.identifier !== this.selectedDiceRollTable.identifier) return;
-        let object = ObjectStore.instance.get(event.data.identifier);
+        const object = ObjectStore.instance.get(event.data.identifier);
         if (object !== null) {
           this.selectedDiceRollTableXml = object.toXml();
         }
@@ -97,7 +97,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
     this.isSaveing = true;
     this.progresPercent = 0;
 
-    let fileName: string = 'fly_rollTable_' + this.selectedDiceRollTable.name;
+    const fileName: string = 'fly_rollTable_' + this.selectedDiceRollTable.name;
 
     await this.saveDataService.saveGameObjectAsync(this.selectedDiceRollTable, fileName, percent => {
       this.progresPercent = percent;
@@ -133,7 +133,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
 
   restore() {
     if (this.selectedDiceRollTable && this.selectedDiceRollTableXml) {
-      let restoreTable = <DiceRollTable>ObjectSerializer.instance.parseXml(this.selectedDiceRollTableXml);
+      const restoreTable = <DiceRollTable>ObjectSerializer.instance.parseXml(this.selectedDiceRollTableXml);
       DiceRollTableList.instance.addDiceRollTable(restoreTable);
       this.selectedDiceRollTableXml = '';
       queueMicrotask(() => {
@@ -146,28 +146,28 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
 
   upTabIndex() {
     if (!this.selectedDiceRollTable) return;
-    let parentElement = this.selectedDiceRollTable.parent;
-    let index: number = parentElement.children.indexOf(this.selectedDiceRollTable);
+    const parentElement = this.selectedDiceRollTable.parent;
+    const index: number = parentElement.children.indexOf(this.selectedDiceRollTable);
     if (0 < index) {
-      let prevElement = parentElement.children[index - 1];
+      const prevElement = parentElement.children[index - 1];
       parentElement.insertBefore(this.selectedDiceRollTable, prevElement);
     }
   }
 
   downTabIndex() {
     if (!this.selectedDiceRollTable) return;
-    let parentElement = this.selectedDiceRollTable.parent;
-    let index: number = parentElement.children.indexOf(this.selectedDiceRollTable);
+    const parentElement = this.selectedDiceRollTable.parent;
+    const index: number = parentElement.children.indexOf(this.selectedDiceRollTable);
     if (index < parentElement.children.length - 1) {
-      let nextElement = parentElement.children[index + 1];
+      const nextElement = parentElement.children[index + 1];
       parentElement.insertBefore(nextElement, this.selectedDiceRollTable);
     }
   }
 
   helpDiceRollTable() {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 788 };
-    let textView = this.panelService.open(TextViewComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 788 };
+    const textView = this.panelService.open(TextViewComponent, option);
     textView.title = '骰子機器人表說明';
     textView.text = 
 `　設定名稱、指令、要擲的骰子，以骰子數字參照表格並顯示結果。

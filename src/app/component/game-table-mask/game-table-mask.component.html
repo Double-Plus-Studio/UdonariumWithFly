@@ -1,7 +1,7 @@
 <div class="component is-3d" [ngClass]="{'is-grab': !isLock && !isScratching, 'is-scratching': isScratching && gameTableMask.isMine, 'is-border': isScratching || (!isLock && borderType >= 1) || borderType >= 2, 'is-gm-layer-hidden': isGMLayerHidden }" style="pointer-events: none"
   [style.width.px]="width * gridSize" [style.height.px]="height * gridSize"
   appMovable [movable.option]="movableOption" [movable.disable]="isLock || isScratching" (movable.ondragstart)="onMove()" (movable.ondragend)="onMoved()">
-  <div class="is-fit-full is-3d" style="pointer-events: none"  [ngClass]="{fall: altitude == 0}" [ngStyle]="{'transform': 'translateZ(' + (altitude * gridSize) + 'px)'}">
+  <div class="is-fit-full is-3d" style="pointer-events: none"  [ngClass]="{fall: altitude === 0}" [ngStyle]="{'transform': 'translateZ(' + (altitude * gridSize) + 'px)'}">
     @if (!isScratching) {
       <div class="is-3d text" style="left: 2px; top: 2px; backface-visibility: hidden"
         [style.width.px]="width * gridSize - 4" [style.height.px]="height * gridSize - 4">
@@ -13,7 +13,7 @@
         [ngStyle]="{'opacity': operateOpacity, 'background-color': imageFileUrl.length < 1 || blendType > 0 ? bgcolor : null, '-webkit-mask': masksCss, mask: masksCss}"
         [ngClass]="{image: imageFileUrl.length >= 1}">
         @if (imageFileUrl.length >= 1) {
-          <img class="is-fit-full is-3d chrome-smooth-image-trick" style="pointer-events: none; position: absolute;" [style.mix-blend-mode]="blendType == 1 ? null : 'hard-light'" [src]="imageFileUrl | safe: 'resourceUrl'">
+          <img class="is-fit-full is-3d chrome-smooth-image-trick" style="pointer-events: none; position: absolute;" [style.mix-blend-mode]="blendType === 1 ? null : 'hard-light'" [src]="imageFileUrl | safe: 'resourceUrl'">
         }
       </div>
       <div class="is-fit-full is-3d scratching-area border" style="pointer-events: none; backface-visibility: hidden">

@@ -14,7 +14,7 @@
       } @else {
         @if (character && character.imageFile != null && 0 < character.imageFile.url.length) {
           <div class="inverser" [ngClass]="{inverse: character.isInverse, hollow: character.isHollow}">
-            <span class="aura imagebox" [ngClass]="{black: character.aura == 0, blue: character.aura == 1, green: character.aura == 2, cyan: character.aura == 3, red: character.aura == 4, magenta: character.aura == 5, yellow: character.aura == 6, white: character.aura == 7}">
+            <span class="aura imagebox" [ngClass]="{black: character.aura === 0, blue: character.aura === 1, green: character.aura === 2, cyan: character.aura === 3, red: character.aura === 4, magenta: character.aura === 5, yellow: character.aura === 6, white: character.aura === 7}">
               <img class="image" [src]="character.imageFile.url | safe: 'resourceUrl'" [ngClass]="{'black-paint': character.isBlackPaint}" />
             </span>
           </div>
@@ -33,12 +33,12 @@
         }
       </label>
       <span style="white-space: nowrap">
-        <select [style.max-width]="character ? '10em' : '13em'" [ngClass]="{'not-allow-chat': !isAllowsChat}" [(ngModel)]="sendFrom" (change)="onChangeSendFromList()" [ngStyle]="{'color': color, 'font-weight': (sendFrom != myPeer?.identifier ? 'normal' : 'bolder')}">
+        <select [style.max-width]="character ? '10em' : '13em'" [ngClass]="{'not-allow-chat': !isAllowsChat}" [(ngModel)]="sendFrom" (change)="onChangeSendFromList()" [ngStyle]="{'color': color, 'font-weight': (sendFrom !== myPeer?.identifier ? 'normal' : 'bolder')}">
           @if (!onlyCharacters) {
             <option value="{{myPeer?.identifier}}" [style.color]="myColor" style="font-weight: bolder;">{{myPeer?.name}}（你）</option>
           }
           @for (gameCharacter of gameCharacters; track gameCharacter) {
-            <option style="font-weight: normal" [style.color]="gameCharacter.chatPalette && gameCharacter.chatPalette.color && gameCharacter.chatPalette.color != '#ffffff' ? gameCharacter.chatPalette.color : '#444'" value="{{gameCharacter.identifier}}">{{gameCharacter.name}}</option>
+            <option style="font-weight: normal" [style.color]="gameCharacter.chatPalette && gameCharacter.chatPalette.color && gameCharacter.chatPalette.color !== '#ffffff' ? gameCharacter.chatPalette.color : '#444'" value="{{gameCharacter.identifier}}">{{gameCharacter.name}}</option>
           }
         </select>
         @if (character) {
@@ -49,7 +49,7 @@
       </span>
       <span style="white-space: nowrap">
         <span style="display: inline-block; margin: auto 2px; text-align: center">➡</span>
-        <select style="max-width: 9.5em" [(ngModel)]="sendTo" [ngClass]="{'not-specified': sendTo == ''}" [ngStyle]="{'color': (sendTo == '' ? null : sendToColor), 'font-weight': (sendTo == '' ? 'normal' : 'bolder')}">
+        <select style="max-width: 9.5em" [(ngModel)]="sendTo" [ngClass]="{'not-specified': sendTo === ''}" [ngStyle]="{'color': (sendTo === '' ? null : sendToColor), 'font-weight': (sendTo === '' ? 'normal' : 'bolder')}">
           <option value="" class="not-specified">全體</option>
           @for (peer of otherPeers; track peer) {
             <option value="{{peer.identifier}}" [style.color]="peer.color" style="font-weight: bolder;">{{peer.name}}
@@ -63,7 +63,7 @@
       <span style="white-space: nowrap">
         @if (diceBotInfosIndexed.length > 0) {
           <select #select style="width: 11em;" (change)="loadDiceBot(select.value)" [(ngModel)]="gameType" [ngModelOptions]="{standalone: true}"
-            [ngClass]="{'not-specified': gameType == 'DiceBot' || gameType == ''}">
+            [ngClass]="{'not-specified': gameType === 'DiceBot' || gameType === ''}">
             <option value="DiceBot" class="not-specified">未指定骰子機器人</option>
             @for (group of diceBotInfosIndexed; track group) {
               <optgroup class="dice-bot-group" label="{{group.index}}">
@@ -76,7 +76,7 @@
         }
         @if (diceBotInfosIndexed.length < 1) {
           <select #select style="width: 11em;" (change)="loadDiceBot(select.value)" [(ngModel)]="gameType" [ngModelOptions]="{standalone: true}" disabled
-            [ngClass]="{'not-specified': gameType == 'DiceBot' || gameType == ''}">
+            [ngClass]="{'not-specified': gameType === 'DiceBot' || gameType === ''}">
             <option value="DiceBot" class="not-specified">骰子機器人載入中…</option>
           </select>
         }
@@ -90,7 +90,7 @@
             <i class="material-icons" style="font-size: 12px; overflow: hidden; vertical-align: text-bottom">{{ isUseStandImageOnChatTab && isUseStandImage ? 'how_to_reg' : 'person_off'}}</i>
           </button>
         </span>
-        <select style="width: 10em; margin-right: 3px" (change)="isUseStandImage = true" [(ngModel)]="standName" [ngModelOptions]="{standalone: true}" [ngClass]="{'not-specified': standName == ''}" [attr.disabled]="!isUseStandImageOnChatTab || !isUseStandImage ? '' : null" >
+        <select style="width: 10em; margin-right: 3px" (change)="isUseStandImage = true" [(ngModel)]="standName" [ngModelOptions]="{standalone: true}" [ngClass]="{'not-specified': standName === ''}" [attr.disabled]="!isUseStandImageOnChatTab || !isUseStandImage ? '' : null" >
           <option value="" class="not-specified">未選取</option>
           @for (name of standNameList; track name) {
             <option value="{{name}}">{{name}}</option>

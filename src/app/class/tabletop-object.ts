@@ -32,7 +32,7 @@ export class TabletopObject extends ObjectNode {
 
   // GameDataElement getter/setter
   get rootDataElement(): DataElement {
-    for (let node of this.children) {
+    for (const node of this.children) {
       if (node.getAttribute('name') === this.aliasName) return <DataElement>node;
     }
     return null;
@@ -56,23 +56,23 @@ export class TabletopObject extends ObjectNode {
   */
   get imageElement(): DataElement {
     if (!this.imageDataElement) return null;
-    let imageIdElements: DataElement[] = this.imageDataElement.getElementsByName('imageIdentifier');
+    const imageIdElements: DataElement[] = this.imageDataElement.getElementsByName('imageIdentifier');
     return imageIdElements[this.currntImageIndex < 0 ? 0 : this.currntImageIndex >= imageIdElements.length ? imageIdElements.length - 1 : this.currntImageIndex];
   }
   get imageFile(): ImageFile {
     if (!this.imageDataElement) return this._imageFile;
-    let imageIdElement = this.imageElement;
+    const imageIdElement = this.imageElement;
     if (imageIdElement && this._imageFile.identifier !== imageIdElement.value) {
-      let file: ImageFile = ImageStorage.instance.get(<string>imageIdElement.value);
+      const file: ImageFile = ImageStorage.instance.get(<string>imageIdElement.value);
       this._imageFile = file ? file : ImageFile.Empty;
     }
     return this._imageFile;
   }
   get imageFiles(): ImageFile[] {
     if (!this.imageDataElement) return [];
-    let elements = this.imageDataElement.getElementsByName('imageIdentifier');
+    const elements = this.imageDataElement.getElementsByName('imageIdentifier');
     return elements.map((element) => {
-      let file: ImageFile = ImageStorage.instance.get(<string>element.value);
+      const file: ImageFile = ImageStorage.instance.get(<string>element.value);
       return file ? file : null;
     }).filter((file) => { return file != null });
   }
@@ -81,9 +81,9 @@ export class TabletopObject extends ObjectNode {
   @SyncVar() currntIconIndex: number = 0;
   get faceIcon(): ImageFile {
     if (!this.imageDataElement) return null;
-    let elements = this.imageDataElement.getElementsByName('faceIcon');
+    const elements = this.imageDataElement.getElementsByName('faceIcon');
     if (elements) {
-      let imageIdElement = elements[this.currntIconIndex];
+      const imageIdElement = elements[this.currntIconIndex];
       if (this.currntIconIndex < 0) this.currntIconIndex = 0;
       return imageIdElement ? ImageStorage.instance.get(<string>imageIdElement.value) : null;
     }
@@ -91,23 +91,23 @@ export class TabletopObject extends ObjectNode {
   }
   get faceIcons(): ImageFile[] {
     if (!this.imageDataElement) return [];
-    let elements = this.imageDataElement.getElementsByName('faceIcon');
+    const elements = this.imageDataElement.getElementsByName('faceIcon');
     return elements.map((element) => {
-      let file: ImageFile = ImageStorage.instance.get(<string>element.value);
+      const file: ImageFile = ImageStorage.instance.get(<string>element.value);
       return file ? file : null;
     }).filter((file) => { return file != null });
   }
 
   get shadowImageFile(): ImageFile {
     if (!this.imageDataElement) return this._shadowImageFile;
-    let imageIdElement: DataElement = this.imageDataElement.getFirstElementByName('shadowImageIdentifier');
+    const imageIdElement: DataElement = this.imageDataElement.getFirstElementByName('shadowImageIdentifier');
     if (imageIdElement && this._shadowImageFile.identifier !== imageIdElement.value) {
-      let file: ImageFile = ImageStorage.instance.get(<string>imageIdElement.value);
+      const file: ImageFile = ImageStorage.instance.get(<string>imageIdElement.value);
       this._shadowImageFile = file ? file : ImageFile.Empty;
     } else {
-      let imageIdElement: DataElement = this.imageElement;
+      const imageIdElement: DataElement = this.imageElement;
       if (imageIdElement && this._shadowImageFile.identifier !== imageIdElement.currentValue) {
-        let file: ImageFile = ImageStorage.instance.get(<string>imageIdElement.currentValue);
+        const file: ImageFile = ImageStorage.instance.get(<string>imageIdElement.currentValue);
         this._shadowImageFile = file ? file : ImageFile.Empty;
       }
     }
@@ -116,15 +116,15 @@ export class TabletopObject extends ObjectNode {
 
   @SyncVar() isAltitudeIndicate: boolean = false;
   get altitude(): number {
-    let element = this.getElement('altitude', this.commonDataElement);
+    const element = this.getElement('altitude', this.commonDataElement);
     //if (!element && this.commonDataElement) {
     //  this.commonDataElement.appendChild(DataElement.create('altitude', 0, {}, 'altitude_' + this.identifier));
     //}
-    let num = element ? +element.value : 0;
+    const num = element ? +element.value : 0;
     return Number.isNaN(num) ? 0 : num;
   }
   set altitude(altitude: number) {
-    let element = this.getElement('altitude', this.commonDataElement);
+    const element = this.getElement('altitude', this.commonDataElement);
     if (element) element.value = altitude;
   }
 
@@ -143,16 +143,16 @@ export class TabletopObject extends ObjectNode {
   get isGMMode(): boolean{ return PeerCursor.myCursor ? PeerCursor.myCursor.isGMMode : false; }
 
   calcSqrDistance(other: TabletopObject): number {
-    let pos1 = { x: this.location.x, y: this.location.y, z: this.posZ };
-    let pos2 = { x: other.location.x, y: other.location.y, z: other.posZ };
+    const pos1 = { x: this.location.x, y: this.location.y, z: this.posZ };
+    const pos2 = { x: other.location.x, y: other.location.y, z: other.posZ };
     return MathUtil.sqrMagnitude(pos1, pos2);
   }
 
   protected createDataElements() {
     this.initialize();
-    let aliasName: string = this.aliasName;
+    const aliasName: string = this.aliasName;
     if (!this.rootDataElement) {
-      let rootElement = DataElement.create(aliasName, '', {}, aliasName + '_' + this.identifier);
+      const rootElement = DataElement.create(aliasName, '', {}, aliasName + '_' + this.identifier);
       this.appendChild(rootElement);
     }
 
@@ -175,11 +175,11 @@ export class TabletopObject extends ObjectNode {
   }
 
   protected getCommonValue<T extends string | number>(elementName: string, defaultValue: T): T {
-    let element = this.getElement(elementName, this.commonDataElement);
+    const element = this.getElement(elementName, this.commonDataElement);
     if (!element) return defaultValue;
 
     if (typeof defaultValue === 'number') {
-      let number: number = +element.value;
+      const number: number = +element.value;
       return <T>(Number.isNaN(number) ? defaultValue : number);
     } else {
       return <T>(element.value + '');
@@ -191,19 +191,19 @@ export class TabletopObject extends ObjectNode {
   }
 
   protected setCommonValue(elementName: string, value: any) {
-    let element = this.getElement(elementName, this.commonDataElement);
+    const element = this.getElement(elementName, this.commonDataElement);
     if (!element) { return; }
     element.value = value;
   }
 
   protected getImageFile(elementName: string) {
     if (!this.imageDataElement) return null;
-    let image = this.getElement(elementName, this.imageDataElement);
+    const image = this.getElement(elementName, this.imageDataElement);
     return image ? ImageStorage.instance.get(<string>image.value) : null;
   }
 
   protected setImageFile(elementName: string, imageFile: ImageFile) {
-    let image = imageFile ? this.getElement(elementName, this.imageDataElement) : null;
+    const image = imageFile ? this.getElement(elementName, this.imageDataElement) : null;
     if (!image) return;
     image.value = imageFile.identifier;
   }

@@ -26,17 +26,17 @@ export class RoomInfo implements IRoomInfo {
   }
 
   static listFrom(peerIds: string[]) {
-    let peers = peerIds.map(peerId => PeerContext.parse(peerId)).sort((a, b) => {
+    const peers = peerIds.map(peerId => PeerContext.parse(peerId)).sort((a, b) => {
       if (a.peerId > b.peerId) return 1;
       if (a.peerId < b.peerId) return -1;
       return 0;
     });
 
-    let roomMap: Map<string, RoomInfo> = new Map();
-    for (let peer of peers) {
+    const roomMap: Map<string, RoomInfo> = new Map();
+    for (const peer of peers) {
       if (peer.isRoom) {
-        let alias = peer.roomId + peer.roomName;
-        let room = roomMap.get(alias) ?? new RoomInfo(peer.roomId, peer.roomName);
+        const alias = peer.roomId + peer.roomName;
+        const room = roomMap.get(alias) ?? new RoomInfo(peer.roomId, peer.roomName);
         room.peers.push(peer);
         roomMap.set(alias, room);
       }
@@ -44,7 +44,7 @@ export class RoomInfo implements IRoomInfo {
 
     if (roomMap.size < 1) return [];
 
-    let rooms = Array.from(roomMap.values()).sort((a, b) => {
+    const rooms = Array.from(roomMap.values()).sort((a, b) => {
       if (a.id + a.name < b.id + b.name) return -1;
       if (a.id + a.name > b.id + b.name) return 1;
       return 0;

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ChatTab } from '@udonarium/chat-tab';
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { Network, EventSystem } from '@udonarium/core/system';
@@ -14,7 +14,7 @@ import { SaveDataService } from 'service/save-data.service';
     styleUrls: ['./chat-log-output.component.css'],
     standalone: false
 })
-export class ChatLogOutputComponent implements OnInit, AfterViewInit {
+export class ChatLogOutputComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('select', { static: false }) select: ElementRef<HTMLSelectElement>;
   
   private static isAllTabs = false;
@@ -49,7 +49,7 @@ export class ChatLogOutputComponent implements OnInit, AfterViewInit {
   get isDisable(): boolean { return this.isEmpty || this.isSaveing || (!this.isAllTabs && this.selectedTabs.length === 0) }
 
   get roomName():string {
-    let roomName = Network.peer && 0 < Network.peer.roomName.length
+    const roomName = Network.peer && 0 < Network.peer.roomName.length
       ? Network.peer.roomName
       : '房間資料';
     return roomName;
@@ -67,7 +67,7 @@ export class ChatLogOutputComponent implements OnInit, AfterViewInit {
     EventSystem.register(this)
       .on('DELETE_GAME_OBJECT', 1000, event => {
         if (this.selectedTabs.length == 0 || !event.data.identifier) return;
-        let object = ObjectStore.instance.get(event.data.identifier);
+        const object = ObjectStore.instance.get(event.data.identifier);
         if (!object) {
           this.selectedTabs = this.selectedTabs.filter(tab => tab && tab.identifier != event.data.identifier);
         }

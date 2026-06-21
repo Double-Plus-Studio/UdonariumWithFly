@@ -78,7 +78,7 @@ export class PointerDeviceService {
   }
 
   private onMouseMove(e: MouseEvent) {
-    let mosuePointer: PointerData = { x: e.pageX, y: e.pageY, z: 0, identifier: MOUSE_IDENTIFIER };
+    const mosuePointer: PointerData = { x: e.pageX, y: e.pageY, z: 0, identifier: MOUSE_IDENTIFIER };
     if (this.isSyntheticEvent(mosuePointer)) return;
     if (this._isAllowedToOpenContextMenu) this.preventContextMenuIfNeeded(mosuePointer, 3);
     this.pointers = [mosuePointer];
@@ -86,12 +86,12 @@ export class PointerDeviceService {
   }
 
   private onTouchMove(e: TouchEvent) {
-    let length = e.touches.length;
+    const length = e.touches.length;
     if (length < 1) return;
     this.pointers = [];
     for (let i = 0; i < length; i++) {
-      let touch = e.touches[i];
-      let touchPointer: PointerData = { x: touch.pageX, y: touch.pageY, z: 0, identifier: touch.identifier };
+      const touch = e.touches[i];
+      const touchPointer: PointerData = { x: touch.pageX, y: touch.pageY, z: 0, identifier: touch.identifier };
       if (this._isAllowedToOpenContextMenu) this.preventContextMenuIfNeeded(touchPointer, 12);
       this.pointers.push(touchPointer);
     }
@@ -104,14 +104,14 @@ export class PointerDeviceService {
   }
 
   private preventContextMenuIfNeeded(pointer: PointerCoordinate, threshold: number = 3) {
-    let distance = MathUtil.sqrMagnitude(pointer, this.startPostion);
+    const distance = MathUtil.sqrMagnitude(pointer, this.startPostion);
     if (threshold ** 2 < distance) this._isAllowedToOpenContextMenu = false;
   }
 
   private isSyntheticEvent(mosuePointer: PointerData, threshold: number = 15): boolean {
-    for (let pointer of this.pointers) {
+    for (const pointer of this.pointers) {
       if (pointer.identifier === mosuePointer.identifier) continue;
-      let distance = MathUtil.sqrMagnitude(mosuePointer, pointer);
+      const distance = MathUtil.sqrMagnitude(mosuePointer, pointer);
       if (distance < threshold ** 2) return true;
     }
     return false;

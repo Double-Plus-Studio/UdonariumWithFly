@@ -32,23 +32,23 @@ export class RangeArea extends TabletopObject {
   get length(): number { return this.getCommonValue('length', 1); }
   get width(): number { return this.getCommonValue('width', 1); }
   get opacity(): number {
-    let element = this.getElement('opacity', this.commonDataElement);
-    let num = element ? <number>element.currentValue / <number>element.value : 1;
+    const element = this.getElement('opacity', this.commonDataElement);
+    const num = element ? <number>element.currentValue / <number>element.value : 1;
     return Number.isNaN(num) ? 1 : num;
   }
 
   get rangeColor(): string { 
-    let element = this.getElement('color', this.commonDataElement);
+    const element = this.getElement('color', this.commonDataElement);
     return element ? element.value + '' : '#ff0000';
   }
   set rangeColor(color: string) { this.setCommonValue('color', color); }
 
   get gridColor(): string { 
-    let element = this.getElement('color', this.commonDataElement);
+    const element = this.getElement('color', this.commonDataElement);
     return element ? element.currentValue + '' : '#ffff00';
   }
   set gridColor(bgcolor: string) { 
-    let element = this.getElement('color', this.commonDataElement);
+    const element = this.getElement('color', this.commonDataElement);
     if (element) element.currentValue = bgcolor;
   }
 
@@ -59,7 +59,7 @@ export class RangeArea extends TabletopObject {
   get followingCharactor(): GameCharacter {
     if (this.followingCharctorIdentifier) {
       if (!this.followingCharactorCache || this.followingCharactorCache.identifier !== this.followingCharctorIdentifier) {
-        let object = ObjectStore.instance.get(this.followingCharctorIdentifier);
+        const object = ObjectStore.instance.get(this.followingCharctorIdentifier);
         if (object && object instanceof GameCharacter) {
           this.followingCharactorCache = object;
         } else {

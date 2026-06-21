@@ -24,14 +24,14 @@ export class WebRTCStats {
       return;
     }
 
-    let candidatePairs = [];
-    let localCandidates = [];
-    let remoteCandidates = [];
+    const candidatePairs = [];
+    const localCandidates = [];
+    const remoteCandidates = [];
 
-    let succeededLocalCandidateIds = [];
-    let succeededRemoteCandidateIds = [];
-    let usedLocalCandidates = [];
-    let usedRemoteCandidates = [];
+    const succeededLocalCandidateIds = [];
+    const succeededRemoteCandidateIds = [];
+    const usedLocalCandidates = [];
+    const usedRemoteCandidates = [];
 
     stats.forEach(stat => {
       if (0 <= stat.type.indexOf('candidate-pair')) {
@@ -65,9 +65,9 @@ export class WebRTCStats {
     });
 
     let candidateType = CandidateType.UNKNOWN;
-    let types: CandidateType[] = Object.values(CandidateType);
+    const types: CandidateType[] = Object.values(CandidateType);
     usedLocalCandidates.concat(usedRemoteCandidates).forEach(candidate => {
-      let index = types.indexOf(candidate.candidateType);
+      const index = types.indexOf(candidate.candidateType);
       if (types.indexOf(candidateType) < index) candidateType = types[index];
     });
     this.candidateType = candidateType;

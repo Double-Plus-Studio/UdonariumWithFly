@@ -20,7 +20,7 @@ export class PromiseQueue {
       this.queue = this.queue.then(arg); // task
     }
 
-    let ret = this.queue;
+    const ret = this.queue;
     this.queue = this.queue.catch((reason) => {
       console.error(reason);
     });

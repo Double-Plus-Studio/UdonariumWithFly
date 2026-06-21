@@ -29,7 +29,7 @@ export class ResizeHandler {
     this.input = new InputHandler(this.handle);
     this.target.appendChild(this.handle);
 
-    let style = this.handle.style;
+    const style = this.handle.style;
     style.position = 'absolute';
     style.zIndex = '1';
     style.backgroundColor = 'transparent';
@@ -105,7 +105,7 @@ export class ResizeHandler {
   }
 
   cursor(active: boolean) {
-    let style = this.handle.style;
+    const style = this.handle.style;
     if (active) {
       switch (this.type) {
         case HandleType.N:

@@ -30,7 +30,7 @@ export class ObjectStore {
   add(object: GameObject, shouldBroadcast: boolean = true): GameObject {
     if (this.get(object.identifier) != null || this.isDeleted(object.identifier)) return null;
     this.identifierMap.set(object.identifier, object);
-    let objectsMap = this.aliasNameMap.has(object.aliasName) ? this.aliasNameMap.get(object.aliasName) : this.aliasNameMap.set(object.aliasName, new Map()).get(object.aliasName);
+    const objectsMap = this.aliasNameMap.has(object.aliasName) ? this.aliasNameMap.get(object.aliasName) : this.aliasNameMap.set(object.aliasName, new Map()).get(object.aliasName);
     objectsMap.set(object.identifier, object);
     object.onStoreAdded();
     if (shouldBroadcast) this.update(object.toContext());
@@ -41,7 +41,7 @@ export class ObjectStore {
     if (!this.identifierMap.has(object.identifier)) return null;
 
     this.identifierMap.delete(object.identifier);
-    let objectsMap = this.aliasNameMap.get(object.aliasName);
+    const objectsMap = this.aliasNameMap.get(object.aliasName);
     if (objectsMap) objectsMap.delete(object.identifier);
     object.onStoreRemoved();
     return object;
@@ -101,7 +101,7 @@ export class ObjectStore {
   update(arg: any) {
     let context: ObjectContext = null;
     if (typeof arg === 'string') {
-      let object: GameObject = this.get(arg);
+      const object: GameObject = this.get(arg);
       if (object) context = object.toContext();
     } else {
       context = arg;
@@ -109,8 +109,8 @@ export class ObjectStore {
     if (!context) return;
 
     if (this.queueMap.has(context.identifier)) {
-      let queue = this.queueMap.get(context.identifier);
-      for (let key in context) {
+      const queue = this.queueMap.get(context.identifier);
+      for (const key in context) {
         queue[key] = context[key];
       }
       return;
@@ -128,13 +128,13 @@ export class ObjectStore {
   }
 
   isDeleted(identifier: string) {
-    let timeStamp = this.garbageMap.get(identifier);
+    const timeStamp = this.garbageMap.get(identifier);
     return timeStamp != null;
   }
 
   getCatalog(): CatalogItem[] {
-    let catalog: CatalogItem[] = [];
-    for (let object of this.identifierMap.values()) {
+    const catalog: CatalogItem[] = [];
+    for (const object of this.identifierMap.values()) {
       catalog.push({ identifier: object.identifier, version: object.version });
     }
     return catalog;
@@ -158,19 +158,19 @@ export class ObjectStore {
   }
 
   private _garbageCollection(ms: number) {
-    let nowDate = performance.now();
+    const nowDate = performance.now();
 
     let checkLength = this.garbageMap.size - 100000;
     if (checkLength < 1) return;
 
-    let entries = this.garbageMap.entries();
+    const entries = this.garbageMap.entries();
     while (checkLength < 1) {
       checkLength--;
-      let item = entries.next();
+      const item = entries.next();
       if (item.done) break;
 
-      let identifier = item.value[0];
-      let timeStamp = item.value[1];
+      const identifier = item.value[0];
+      const timeStamp = item.value[1];
 
       if (timeStamp + ms < nowDate) continue;
       this.garbageMap.delete(identifier);

@@ -21,7 +21,7 @@ import { ModalService } from 'service/modal.service';
 })
 export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() character: GameCharacter = null;
-　@ViewChildren(StandElementComponent) standElementComponents: QueryList<StandElementComponent>;
+  @ViewChildren(StandElementComponent) standElementComponents: QueryList<StandElementComponent>;
 
   panelId: string;
   standSettingXML = '';
@@ -41,13 +41,13 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   get imageList(): ImageFile[] {
     if (!this.character) return [];
-    let ret = [];
-    let dupe = {};
+    const ret = [];
+    const dupe = {};
     const tmp = this.character.imageDataElement.getElementsByName('imageIdentifier');
     const elements = tmp.concat(this.character.imageDataElement.getElementsByName('faceIcon'));
-    for (let elm of elements) {
+    for (const elm of elements) {
       if (dupe[elm.value]) continue;
-      let file = this.imageElementToFile(elm);
+      const file = this.imageElementToFile(elm);
       if (file) {
         dupe[elm.value] = true;
         ret.push(file);
@@ -143,7 +143,7 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
       materialIcon: 'person_off',
       action: () => {
         this.standSettingXML = standElement.toXml();
-        let elm = this.character.standList.removeChild(standElement);
+        const elm = this.character.standList.removeChild(standElement);
         if (elm) {
           if (this.character.standList.overviewIndex == index) {
             this.character.standList.overviewIndex = -1;
@@ -157,17 +157,17 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   
   restore() {
     if (!this.standSettingXML) return;
-    let restoreStand = <DataElement>ObjectSerializer.instance.parseXml(this.standSettingXML);
+    const restoreStand = <DataElement>ObjectSerializer.instance.parseXml(this.standSettingXML);
     this.character.standList.appendChild(restoreStand);
     this.standSettingXML = '';
   }
 
   upStandIndex(standElement: DataElement) {
     this.standSettingXML = '';
-    let parentElement = this.character.standList;
-    let index: number = parentElement.children.indexOf(standElement);
+    const parentElement = this.character.standList;
+    const index: number = parentElement.children.indexOf(standElement);
     if (0 < index) {
-      let prevElement = parentElement.children[index - 1];
+      const prevElement = parentElement.children[index - 1];
       parentElement.insertBefore(standElement, prevElement);
       if (this.character.standList.overviewIndex == index) {
         this.character.standList.overviewIndex -= 1;
@@ -179,10 +179,10 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   downStandIndex(standElement: DataElement) {
     this.standSettingXML = '';
-    let parentElement = this.character.standList;
-    let index: number = parentElement.children.indexOf(standElement);
+    const parentElement = this.character.standList;
+    const index: number = parentElement.children.indexOf(standElement);
     if (index < parentElement.children.length - 1) {
-      let nextElement = parentElement.children[index + 1];
+      const nextElement = parentElement.children[index + 1];
       parentElement.insertBefore(nextElement, standElement);
       if (this.character.standList.overviewIndex == index) {
         this.character.standList.overviewIndex += 1;
@@ -193,9 +193,9 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   helpStandSeteing() {
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 620 };
-    let textView = this.panelService.open(TextViewComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x, top: coordinate.y, width: 600, height: 620 };
+    const textView = this.panelService.open(TextViewComponent, option);
     textView.title = '立繪設定說明';
     textView.text = 
 `　可設定立繪的名稱、位置與圖片高度（均以相對於畫面尺寸的比例指定），以及聊天送出時顯示立繪的觸發條件。

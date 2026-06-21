@@ -224,7 +224,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
 
-    let menuPosition = this.pointerDeviceService.pointers[0];
+    const menuPosition = this.pointerDeviceService.pointers[0];
     let menuActions: ContextMenuAction[] = [];
     menuActions = menuActions.concat(this.makeSelectionContextMenu());
     menuActions = menuActions.concat(this.makeContextMenu());
@@ -288,13 +288,13 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
   private makeSelectionContextMenu(): ContextMenuAction[] {
     if (this.selectionService.objects.length < 1) return [];
 
-    let actions: ContextMenuAction[] = [];
+    const actions: ContextMenuAction[] = [];
 
-    let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
+    const objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
-      let selectedGameTableMasks = () => this.selectionService.objects.filter(object => object.aliasName === this.terrain.aliasName) as Terrain[];
+      const selectedGameTableMasks = () => this.selectionService.objects.filter(object => object.aliasName === this.terrain.aliasName) as Terrain[];
       actions.push(
         {
           name: '選取的地形', action: null, subActions: [
@@ -307,7 +307,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
             {
               name: '全部建立副本', action: () => {
                 selectedGameTableMasks().forEach(terrain => {
-                  let cloneObject = terrain.clone();
+                  const cloneObject = terrain.clone();
                   cloneObject.location.x += this.gridSize;
                   cloneObject.location.y += this.gridSize;
                   cloneObject.isLocked = false;
@@ -325,8 +325,8 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   private makeContextMenu(): ContextMenuAction[] {
-    let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
-    let actions: ContextMenuAction[] = [
+    const objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
+    const actions: ContextMenuAction[] = [
       (this.isLocked
         ? {
           name: '☑ 固定', action: () => {
@@ -498,7 +498,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
       (this.terrain.getUrls().length <= 0 ? null : ContextMenuSeparator),
       {
         name: '建立副本', action: () => {
-          let cloneObject = this.terrain.clone();
+          const cloneObject = this.terrain.clone();
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
           cloneObject.isLocked = false;
@@ -521,11 +521,11 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   private showDetail(gameObject: Terrain) {
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName });
-    let coordinate = this.pointerDeviceService.pointers[0];
+    const coordinate = this.pointerDeviceService.pointers[0];
     let title = '地形設定';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
-    let option: PanelOption = { title: title, left: coordinate.x - 250, top: coordinate.y - 150, width: 550, height: 380 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x - 250, top: coordinate.y - 150, width: 550, height: 380 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 }

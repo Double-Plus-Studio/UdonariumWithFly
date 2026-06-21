@@ -44,11 +44,11 @@ export class TableTouchGesture {
   private initializeHammer() {
     this.hammer = new Hammer.Manager(this.targetElement, { inputClass: Hammer.TouchInput });
 
-    let tap = new Hammer.Tap();
-    let pan1p = new Hammer.Pan({ event: 'pan1p', pointers: 1, threshold: 0 });
-    let pan2p = new Hammer.Pan({ event: 'pan2p', pointers: 2, threshold: 0 });
-    let pinch = new Hammer.Pinch();
-    let rotate = new Hammer.Rotate();
+    const tap = new Hammer.Tap();
+    const pan1p = new Hammer.Pan({ event: 'pan1p', pointers: 1, threshold: 0 });
+    const pan2p = new Hammer.Pan({ event: 'pan2p', pointers: 2, threshold: 0 });
+    const pinch = new Hammer.Pinch();
+    const rotate = new Hammer.Rotate();
 
     pan1p.recognizeWith(pan2p);
     pan1p.recognizeWith(rotate);
@@ -71,12 +71,12 @@ export class TableTouchGesture {
     this.hammer.on('rotatemove', this.onRotateMove.bind(this));
 
     // iOS で contextmenu が発火しない問題へのworkaround.
-    let ua = window.navigator.userAgent.toLowerCase();
-    let isiOS = ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1 || ua.indexOf('macintosh') > -1 && 'ontouchend' in document;
+    const ua = window.navigator.userAgent.toLowerCase();
+    const isiOS = ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1 || ua.indexOf('macintosh') > -1 && 'ontouchend' in document;
     if (!isiOS) return;
     this.hammer.add(new Hammer.Press({ time: 251 }));
     this.hammer.on('press', ev => {
-      let event = new MouseEvent('contextmenu', {
+      const event = new MouseEvent('contextmenu', {
         bubbles: true,
         cancelable: true,
         clientX: ev.center.x,
@@ -107,7 +107,7 @@ export class TableTouchGesture {
     this.prevHammerDeltaY = ev.deltaY;
 
     if (this.tappedPanTimer == null || ev.eventType != Hammer.INPUT_START) return;
-    let distance = MathUtil.sqrMagnitude(this.tappedPanCenter, ev.center);
+    const distance = MathUtil.sqrMagnitude(this.tappedPanCenter, ev.center);
     if (50 ** 2 < distance) {
       this.clearTappedPanTimer();
     }
@@ -131,14 +131,14 @@ export class TableTouchGesture {
 
   private onTappedPanMove(ev: HammerInput) {
     if (this.tappedPanTimer == null) {
-      let transformX = this.deltaHammerDeltaX;
-      let transformY = this.deltaHammerDeltaY;
-      let transformZ = 0;
+      const transformX = this.deltaHammerDeltaX;
+      const transformY = this.deltaHammerDeltaY;
+      const transformZ = 0;
       if (this.ontransform) this.ontransform(transformX, transformY, transformZ, 0, 0, 0, TableTouchGestureEvent.PAN, ev.srcEvent);
     } else {
       this.clearTappedPanTimer(false);
-      let scale = this.deltaHammerDeltaY;
-      let transformZ = scale * 7.5;
+      const scale = this.deltaHammerDeltaY;
+      const transformZ = scale * 7.5;
       if (this.ongesture) this.ongesture(ev.srcEvent);
       if (this.ontransform) this.ontransform(0, 0, transformZ, 0, 0, 0, TableTouchGestureEvent.TAP_PINCH, ev.srcEvent);
     }
@@ -146,21 +146,21 @@ export class TableTouchGesture {
 
   private onPanMove(ev: HammerInput) {
     this.clearTappedPanTimer();
-    let rotateX = -this.deltaHammerDeltaY / window.innerHeight * 100;
+    const rotateX = -this.deltaHammerDeltaY / window.innerHeight * 100;
     if (this.ongesture) this.ongesture(ev.srcEvent);
     if (this.ontransform) this.ontransform(0, 0, 0, rotateX, 0, 0, TableTouchGestureEvent.ROTATE, ev.srcEvent);
   }
 
   private onPinchMove(ev: HammerInput) {
     this.clearTappedPanTimer();
-    let transformZ = this.deltaHammerScale * 500;
+    const transformZ = this.deltaHammerScale * 500;
     if (this.ongesture) this.ongesture(ev.srcEvent);
     if (this.ontransform) this.ontransform(0, 0, transformZ, 0, 0, 0, TableTouchGestureEvent.PINCH, ev.srcEvent);
   }
 
   private onRotateMove(ev: HammerInput) {
     this.clearTappedPanTimer();
-    let rotateZ = this.deltaHammerRotation;
+    const rotateZ = this.deltaHammerRotation;
     if (this.ongesture) this.ongesture(ev.srcEvent);
     if (this.ontransform) this.ontransform(0, 0, 0, 0, 0, rotateZ, TableTouchGestureEvent.ROTATE, ev.srcEvent);
   }

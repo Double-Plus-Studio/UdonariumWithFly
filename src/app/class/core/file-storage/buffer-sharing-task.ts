@@ -42,13 +42,13 @@ export class BufferSharingTask<T> {
   }
 
   static createSendTask<T>(identifier: string, sendTo: string, data?: T): BufferSharingTask<T> {
-    let task = new BufferSharingTask(identifier, sendTo, data);
+    const task = new BufferSharingTask(identifier, sendTo, data);
     task.onstart = () => task.initializeSend();
     return task;
   }
 
   static createReceiveTask<T>(identifier: string): BufferSharingTask<T> {
-    let task = new BufferSharingTask<T>(identifier);
+    const task = new BufferSharingTask<T>(identifier);
     task.onstart = () => task.initializeReceive();
     return task;
   }
@@ -107,7 +107,7 @@ export class BufferSharingTask<T> {
 
   private initializeSend() {
     this.uint8Array = MessagePack.encode(this.data);
-    let total = Math.ceil(this.uint8Array.byteLength / this.chankSize);
+    const total = Math.ceil(this.uint8Array.byteLength / this.chankSize);
     this.chanks = new Array(total);
 
     console.log('チャンク分割 ' + this.identifier, this.chanks.length);
@@ -136,8 +136,8 @@ export class BufferSharingTask<T> {
   }
 
   private sendChank(index: number) {
-    let chank = this.uint8Array.slice(index * this.chankSize, (index + 1) * this.chankSize);
-    let data = { index: index, length: this.chanks.length, chank: chank };
+    const chank = this.uint8Array.slice(index * this.chankSize, (index + 1) * this.chankSize);
+    const data = { index: index, length: this.chanks.length, chank: chank };
     EventSystem.call('FILE_SEND_CHANK_' + this.identifier, data, this.sendTo);
     this.sentChankIndex = index;
     this.sendChankTimer = null;
@@ -189,13 +189,13 @@ export class BufferSharingTask<T> {
     console.log('バッファ受信完了', this.identifier);
 
     let sumLength = 0;
-    for (let chank of this.chanks) { sumLength += chank.byteLength; }
+    for (const chank of this.chanks) { sumLength += chank.byteLength; }
 
     this.outputTransferRate(sumLength);
-    let uint8Array = new Uint8Array(sumLength);
+    const uint8Array = new Uint8Array(sumLength);
     let pos = 0;
 
-    for (let chank of this.chanks) {
+    for (const chank of this.chanks) {
       uint8Array.set(chank, pos);
       pos += chank.byteLength;
     }
@@ -210,8 +210,8 @@ export class BufferSharingTask<T> {
   }
 
   private outputTransferRate(byteLength: number) {
-    let time = performance.now() - this.startTime;
-    let rate = (byteLength / 1024 / 1024) / (time / 1000);
+    const time = performance.now() - this.startTime;
+    const rate = (byteLength / 1024 / 1024) / (time / 1000);
     console.log(`${(byteLength / 1024).toFixed(2)}KB ${(time / 1000).toFixed(2)}秒 転送速度: ${rate.toFixed(2)}MB/s`);
   }
 }

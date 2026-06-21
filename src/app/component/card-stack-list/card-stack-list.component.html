@@ -10,8 +10,8 @@
         <br>
           <button (click)="up(card)">↑</button>
           <button (click)="down(card)">↓</button>
-          <button (click)="card.rotate = (card.rotate == 180 ? 0 : 180)" style="margin-left: 5px">旋轉</button>
-          <button (click)="card.state = (card.state == CardStateFront ? CardStateBack : CardStateFront)">翻面</button>
+          <button (click)="card.rotate = (card.rotate === 180 ? 0 : 180)" style="margin-left: 5px">旋轉</button>
+          <button (click)="card.state = (card.state === CardStateFront ? CardStateBack : CardStateFront)">翻面</button>
           <br>
           </div>
         </div>

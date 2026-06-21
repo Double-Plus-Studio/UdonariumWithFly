@@ -32,20 +32,20 @@ export class TabletopSelectionService {
 
   add(object: TabletopObject, state: SelectionState = SelectionState.SELECTED) {
     if (state === SelectionState.NONE) return this.remove(object);
-    let prevs = this.objects;
+    const prevs = this.objects;
     this.selectionMap.set(object, state);
     this.updateHighlight(prevs);
   }
 
   remove(object: TabletopObject) {
     if (!this.selectionMap.has(object)) return;
-    let prevs = this.objects;
+    const prevs = this.objects;
     this.selectionMap.delete(object);
     this.updateHighlight(prevs);
   }
 
   clear() {
-    let prevs = this.objects;
+    const prevs = this.objects;
     this.selectionMap.clear();
     this.updateHighlight(prevs);
   }
@@ -60,10 +60,10 @@ export class TabletopSelectionService {
     queueMicrotask(() => {
       this.isUdpateCssBatching = false;
       this.selectionMap.forEach((state, object) => this.previus.add(object));
-      let targets = Array.from(this.previus);
+      const targets = Array.from(this.previus);
       this.previus.clear();
       if (0 < targets.length) EventSystem.trigger('UPDATE_SELECTION', { changed: targets });
-      for (let target of targets) {
+      for (const target of targets) {
         EventSystem.trigger(`UPDATE_SELECTION/identifier/${target.identifier}`, { changed: targets });
       }
       EventSystem.trigger('UPDATE_INVENTORY', null);

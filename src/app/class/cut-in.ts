@@ -39,14 +39,14 @@ export class CutIn extends ObjectNode {
       const hostname = (new URL(this.videoUrl)).hostname
       if (hostname == 'youtube.com' || hostname == 'www.youtube.com') {
         if (this.videoUrl.indexOf('/shorts/') >= 0) {
-          let tmp = this.videoUrl.split('/shorts/');
+          const tmp = this.videoUrl.split('/shorts/');
           if (tmp[1]) ret = encodeURI(tmp[1].split(/[\?\&\#\/]/)[0]);
         } else if (this.videoUrl.indexOf('v=') >= 0) {
-          let tmp = this.videoUrl.split('v=');
+          const tmp = this.videoUrl.split('v=');
           if (tmp[1]) ret = encodeURI(tmp[1].split(/[\?\&\#\/]/)[0]);
         }
       } else if (hostname == 'youtu.be') {
-        let tmp = this.videoUrl.split('youtu.be/');
+        const tmp = this.videoUrl.split('youtu.be/');
         if (tmp[1]) ret = encodeURI(tmp[1].split(/[\?\&\#\/]/)[0]);
       } else {
         return '';
@@ -70,9 +70,12 @@ export class CutIn extends ObjectNode {
   private _sec(str: string): string {
     if (!str) return null;
     let tmp = null;
-    if (tmp = /^(\d+)$/.exec(str)) {
+    tmp = /^(\d+)$/.exec(str);
+    if (tmp) {
       return tmp[1];
-    } else if (tmp = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/i.exec(str)) {
+    }
+    tmp = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/i.exec(str);
+    if (tmp) {
       let sec = 0;
       if (tmp[1]) sec += +tmp[1] * 60 * 60;
       if (tmp[2]) sec += +tmp[2] * 60;
@@ -86,7 +89,7 @@ export class CutIn extends ObjectNode {
     if (!this.isVideoCutIn || !this.videoId) return '';
     let ret = '';
     if (StringUtil.validUrl(this.videoUrl)) {
-      let tmp = this.videoUrl.split('list=');
+      const tmp = this.videoUrl.split('list=');
       if (tmp[1]) ret = encodeURI(tmp[1].split(/[\&\#\/]/)[0]);
     } else {
       return ret = '';

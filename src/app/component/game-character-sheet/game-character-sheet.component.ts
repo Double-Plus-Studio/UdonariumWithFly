@@ -135,12 +135,13 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
             case 'terrain':
               this.panelService.title = `地形設定 - ${this.tabletopObjectName}`;
               break;
-            case 'card':
+            case 'card': {
               const card = this.tabletopObject;
-              if (card instanceof Card) { 
+              if (card instanceof Card) {
                 this.panelService.title = `牌設定 - ${card.isFront ? this.tabletopObjectName : '牌（裏面）'}`;
-              } 
+              }
               break;
+            }
             case 'card-stack':
               this.panelService.title = `牌堆設定 - ${this.tabletopObjectName}`;
               break;
@@ -181,15 +182,15 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
   addDataElement() {
     if (this.tabletopObject.detailDataElement) {
-      let title = DataElement.create('標題', '', {});
-      let tag = DataElement.create('標籤', '', {});
+      const title = DataElement.create('標題', '', {});
+      const tag = DataElement.create('標籤', '', {});
       title.appendChild(tag);
       this.tabletopObject.detailDataElement.appendChild(title);
     }
   }
 
   clone() {
-    let cloneObject = this.tabletopObject.clone();
+    const cloneObject = this.tabletopObject.clone();
     cloneObject.location.x += 50;
     cloneObject.location.y += 50;
     if (this.tabletopObject.parent) this.tabletopObject.parent.appendChild(cloneObject);
@@ -203,6 +204,10 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
       case 'card-stack':
         (cloneObject as any).owner = '';
         (cloneObject as any).toTopmost();
+        (cloneObject as any).isLock = false;
+        (cloneObject as any).isPreview = false;
+        SoundEffect.play(PresetSound.cardPut);
+        break;
       case 'table-mask':
         (cloneObject as any).isLock = false;
         (cloneObject as any).isPreview = false;
@@ -214,6 +219,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
         break;
       case 'dice-symbol':
         SoundEffect.play(PresetSound.dicePut);
+        break;
       default:
         SoundEffect.play(PresetSound.piecePut);
         break;
@@ -221,7 +227,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   get tabletopObjectName(): string {
-    let element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
+    const element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
     return element ? <string>element.value : '';
   }
 
@@ -308,7 +314,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
         }
       } else if (name === 'faceIcon') {
         // faceIcon特殊処理（ToDo：分ける）
-        let elements = this.tabletopObject.imageDataElement.getElementsByName(name);
+        const elements = this.tabletopObject.imageDataElement.getElementsByName(name);
         if (elements.length >= this.MAX_IMAGE_ICON_COUNT) {
           for (let i = this.MAX_IMAGE_ICON_COUNT; i < elements.length; i++) {
             this.deleteIcon(i);
@@ -319,7 +325,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
         }
         if (this.tabletopObject.currntIconIndex < 0) this.tabletopObject.currntIconIndex = 0;
       } else {
-        let element = this.tabletopObject.imageDataElement.getFirstElementByName(name);
+        const element = this.tabletopObject.imageDataElement.getFirstElementByName(name);
         if (element) {
           element.value = value;
         } else {
@@ -338,7 +344,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
     }
     this.modalService.open<string>(FileSelecterComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.tabletopObject || !this.tabletopObject.imageDataElement || !value) return;
-      let elements = this.tabletopObject.imageDataElement.getElementsByName('imageIdentifier');
+      const elements = this.tabletopObject.imageDataElement.getElementsByName('imageIdentifier');
       if (elements.length >= this.MAX_IMAGE_ICON_COUNT) {
         for (let i = this.MAX_IMAGE_ICON_COUNT; i < elements.length; i++) {
           this.deleteImage(i);
@@ -378,7 +384,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
     this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: false }).then(value => {
       if (!this.tabletopObject || !this.tabletopObject || !(this.tabletopObject instanceof CardStack) || !value) return;
       this.tabletopObject.cards.forEach(card => {
-        let element = card.imageDataElement.getFirstElementByName('back');
+        const element = card.imageDataElement.getFirstElementByName('back');
         if (element) {
           element.value = value;
         } else {
@@ -403,7 +409,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
   deleteImage(index: number=0, name='imageIdentifier') {
     if (!this.tabletopObject || !this.tabletopObject.imageDataElement) return;
-    let elements = this.tabletopObject.imageDataElement.getElementsByName(name);
+    const elements = this.tabletopObject.imageDataElement.getElementsByName(name);
     //ToDO インデックスも抽象化して汎用にする
     if (elements && 0 < elements.length && index < elements.length) {
       if (this.tabletopObject.currntImageIndex > index) this.tabletopObject.currntImageIndex -= 1;
@@ -416,7 +422,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
   deleteIcon(index: number=0, imageIdentifier='') {
     if (!this.tabletopObject || !this.tabletopObject.imageDataElement) return;
-    let elements = this.tabletopObject.imageDataElement.getElementsByName('faceIcon');
+    const elements = this.tabletopObject.imageDataElement.getElementsByName('faceIcon');
     //console.log(elements[index].value  + ' : ' + imageIdentifier);
     if (elements && 0 < elements.length && index < elements.length && (!imageIdentifier || elements[index].value === imageIdentifier)) {
       if (this.tabletopObject.currntIconIndex > index) this.tabletopObject.currntIconIndex -= 1;
@@ -443,17 +449,17 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
   showChatPalette() {
     if (!(this.tabletopObject instanceof GameCharacter)) return;
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 620, height: 350 };
-    let component = this.panelService.open<ChatPaletteComponent>(ChatPaletteComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 620, height: 350 };
+    const component = this.panelService.open<ChatPaletteComponent>(ChatPaletteComponent, option);
     component.character = <GameCharacter>this.tabletopObject;
   }
 
   showStandSetting() {
     if (!(this.tabletopObject instanceof GameCharacter)) return;
-    let coordinate = this.pointerDeviceService.pointers[0];
-    let option: PanelOption = { left: coordinate.x - 400, top: coordinate.y - 175, width: 720, height: 572 };
-    let component = this.panelService.open<StandSettingComponent>(StandSettingComponent, option);
+    const coordinate = this.pointerDeviceService.pointers[0];
+    const option: PanelOption = { left: coordinate.x - 400, top: coordinate.y - 175, width: 720, height: 572 };
+    const component = this.panelService.open<StandSettingComponent>(StandSettingComponent, option);
     component.character = <GameCharacter>this.tabletopObject;
   }
 
@@ -567,13 +573,13 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   showCaseOffset(index: number): number {
-    let len = this.tabletopObject.imageFiles.length;
+    const len = this.tabletopObject.imageFiles.length;
     if (len <= 5) return 0; 
     return (50 - (160 / (len - 2))) * (this.tabletopObject.currntImageIndex <= index ? index-1 : index);
   }
 
   showIconOffset(index): number {
-    let len = this.tabletopObject.faceIcons.length;
+    const len = this.tabletopObject.faceIcons.length;
     if (len <= 5) return 0;
     return (50 - (200 / (len - 1))) * index + 2;
   }

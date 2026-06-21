@@ -23,45 +23,45 @@ export class GameTableMask extends TabletopObject {
   get width(): number { return this.getCommonValue('width', 1); }
   get height(): number { return this.getCommonValue('height', 1); }
   get opacity(): number {
-    let element = this.getElement('opacity', this.commonDataElement);
-    let num = element ? <number>element.currentValue / <number>element.value : 1;
+    const element = this.getElement('opacity', this.commonDataElement);
+    const num = element ? <number>element.currentValue / <number>element.value : 1;
     return Number.isNaN(num) ? 1 : num;
   }
   
   get fontsize(): number { 
-    let element = this.getElement('fontsize', this.commonDataElement);
+    const element = this.getElement('fontsize', this.commonDataElement);
     return element ? +element.value : 18;
   }
   set fontsize(fontsize: number) { this.setCommonValue('fontsize', fontsize); }
   
   get text(): string { 
-    let element = this.getElement('text', this.commonDataElement);
+    const element = this.getElement('text', this.commonDataElement);
     return element ? element.value + '' : '';
   }
   set text(text: string) { this.setCommonValue('text', text); }
 
   get color(): string { 
-    let element = this.getElement('color', this.commonDataElement);
+    const element = this.getElement('color', this.commonDataElement);
     return element ? element.value + '' : '#555555';
   }
   set color(color: string) { this.setCommonValue('color', color); }
 
   get bgcolor(): string { 
-    let element = this.getElement('color', this.commonDataElement);
+    const element = this.getElement('color', this.commonDataElement);
     return element ? element.currentValue + '' : '#0a0a0a';
   }
   set bgcolor(bgcolor: string) { 
-    let element = this.getElement('color', this.commonDataElement);
+    const element = this.getElement('color', this.commonDataElement);
     if (element) element.currentValue = bgcolor;
   }
 
   get ownerName(): string {
-    let object = PeerCursor.findByUserId(this.owner);
+    const object = PeerCursor.findByUserId(this.owner);
     return object ? object.name : '';
   }
 
   get ownerColor(): string {
-    let object = PeerCursor.findByUserId(this.owner);
+    const object = PeerCursor.findByUserId(this.owner);
     return object ? object.color : '#444444';
   }
 

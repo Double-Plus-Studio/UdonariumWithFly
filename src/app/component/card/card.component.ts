@@ -180,7 +180,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
     EventSystem.unregister(this);
     EventSystem.register(this)
       .on(`UPDATE_GAME_OBJECT/aliasName/${PeerCursor.aliasName}`, event => {
-        let object = ObjectStore.instance.get<PeerCursor>(event.data.identifier);
+        const object = ObjectStore.instance.get<PeerCursor>(event.data.identifier);
         if (this.card && object && object.userId === this.card.owner) {
           this.changeDetector.markForCheck();
         }
@@ -210,7 +210,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
         this.changeDetector.markForCheck();
       })
       .on('DISCONNECT_PEER', event => {
-        let cursor = PeerCursor.findByPeerId(event.data.peerId);
+        const cursor = PeerCursor.findByPeerId(event.data.peerId);
         if (!cursor || this.card.owner === cursor.userId) this.changeDetector.markForCheck();
       });
     this.movableOption = {
@@ -247,8 +247,8 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
 
     if (e.detail instanceof CardStack) {
       if (this.isLocked) return;
-      let cardStack: CardStack = e.detail;
-      let distance: number = this.card.calcSqrDistance(cardStack);
+      const cardStack: CardStack = e.detail;
+      const distance: number = this.card.calcSqrDistance(cardStack);
       if (distance < 25 ** 2) {
         cardStack.location.x = this.card.location.x;
         cardStack.location.y = this.card.location.y;
@@ -292,7 +292,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
     e.stopPropagation();
     e.preventDefault();
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
-    let position = this.pointerDeviceService.pointers[0];
+    const position = this.pointerDeviceService.pointers[0];
 
     let menuActions: ContextMenuAction[] = [];
     menuActions = menuActions.concat(this.makeSelectionContextMenu());
@@ -323,7 +323,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   }
 
   private createStack() {
-    let cardStack = CardStack.create('山札');
+    const cardStack = CardStack.create('山札');
     cardStack.location.x = this.card.location.x;
     cardStack.location.y = this.card.location.y;
     cardStack.posZ = this.card.posZ;
@@ -331,8 +331,8 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
     cardStack.rotate = this.rotate;
     cardStack.zindex = this.card.zindex;
 
-    let cards: Card[] = this.tabletopService.cards.filter(card => {
-      let distance: number = this.card.calcSqrDistance(card);
+    const cards: Card[] = this.tabletopService.cards.filter(card => {
+      const distance: number = this.card.calcSqrDistance(card);
       return distance < 100 ** 2;
     });
 
@@ -342,16 +342,16 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
       return 0;
     });
 
-    for (let card of cards) {
+    for (const card of cards) {
       cardStack.putOnBottom(card);
     }
   }
 
   private dispatchCardDropEvent() {
-    let element: HTMLElement = this.elementRef.nativeElement;
-    let parent = element.parentElement;
-    let children = parent.children;
-    let event = new CustomEvent('carddrop', { detail: this.card, bubbles: true });
+    const element: HTMLElement = this.elementRef.nativeElement;
+    const parent = element.parentElement;
+    const children = parent.children;
+    const event = new CustomEvent('carddrop', { detail: this.card, bubbles: true });
     for (let i = 0; i < children.length; i++) {
       children[i].dispatchEvent(event);
     }
@@ -360,9 +360,9 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   private makeSelectionContextMenu(): ContextMenuAction[] {
     if (this.selectionService.objects.length < 1) return [];
 
-    let actions: ContextMenuAction[] = [];
+    const actions: ContextMenuAction[] = [];
 
-    let objectPosition = {
+    const objectPosition = {
       x: this.card.location.x + (this.card.size * this.gridSize) / 2,
       y: this.card.location.y + (this.card.size * this.gridSize) / 2,
       z: this.card.posZ
@@ -370,7 +370,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
-      let selectedCards = () => this.selectionService.objects.filter(object => object.aliasName === this.card.aliasName) as Card[];
+      const selectedCards = () => this.selectionService.objects.filter(object => object.aliasName === this.card.aliasName) as Card[];
       actions.push(
         {
           name: '選取的牌', action: null, subActions: [
@@ -429,7 +429,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   }
 
   private makeContextMenu(): ContextMenuAction[] {
-    let actions: ContextMenuAction[] = [];
+    const actions: ContextMenuAction[] = [];
     actions.push(this.isLocked
       ? {
         name: '☑ 固定', action: () => {
@@ -544,7 +544,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
 
     actions.push({
       name: '建立副本', action: () => {
-        let cloneObject = this.card.clone();
+        const cloneObject = this.card.clone();
         cloneObject.location.x += this.gridSize;
         cloneObject.location.y += this.gridSize;
         cloneObject.toTopmost();
@@ -595,11 +595,11 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
 
   private showDetail(gameObject: Card) {
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName });
-    let coordinate = this.pointerDeviceService.pointers[0];
+    const coordinate = this.pointerDeviceService.pointers[0];
     let title = '牌設定';
     if (gameObject.name.length) title += ' - ' + (this.isVisible ? gameObject.name : '牌（裏面）');
-    let option: PanelOption = { title: title, left: coordinate.x - 300, top: coordinate.y - 300, width: 600, height: 490 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x - 300, top: coordinate.y - 300, width: 600, height: 490 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 }

@@ -35,7 +35,7 @@
     [ngClass]="{ 'is-pointer-events-auto': !this.isPointerDragging, 'pointer-events-none': this.isPointerDragging }">
     @if (hasImage) {
       <div style="position: relative;">
-        @if ((card.aliasName == 'card' && !(cardState === CardStateBack) && (cardState == CardStateFront || card.isFront || card.isHand || card.isGMMode)) || (card.aliasName == 'card-stack' && card.topCard.isFront)) {
+        @if ((card.aliasName === 'card' && !(cardState === CardStateBack) && (cardState === CardStateFront || card.isFront || card.isHand || card.isGMMode)) || (card.aliasName === 'card-stack' && card.topCard.isFront)) {
           <div
             class="text" style="z-index: 5; top: 8px"
             [style.width.px]="imageAreaRect.width" [style.height.px]="imageAreaRect.height" [style.left.px]="imageAreaRect.left"
@@ -59,7 +59,7 @@
       [ngClass]="{'with-button-marign': hasImage}">
       @if (!(cardState === CardStateBack) && (cardState === CardStateFront || card.isVisible == null || card.isVisible || card.isGMMode)) {
         {{card.name}}
-        }@if (card.aliasName == 'card-stack' && !card.isEmpty) {
+        }@if (card.aliasName === 'card-stack' && !card.isEmpty) {
         頂部
       }
       @if (!(cardState === CardStateFront) && (cardState === CardStateBack || (card.isVisible != null && !card.isVisible && !card.isGMMode))) {
@@ -108,7 +108,7 @@
         @if (!isUseIcon) {
           <div [ngStyle]="{'transform': ('rotate(' + roll + 'deg)') }">
             <div class="inverser" [ngClass]="{inverse: isInverse, hollow: isHollow}">
-              <span class="aura" [ngClass]="{black: aura == 0, blue: aura == 1, green: aura == 2, cyan: aura == 3, red: aura == 4, magenta: aura == 5, yellow: aura == 6, white: aura == 7}">
+              <span class="aura" [ngClass]="{black: aura === 0, blue: aura === 1, green: aura === 2, cyan: aura === 3, red: aura === 4, magenta: aura === 5, yellow: aura === 6, white: aura === 7}">
                 <img class="character-image" [ngClass]="{'black-paint': isBlackPaint}" [src]="imageUrl | safe: 'resourceUrl'" style="pointer-events: none">
               </span>
             </div>
@@ -208,7 +208,7 @@
         <div class="grid-container-root">
           <div class="grid-container">
             @for (dataElm of rangeElms; track dataElm) {
-              @if (dataElm.name == 'length' || dataElm.name == 'width') {
+              @if (dataElm.name === 'length' || dataElm.name === 'width') {
                 <div class="tag" style="min-width: 100px" [attr.title]="dataElm.name">{{dataElm.name}}</div>
                 <div class="value">
                   <div style="display: inline-block; width: min-content;">
@@ -219,10 +219,10 @@
                 <div class="section" style="line-height: 1em;">
                   <input type="range" title="{{dataElm.value}}"
                     [style]="'font-size: 0.8em; width: 100%; --min: 0; --max:' + dataElm.value + '; --val:' + dataElm.currentValue +';' | safe: 'style'"
-                    [min]="dataElm.name == 'length' ? 1 : 0" max="12" step="0.5" [(ngModel)]="dataElm.value" />
+                    [min]="dataElm.name === 'length' ? 1 : 0" max="12" step="0.5" [(ngModel)]="dataElm.value" />
                 </div>
               }
-              @if (dataElm.name == 'opacity') {
+              @if (dataElm.name === 'opacity') {
                 <div class="tag" style="min-width: 100px" [attr.title]="dataElm.name">{{dataElm.name}}</div>
                 <div class="value">
                   <div style="display: inline-block; width: min-content;">
@@ -241,7 +241,7 @@
               <div class="tag">➡ {{ range.followingCharactor.name }}</div>
               <div class="value" style="margin-top: 3px; pointer-events: none">
                 <div class="inverser" style="min-width: 32px; min-height: 32px; max-width: 32px; max-height: 32px; margin-left: auto; margin-right: 0px" [ngClass]="{inverse: range.followingCharactor.isInverse, hollow: range.followingCharactor.isHollow}">
-                  <span class="aura-following" [ngClass]="{black: range.followingCharactor.aura == 0, blue: range.followingCharactor.aura == 1, green: range.followingCharactor.aura == 2, cyan: range.followingCharactor.aura == 3, red: range.followingCharactor.aura == 4, magenta: range.followingCharactor.aura == 5, yellow: range.followingCharactor.aura == 6, white: range.followingCharactor.aura == 7}">
+                  <span class="aura-following" [ngClass]="{black: range.followingCharactor.aura === 0, blue: range.followingCharactor.aura === 1, green: range.followingCharactor.aura === 2, cyan: range.followingCharactor.aura === 3, red: range.followingCharactor.aura === 4, magenta: range.followingCharactor.aura === 5, yellow: range.followingCharactor.aura === 6, white: range.followingCharactor.aura === 7}">
                     <img style="max-width: 32px; max-height: 32px" class="character-image" draggable="false" [ngClass]="{'black-paint': range.followingCharactor.isBlackPaint}" [src]="range.followingCharactor.imageFile.url | safe: 'resourceUrl'" style="pointer-events: none">
                   </span>
                 </div>
@@ -314,7 +314,7 @@
         <div class="tag" [attr.title]="dataElm.name">{{dataElm.name}}</div>
         <div class="value">
           <div class="hidden-spacer">{{dataElm.value}}</div>
-          <input appLogging [logging.name]="name" [logging.dataElement]="dataElm" [logging.disable]="isNoLogging" class="input" style="width:4em" type="{{(dataElm.value && dataElm.value == +dataElm.value) ? 'number' : 'text'}}" size="1" [(ngModel)]="dataElm.value" />
+          <input appLogging [logging.name]="name" [logging.dataElement]="dataElm" [logging.disable]="isNoLogging" class="input" style="width:4em" type="{{(dataElm.value && dataElm.value === +dataElm.value) ? 'number' : 'text'}}" size="1" [(ngModel)]="dataElm.value" />
         </div>
       }
       @case ('numberResource') {
@@ -342,7 +342,7 @@
         <div class="tag" [attr.title]="dataElm.name">{{dataElm.name}}</div>
         <div class="value">
           <div class="hidden-spacer">{{dataElm.value}}</div>
-          <input appLogging [logging.name]="name" [logging.dataElement]="dataElm" [logging.disable]="isNoLogging" class="input" style="width:4em" type="{{(dataElm.value && dataElm.value == +dataElm.value) ? 'number' : 'text'}}" size="1" [(ngModel)]="dataElm.value" />
+          <input appLogging [logging.name]="name" [logging.dataElement]="dataElm" [logging.disable]="isNoLogging" class="input" style="width:4em" type="{{(dataElm.value && dataElm.value === +dataElm.value) ? 'number' : 'text'}}" size="1" [(ngModel)]="dataElm.value" />
           @if (dataElm.currentValue) {
             <span style="font-size: smaller">({{ (dataElm.calcAbilityScore() >= 0 ? '+' : '') + dataElm.calcAbilityScore() }})</span>
           }
@@ -374,7 +374,7 @@
 
   <ng-template #imageView>
     <div class="image-view-background is-fill" (click)="chanageImageView(false)" [@fadeInOut]="'in'">
-      @if ((tabletopObject.aliasName == 'card' && !(cardState === CardStateBack) && (cardState == CardStateFront || $any(tabletopObject).isFront || $any(tabletopObject).isHand || tabletopObject.isGMMode)) || (tabletopObject.aliasName == 'card-stack' && $any(tabletopObject).topCard.isFront)) {
+      @if ((tabletopObject.aliasName === 'card' && !(cardState === CardStateBack) && (cardState === CardStateFront || $any(tabletopObject).isFront || $any(tabletopObject).isHand || tabletopObject.isGMMode)) || (tabletopObject.aliasName === 'card-stack' && $any(tabletopObject).topCard.isFront)) {
         <div
           class="text" style="z-index: 5"
           [style.width.px]="fullImageAreaRect.width" [style.height.px]="fullImageAreaRect.height" [style.left.px]="fullImageAreaRect.left" [style.top.px]="fullImageAreaRect.top"

@@ -42,8 +42,8 @@ export class PeerContext implements IPeerContext {
   private parse(peerId: string) {
     try {
       this.peerId = peerId;
-      let regArray = roomIdPattern.exec(peerId);
-      let isRoom = regArray != null;
+      const regArray = roomIdPattern.exec(peerId);
+      const isRoom = regArray != null;
       if (isRoom) {
         this.digestUserId = regArray[1];
         this.roomId = regArray[2];
@@ -59,19 +59,19 @@ export class PeerContext implements IPeerContext {
   }
 
   verifyPassword(password: string): boolean {
-    let digest = calcDigestPassword(this.digestUserId, this.roomId, this.roomName, password);
-    let isCorrect = digest === this.digestPassword;
+    const digest = calcDigestPassword(this.digestUserId, this.roomId, this.roomName, password);
+    const isCorrect = digest === this.digestPassword;
     return isCorrect && this.verifyRoomId(password);
   }
 
   private verifyRoomId(password: string): boolean {
-    let checksumedRoomId = calcChecksumedRoomId(this.roomId, this.roomName, password);
-    let isCorrect = checksumedRoomId === this.roomId;
+    const checksumedRoomId = calcChecksumedRoomId(this.roomId, this.roomName, password);
+    const isCorrect = checksumedRoomId === this.roomId;
     return isCorrect;
   }
 
   verifyPeer(peerId: string): boolean {
-    let peer = PeerContext.parse(peerId);
+    const peer = PeerContext.parse(peerId);
     if (this.roomId != peer.roomId || this.roomName != peer.roomName || this.hasPassword != peer.hasPassword) {
       return false;
     }
@@ -85,7 +85,7 @@ export class PeerContext implements IPeerContext {
       return false;
     }
 
-    let isValid = peer.verifyPassword(this.password);
+    const isValid = peer.verifyPassword(this.password);
     return isValid;
   }
 
@@ -104,20 +104,20 @@ export class PeerContext implements IPeerContext {
   }
 
   private static _create(userId: string = ''): PeerContext {
-    let digestUserId = calcDigestUserId(userId);
-    let peer = new PeerContext(digestUserId);
+    const digestUserId = calcDigestUserId(userId);
+    const peer = new PeerContext(digestUserId);
 
     peer.userId = userId;
     return peer;
   }
 
   private static _createRoom(userId: string = '', roomId: string = '', roomName: string = '', password: string = ''): PeerContext {
-    let digestUserId = calcDigest(userId, 6);
-    let checksumedRoomId = calcChecksumedRoomId(roomId, roomName, password);
-    let digestPassword = calcDigestPassword(digestUserId, checksumedRoomId, roomName, password);
-    let peerId = `${digestUserId}${checksumedRoomId}${lzbase62.compress(roomName)}-${digestPassword}`;
+    const digestUserId = calcDigest(userId, 6);
+    const checksumedRoomId = calcChecksumedRoomId(roomId, roomName, password);
+    const digestPassword = calcDigestPassword(digestUserId, checksumedRoomId, roomName, password);
+    const peerId = `${digestUserId}${checksumedRoomId}${lzbase62.compress(roomName)}-${digestPassword}`;
 
-    let peer = new PeerContext(peerId);
+    const peer = new PeerContext(peerId);
     peer.userId = userId;
     peer.password = password;
     return peer;
@@ -145,13 +145,13 @@ function calcDigestPassword(digestUserId: string, roomId: string, roomName: stri
 
 function calcChecksumedRoomId(roomId: string, roomName: string, password: string): string {
   if (password.length < 1) return roomId;
-  let salt = roomId.slice(0, 2);
+  const salt = roomId.slice(0, 2);
   return salt + calcDigest(salt + roomName + password, 1);
 }
 
 function calcDigest(str: string, truncateLength: number = -1): string {
   if (str == null) return '';
-  let array = CryptoUtil.sha256(str);
+  const array = CryptoUtil.sha256(str);
   let base62 = Base62.encode(array);
 
   if (truncateLength < 0) truncateLength = base62.length;

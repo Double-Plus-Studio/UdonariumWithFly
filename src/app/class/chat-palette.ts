@@ -69,7 +69,7 @@ export class ChatPalette extends ObjectNode {
     
     const delayRefName = [];
     //console.log(evaluate);
-    let limit = 128;
+    const limit = 128;
     let loop = 0;
     let isContinue = true;
     while (isContinue) {
@@ -82,7 +82,7 @@ export class ChatPalette extends ObjectNode {
         isContinue = true;
         //name = StringUtil.toHalfWidth(name).toLocaleLowerCase();
         let ret: number|string = '';
-        for (let variable of this.paletteVariables) {
+        for (const variable of this.paletteVariables) {
           //if (variable.name == name) ret = variable.value;
           if (StringUtil.cr(StringUtil.toHalfWidth(variable.name.replace(/[―ー—‐]/g, '-')).toLowerCase()).replace(/[\s\r\n]+/, ' ').trim()
            === StringUtil.cr(StringUtil.toHalfWidth(name.replace(/[―ー—‐]/g, '-'))).toLowerCase().replace(/[\s\r\n]+/, ' ').trim()) ret = variable.value;
@@ -123,7 +123,7 @@ export class ChatPalette extends ObjectNode {
           }
           if (ret == '') {
             let delayMatch;
-            if (delayMatch = /^\$(.+)$/.exec(StringUtil.toHalfWidth(name.replace(/[―ー—‐]/g, '-')))) { 
+            if ((delayMatch = /^\$(.+)$/.exec(StringUtil.toHalfWidth(name.replace(/[―ー—‐]/g, '-'))))) {
               if (delayRefs) {
                 if (/^\d+$/.test(StringUtil.toHalfWidth(delayMatch[1]))) {
                   const indexNo = parseInt(StringUtil.toHalfWidth(delayMatch[1]));
@@ -151,22 +151,22 @@ export class ChatPalette extends ObjectNode {
     this._paletteLines = [];
     this._paletteVariables = [];
 
-    for (let palette of this._palettes) {
-      let variable = this.parseVariable(palette);
+    for (const palette of this._palettes) {
+      const variable = this.parseVariable(palette);
       if (variable) {
         this._paletteVariables.push(variable);
         continue;
       }
-      let line: PaletteLine = { palette: palette };
+      const line: PaletteLine = { palette: palette };
       this._paletteLines.push(line);
     }
     this.isAnalized = true;
   }
 
   private parseVariable(palette: string): PaletteVariable {
-    let array = /^[\s　]*[/／]{2}([^=＝{}｛｝\s　]+)[\s　]*[=＝][\s　]*(.+)[\s　]*/gi.exec(palette);
+    const array = /^[\s　]*[/／]{2}([^=＝{}｛｝\s　]+)[\s　]*[=＝][\s　]*(.+)[\s　]*/gi.exec(palette);
     if (!array) return null;
-    let variable: PaletteVariable = {
+    const variable: PaletteVariable = {
       name: StringUtil.toHalfWidth(array[1]),
       value: array[2]
     }

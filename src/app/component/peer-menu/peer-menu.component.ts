@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 
 import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem, Network } from '@udonarium/core/system';
@@ -34,7 +34,7 @@ import * as localForage from 'localforage';
     ],
     standalone: false
 })
-export class PeerMenuComponent implements OnInit, OnDestroy {
+export class PeerMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   targetUserId: string = '';
   networkService = Network
   gameRoomService = ObjectStore.instance;
@@ -136,7 +136,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
     this.modalService.open<string>(FileSelecterComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.myPeer || !value) return;
       this.myPeer.imageIdentifier = value;
-      let file: ImageFile = ImageStorage.instance.get(value);
+      const file: ImageFile = ImageStorage.instance.get(value);
       if (file) {
         if (file.state === ImageState.COMPLETE) {
           localForage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, file.blob).catch(e => console.log(e));
@@ -150,11 +150,11 @@ export class PeerMenuComponent implements OnInit, OnDestroy {
   }
 
   connectPeer() {
-    let targetUserId = this.targetUserId;
+    const targetUserId = this.targetUserId;
     this.targetUserId = '';
     if (targetUserId.length < 1) return;
     this.help = '';
-    let peer = PeerContext.create(targetUserId);
+    const peer = PeerContext.create(targetUserId);
     if (peer.isRoom) return;
     ObjectStore.instance.clearDeleteHistory();
     Network.connect(peer);

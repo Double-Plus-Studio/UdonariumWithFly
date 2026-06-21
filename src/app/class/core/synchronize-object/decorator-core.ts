@@ -31,7 +31,7 @@ export function defineSyncAttribute() {
 }
 
 function storeDecorator(target: GameObject, type: symbol, key: PropertyKey) {
-  if (!target.hasOwnProperty(type)) {
+  if (!Object.prototype.hasOwnProperty.call(target, type)) {
     Object.defineProperty(target, type, {
       enumerable: false,
       configurable: true,
@@ -78,7 +78,7 @@ function redefineProperties(
   let source = target;
   while (source) {
     const keys = source[keySymbol] as Set<PropertyKey>;
-    if (keys != null && source.hasOwnProperty(keySymbol)) {
+    if (keys != null && Object.prototype.hasOwnProperty.call(source, keySymbol)) {
       for (const key of keys) {
         if (definedKeys.has(key)) continue;
         definedKeys.add(key);

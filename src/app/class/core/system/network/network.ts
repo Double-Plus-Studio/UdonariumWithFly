@@ -51,11 +51,11 @@ export class Network {
       this.close();
     }
 
-    this.openAsync.apply(this, args);
+    this.openAsync(...args);
   }
 
   private async openAsync(...args: any[]) {
-    let promise = this.dynamicImport(this.config?.backend?.mode);
+    const promise = this.dynamicImport(this.config?.backend?.mode);
     this.connectionClassPromise = promise;
     this.connectionClass = await promise;
     if (this.connectionClassPromise != promise) {
@@ -65,7 +65,7 @@ export class Network {
 
     console.log('Network open...', args);
     this.connection = this.initializeConnection();
-    this.connection.open.apply(this.connection, args);
+    this.connection.open(...args);
 
     window.addEventListener('unload', this.callbackUnload, false);
   }
@@ -99,12 +99,12 @@ export class Network {
   }
 
   private sendQueue() {
-    let broadcast: any[] = [];
-    let unicast: { [sendTo: string]: any[] } = {};
-    let echocast: any[] = [];
+    const broadcast: any[] = [];
+    const unicast: { [sendTo: string]: any[] } = {};
+    const echocast: any[] = [];
 
     let loopCount = this.queue.size < 128 ? this.queue.size : 128;
-    for (let item of this.queue) {
+    for (const item of this.queue) {
       if (loopCount <= 0) break;
       loopCount--;
       this.queue.delete(item);
@@ -121,7 +121,7 @@ export class Network {
     // できるだけ一纏めにして送る
     if (this.connection) {
       if (broadcast.length) this.connection.send(broadcast);
-      for (let sendTo in unicast) this.connection.send(unicast[sendTo], sendTo);
+      for (const sendTo in unicast) this.connection.send(unicast[sendTo], sendTo);
     }
 
     // 自分自身への送信
@@ -176,7 +176,7 @@ export class Network {
   }
 
   private initializeConnection(): Connection {
-    let connection = new this.connectionClass();
+    const connection = new this.connectionClass();
     connection.configure(this.config);
 
     connection.callback.onOpen = (peer) => { if (this.callback.onOpen) this.callback.onOpen(peer); }

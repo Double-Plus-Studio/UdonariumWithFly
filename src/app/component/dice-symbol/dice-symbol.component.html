@@ -49,7 +49,7 @@
                 </div>
               }
               <div class="component-content is-3d"
-                [@changeFace]="!isCoin && isVisible ? face : null" [@changeFaceCoin]="isCoin && isVisible ? (face == '裏' ? 0 : 1) : null"
+                [@changeFace]="!isCoin && isVisible ? face : null" [@changeFaceCoin]="isCoin && isVisible ? (face === '裏' ? 0 : 1) : null"
                 [@diceRoll]="!isCoin && animeState" [@coinFlip]="isCoin && animeState"
                 (@diceRoll.done)="animationShuffleDone($event)" (@coinFlip.done)="animationShuffleDone($event)" [style.transform]="isCoin ? 'rotateX(30deg)' : ''">
                 @if (0 < imageFile.url.length) {
@@ -63,7 +63,7 @@
           </div>
         </div>
         <div class="is-3d" style="position: relative; top: -20%;" [style.width.px]="size * gridSize" [style.height.px]="size * gridSize"
-          [@changeFace]="!isCoin && isVisible ? face : null" [@changeFaceCoin]="isCoin && isVisible ? (face == '表' ? 1 : 2) : null"
+          [@changeFace]="!isCoin && isVisible ? face : null" [@changeFaceCoin]="isCoin && isVisible ? (face === '表' ? 1 : 2) : null"
           [@diceRoll]="animeState"
           (@diceRoll.done)="animationShuffleDone($event)">
           @if (!isFlip && isDropShadow && 0 < imageFile.url.length) {

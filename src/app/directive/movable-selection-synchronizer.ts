@@ -11,8 +11,8 @@ export class MovableSelectionSynchronizer {
   private static readonly objectMap: Map<TabletopObject, Set<MovableDirective>> = new Map();
 
   get selectedMovables(): Set<MovableDirective> {
-    let selected: Set<MovableDirective> = new Set();
-    for (let object of this.selection.objects) {
+    const selected: Set<MovableDirective> = new Set();
+    for (const object of this.selection.objects) {
       MovableSelectionSynchronizer.objectMap.get(object)?.forEach(m => selected.add(m));
     }
     return selected;
@@ -67,17 +67,17 @@ export class MovableSelectionSynchronizer {
   private onPickRegion(e: CustomEvent) {
     if (this.pointerDevice.isDragging || this.movable.isDisable) return;
 
-    let x: number = e.detail.x;
-    let y: number = e.detail.y;
-    let width: number = e.detail.width;
-    let height: number = e.detail.height;
+    const x: number = e.detail.x;
+    const y: number = e.detail.y;
+    const width: number = e.detail.width;
+    const height: number = e.detail.height;
 
-    let targetRect = this.movable.nativeElement.getBoundingClientRect();
+    const targetRect = this.movable.nativeElement.getBoundingClientRect();
 
-    let isMaybeOverlap = targetRect.x <= x + width && x <= targetRect.x + targetRect.width && targetRect.y <= y + height && y <= targetRect.y + targetRect.height;
+    const isMaybeOverlap = targetRect.x <= x + width && x <= targetRect.x + targetRect.width && targetRect.y <= y + height && y <= targetRect.y + targetRect.height;
     if (!isMaybeOverlap) return;
 
-    let hasUpdatedRect = !(this.latestDomRect != null
+    const hasUpdatedRect = !(this.latestDomRect != null
       && this.latestDomRect.x === targetRect.x
       && this.latestDomRect.y === targetRect.y
       && this.latestDomRect.width === targetRect.width
@@ -88,27 +88,27 @@ export class MovableSelectionSynchronizer {
       && this.latestDomRect.right === targetRect.right);
 
     if (hasUpdatedRect) {
-      let points: IPoint2D[] = [
+      const points: IPoint2D[] = [
         { x: 0, y: 0 },
         { x: this.movable.nativeElement.clientWidth, y: 0 },
         { x: this.movable.nativeElement.clientWidth, y: this.movable.nativeElement.clientHeight },
         { x: 0, y: this.movable.nativeElement.clientHeight },
       ];
-      let transformer: Transform = new Transform(this.movable.nativeElement);
+      const transformer: Transform = new Transform(this.movable.nativeElement);
       this.latestDomRect = targetRect;
       this.latestRectPoints = points.map(point => transformer.localToGlobal(point.x, point.y));
       transformer.clear();
     }
 
-    let rectA: IPoint2D[] = [
+    const rectA: IPoint2D[] = [
       { x: x, y: y },
       { x: x + width, y: y },
       { x: x + width, y: y + height },
       { x: x, y: y + height },
     ];
-    let rectB: IPoint2D[] = this.latestRectPoints;
+    const rectB: IPoint2D[] = this.latestRectPoints;
 
-    let isOverlap = checkOverlapSAT(rectA, rectB);
+    const isOverlap = checkOverlapSAT(rectA, rectB);
     if (isOverlap) {
       this.movable.state = SelectionState.SELECTED;
     }
@@ -123,7 +123,7 @@ export class MovableSelectionSynchronizer {
   prepareMove() {
     if (!this.shouldSynchronize()) return;
 
-    for (let movable of this.selectedMovables) {
+    for (const movable of this.selectedMovables) {
       if (movable === this.movable) continue;
       if (movable.isDisable) {
         movable.state = SelectionState.NONE;
@@ -142,9 +142,9 @@ export class MovableSelectionSynchronizer {
     }
 
     if (this.movable.state === SelectionState.MAGNETIC) {
-      let layer = MovableDirective.layerMap.get(this.movable.layerName);
+      const layer = MovableDirective.layerMap.get(this.movable.layerName);
       if (layer) {
-        for (let movable of layer) {
+        for (const movable of layer) {
           if (movable !== this.movable && !movable.isDisable && movable.state === SelectionState.NONE) {
             if (movable.width < 0) movable.width = movable.nativeElement.clientWidth;
             if (movable.height < 0) movable.height = movable.nativeElement.clientHeight;
@@ -159,7 +159,7 @@ export class MovableSelectionSynchronizer {
       }
     }
 
-    for (let movable of this.selectedMovables) {
+    for (const movable of this.selectedMovables) {
       if (movable === this.movable) continue;
       movable.posX += delta.x;
       movable.posY += delta.y;
@@ -181,31 +181,31 @@ export class MovableSelectionSynchronizer {
       return;
     }
 
-    for (let movable of this.selectedMovables) {
+    for (const movable of this.selectedMovables) {
       if (movable === this.movable) continue;
       movable.posX += delta.x;
       movable.posY += delta.y;
       movable.posZ += delta.z;
     }
 
-    let movables = Array.from(this.selectedMovables).sort((a, b) => {
-      let zindexA = (a.tabletopObject as Stackable).zindex;
-      let zindexB = (b.tabletopObject as Stackable).zindex;
+    const movables = Array.from(this.selectedMovables).sort((a, b) => {
+      const zindexA = (a.tabletopObject as Stackable).zindex;
+      const zindexB = (b.tabletopObject as Stackable).zindex;
       if (zindexA == null || zindexB == null) return 0;
       return zindexA - zindexB;
     }).filter(movable => movable.state === SelectionState.MAGNETIC && movable !== this.movable);
 
-    let polygonal = 360 / movables.length;
+    const polygonal = 360 / movables.length;
     let angle = Math.random() * 360;
-    let distance = Math.min(Math.max((this.movable.width + this.movable.height) / 2, 50), 75);
-    let center = { x: this.movable.posX + this.movable.width / 2, y: this.movable.posY + this.movable.height / 2, z: this.movable.posZ };
+    const distance = Math.min(Math.max((this.movable.width + this.movable.height) / 2, 50), 75);
+    const center = { x: this.movable.posX + this.movable.width / 2, y: this.movable.posY + this.movable.height / 2, z: this.movable.posZ };
 
-    for (let movable of movables) {
+    for (const movable of movables) {
       if (movable === this.movable) continue;
       //movable.ondragend.emit(e as PointerEvent);
       //movable.onend.emit(e as PointerEvent);
       angle += polygonal;
-      let rad = MathUtil.radians(angle);
+      const rad = MathUtil.radians(angle);
       movable.posX = center.x + distance * Math.sin(rad) - (movable.width / 2);
       movable.posY = center.y + distance * Math.cos(rad) - (movable.height / 2);
     }
@@ -218,12 +218,12 @@ export class MovableSelectionSynchronizer {
   }
 
   private shouldSynchronize(): boolean {
-    let isSynchronize = this.movable.state !== SelectionState.NONE;
+    const isSynchronize = this.movable.state !== SelectionState.NONE;
     return isSynchronize;
   }
 
   private refreshState() {
-    for (let movable of this.selectedMovables) {
+    for (const movable of this.selectedMovables) {
       movable.state = SelectionState.SELECTED;
       if (movable === this.movable) continue;
       movable.setPointerEvents(true);
@@ -233,18 +233,18 @@ export class MovableSelectionSynchronizer {
   }
 
   private isProximity(a: MovableDirective, b: MovableDirective = this.movable): boolean {
-    let range = Math.max((((a.width + b.width) / 4) + ((a.height + b.height) / 4)) * 0.95, 25) ** 2;
-    let posA = {
+    const range = Math.max((((a.width + b.width) / 4) + ((a.height + b.height) / 4)) * 0.95, 25) ** 2;
+    const posA = {
       x: a.posX + a.width / 2,
       y: a.posY + a.height / 2,
       z: a.posZ
     };
-    let posB = {
+    const posB = {
       x: b.posX + b.width / 2,
       y: b.posY + b.height / 2,
       z: b.posZ
     };
-    let distance = MathUtil.sqrMagnitude(posA, posB);
+    const distance = MathUtil.sqrMagnitude(posA, posB);
     return distance < range;
   }
 
@@ -261,39 +261,39 @@ export class MovableSelectionSynchronizer {
   }
 
   register() {
-    let movableSet = MovableSelectionSynchronizer.objectMap.get(this.movable.tabletopObject) ?? new Set();
+    const movableSet = MovableSelectionSynchronizer.objectMap.get(this.movable.tabletopObject) ?? new Set();
     movableSet.add(this.movable);
     MovableSelectionSynchronizer.objectMap.set(this.movable.tabletopObject, movableSet);
   }
 
   unregister() {
-    let movableSet = MovableSelectionSynchronizer.objectMap.get(this.movable.tabletopObject);
+    const movableSet = MovableSelectionSynchronizer.objectMap.get(this.movable.tabletopObject);
     if (!movableSet) return;
     movableSet.delete(this.movable);
     if (movableSet.size < 1) MovableSelectionSynchronizer.objectMap.delete(this.movable.tabletopObject);
   }
 
   static congregate(center: PointerCoordinate, targets: TabletopObject[]) {
-    let objects = targets.sort((a, b) => {
-      let zindexA = (a as any).zindex;
-      let zindexB = (b as any).zindex;
+    const objects = targets.sort((a, b) => {
+      const zindexA = (a as any).zindex;
+      const zindexB = (b as any).zindex;
       if (zindexA == null || zindexB == null) return 0;
       return zindexA - zindexB;
     });
-    let polygonal = 360 / objects.length;
+    const polygonal = 360 / objects.length;
     let angle = Math.random() * 360;
-    let distance = Math.min(Math.max(objects.length * 9, 5), 75);
+    const distance = Math.min(Math.max(objects.length * 9, 5), 75);
 
-    for (let object of objects) {
-      let movables = MovableSelectionSynchronizer.objectMap.get(object);
+    for (const object of objects) {
+      const movables = MovableSelectionSynchronizer.objectMap.get(object);
       if (movables == null) continue;
-      for (let movable of movables) {
+      for (const movable of movables) {
         movable.setAnimatedTransition(true);
         movable.stopTransition();
         if (movable.width < 0) movable.width = movable.nativeElement.clientWidth;
         if (movable.height < 0) movable.height = movable.nativeElement.clientHeight;
         angle += polygonal;
-        let rad = MathUtil.radians(angle);
+        const rad = MathUtil.radians(angle);
         movable.posX = center.x + distance * Math.sin(rad) - (movable.width / 2);
         movable.posY = center.y + distance * Math.cos(rad) - (movable.height / 2);
         movable.posZ = center.z;
@@ -303,14 +303,14 @@ export class MovableSelectionSynchronizer {
 }
 
 function checkOverlapSAT(rectA: IPoint2D[], rectB: IPoint2D[]) {
-  let edges = [...getEdges(rectA), ...getEdges(rectB)];
+  const edges = [...getEdges(rectA), ...getEdges(rectB)];
 
-  for (let edge of edges) {
-    let axis = { x: -edge.y, y: edge.x }; // 法線ベクトル
-    let projA = projectOntoAxis(rectA, axis);
-    let projB = projectOntoAxis(rectB, axis);
+  for (const edge of edges) {
+    const axis = { x: -edge.y, y: edge.x }; // 法線ベクトル
+    const projA = projectOntoAxis(rectA, axis);
+    const projB = projectOntoAxis(rectB, axis);
 
-    let isProjectionsOverlap = !(projA.max < projB.min || projB.max < projA.min);
+    const isProjectionsOverlap = !(projA.max < projB.min || projB.max < projA.min);
     if (!isProjectionsOverlap) return false;
   }
 
@@ -318,9 +318,9 @@ function checkOverlapSAT(rectA: IPoint2D[], rectB: IPoint2D[]) {
 }
 
 function getEdges(points: IPoint2D[]): IPoint2D[] {
-  let edges = [];
+  const edges = [];
   for (let i = 0; i < points.length; i++) {
-    let next = (i + 1) % points.length;
+    const next = (i + 1) % points.length;
     edges.push({ x: points[next].x - points[i].x, y: points[next].y - points[i].y });
   }
   return edges;
@@ -328,8 +328,8 @@ function getEdges(points: IPoint2D[]): IPoint2D[] {
 
 function projectOntoAxis(points: IPoint2D[], axis: IPoint2D): { min: number, max: number } {
   let min = Infinity, max = -Infinity;
-  for (let p of points) {
-    let projection = (p.x * axis.x + p.y * axis.y);
+  for (const p of points) {
+    const projection = (p.x * axis.x + p.y * axis.y);
     min = Math.min(min, projection);
     max = Math.max(max, projection);
   }

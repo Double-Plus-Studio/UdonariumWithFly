@@ -71,29 +71,29 @@ export class LobbyComponent implements OnInit, OnDestroy {
       if (password == null) password = '';
     }
 
-    let targetPeers = room.filterByPassword(password);
+    const targetPeers = room.filterByPassword(password);
     if (targetPeers.length < 1) return;
 
-    let userId = Network.peer.userId;
+    const userId = Network.peer.userId;
     Network.open(userId, room.id, room.name, password);
     PeerCursor.myCursor.peerId = Network.peerId;
 
-    let triedPeer: string[] = [];
+    const triedPeer: string[] = [];
 
-    let onTried = () => {
+    const onTried = () => {
       if (triedPeer.length < targetPeers.length) return false;
       this.resetNetwork();
       EventSystem.unregister(triedPeer);
       this.closeIfConnected();
       return true;
     }
-    let onConnect = (peerId) => {
+    const onConnect = (peerId) => {
       console.log('接続成功！', peerId);
       triedPeer.push(peerId);
       console.log('接続成功 ' + triedPeer.length + '/' + targetPeers.length);
       return onTried();
     }
-    let onDisconnect = (peerId) => {
+    const onDisconnect = (peerId) => {
       console.warn('接続失敗', peerId);
       triedPeer.push(peerId);
       console.warn('接続失敗 ' + triedPeer.length + '/' + targetPeers.length);
@@ -105,7 +105,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
         console.log('LobbyComponent OPEN_PEER', event.data.peerId);
         EventSystem.unregister(triedPeer);
         ObjectStore.instance.clearDeleteHistory();
-        for (let peer of targetPeers) {
+        for (const peer of targetPeers) {
           if (!Network.connect(peer) && onDisconnect(peer.peerId)) return;
         }
         EventSystem.register(triedPeer)
@@ -126,7 +126,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   }
 
   async showRoomSetting() {
-    let isCreate = await this.modalService.open(RoomSettingComponent, { width: 700, height: 400, left: 0, top: 400 });
+    const isCreate = await this.modalService.open(RoomSettingComponent, { width: 700, height: 400, left: 0, top: 400 });
     if (isCreate) this.modalService.resolve();
     this.help = '按下「重新整理列表」按鈕可顯示可連線的房間列表。';
   }

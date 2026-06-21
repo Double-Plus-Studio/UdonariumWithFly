@@ -40,7 +40,7 @@ export class ResettableTimeout {
     }
     this.isStopped = false;
 
-    let oldTimeoutDate = this.timeoutDate;
+    const oldTimeoutDate = this.timeoutDate;
     this.timeoutDate = performance.now() + this.timerMilliSecond;
 
     if (this.timeoutTimer && oldTimeoutDate <= this.timeoutDate) return;

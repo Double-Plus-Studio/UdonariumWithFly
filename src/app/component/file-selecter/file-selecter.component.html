@@ -1,6 +1,6 @@
 <div class="sticky-top">
   <div style="float: right; margin-top: 3px; margin-right: 3px">
-    <label sytle="white-space: nowrap">
+    <label style="white-space: nowrap">
       <input name="show-hide-images" type="checkbox" value="Show Hides" checked="{{isShowHideImages ? 'checked' : ''}}" (click)="onShowHiddenImages($event)">
       <i class="material-icons" style="font-size: smaller" [ngClass]="{'red-eye': isShowHideImages}">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
     </label>
@@ -32,7 +32,7 @@
     <option value="true">任一符合 (OR)</option>
     <option value="">全部符合 (AND)</option>
   </select>
-  <label sytle="white-space: nowrap" title="將最近使用標籤的圖片排在前面">
+  <label style="white-space: nowrap" title="將最近使用標籤的圖片排在前面">
     <input name="is-sort" value="Sort" type="checkbox" [(ngModel)]="isSort" checked="{{isSort ? 'checked' : ''}}" (change)="isSort = (isSort ? true : false)">
     <b style="font-size: smaller; margin-right: 3px">排序</b>
   </label>
@@ -53,7 +53,7 @@
               @if (i < 6) {
                 <label class="word-tag grow" style="display: block; width: 88px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none">{{ word }}</label>
               }
-              @if (i == 6) {
+              @if (i === 6) {
                 <span class="grow" style="display: block; width: 88px; overflow: hidden; padding-left: 2px; font-weight: bold; text-overflow: ellipsis; white-space: nowrap; pointer-events: none">…</span>
               }
             }

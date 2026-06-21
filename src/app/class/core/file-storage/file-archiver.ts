@@ -71,7 +71,7 @@ export class FileArchiver {
     event.preventDefault();
 
     console.log('onDrop', event.dataTransfer);
-    let files = event.dataTransfer.files
+    const files = event.dataTransfer.files
     this.load(files);
   };
 
@@ -79,9 +79,9 @@ export class FileArchiver {
   async load(files: FileList): Promise<void>
   async load(files: any): Promise<void> {
     if (!files) return;
-    let loadFiles: File[] = files instanceof FileList ? toArrayOfFileList(files) : files;
+    const loadFiles: File[] = files instanceof FileList ? toArrayOfFileList(files) : files;
 
-    for (let file of loadFiles) {
+    for (const file of loadFiles) {
       await this.handleImage(file);
       await this.handleAudio(file);
       await this.handleText(file);
@@ -114,7 +114,7 @@ export class FileArchiver {
     if (file.type.indexOf('text/') < 0) return;
     console.log(file.name + ' type:' + file.type);
     try {
-      let xmlElement: Element = XmlUtil.xml2element(await FileReaderUtil.readAsTextAsync(file));
+      const xmlElement: Element = XmlUtil.xml2element(await FileReaderUtil.readAsTextAsync(file));
       if (xmlElement) EventSystem.trigger('XML_LOADED', { xmlElement: xmlElement });
     } catch (reason) {
       console.warn(reason);
@@ -124,12 +124,12 @@ export class FileArchiver {
   private async handleZip(file: File) {
     if (!(0 <= file.type.indexOf('application/') || file.type.length < 1)) return;
 
-    let zipReader = new ZipReader(new BlobReader(file));
-    let entries = await zipReader.getEntries();
+    const zipReader = new ZipReader(new BlobReader(file));
+    const entries = await zipReader.getEntries();
 
-    for (let entry of entries) {
+    for (const entry of entries) {
       try {
-        let blob = await entry.getData(new BlobWriter());
+        const blob = await entry.getData(new BlobWriter());
         console.log(entry.filename + ' 解凍...');
         await this.load([new File([blob], entry.filename, { type: MimeType.type(entry.filename) })]);
       } catch (reason) {
@@ -142,9 +142,9 @@ export class FileArchiver {
   async saveAsync(files: FileList, zipName: string, updateCallback?: UpdateCallback): Promise<void>
   async saveAsync(files: any, zipName: string, updateCallback?: UpdateCallback): Promise<void> {
     if (!files) return;
-    let saveFiles: File[] = files instanceof FileList ? toArrayOfFileList(files) : files;
+    const saveFiles: File[] = files instanceof FileList ? toArrayOfFileList(files) : files;
 
-    let zipWriter = new ZipWriter(new BlobWriter('application/zip'), { bufferedWrite: true });
+    const zipWriter = new ZipWriter(new BlobWriter('application/zip'), { bufferedWrite: true });
 
     let sumProgress = 0;
     let sumTotal = 0;
@@ -155,7 +155,7 @@ export class FileArchiver {
         async onprogress(progress, total) {
           sumProgress += progress - prevProgress;
           prevProgress = progress;
-          let percent = sumProgress * 100 / sumTotal;
+          const percent = sumProgress * 100 / sumTotal;
           updateCallback({ percent: percent, currentFile: file.name });
         }
       });
@@ -166,8 +166,8 @@ export class FileArchiver {
 }
 
 function toArrayOfFileList(fileList: FileList): File[] {
-  let files: File[] = [];
-  let length = fileList.length;
+  const files: File[] = [];
+  const length = fileList.length;
   for (let i = 0; i < length; i++) { files.push(fileList[i]); }
   return files;
 }

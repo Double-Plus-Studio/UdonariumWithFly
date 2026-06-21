@@ -91,15 +91,15 @@ export class SkyWayDataConnection extends EventEmitter implements WebRTCConnecti
   }
 
   send(data: any) {
-    let encodedData: Uint8Array = MessagePack.encode(data);
+    const encodedData: Uint8Array = MessagePack.encode(data);
 
-    let total = Math.ceil(encodedData.byteLength / this.chunkSize);
+    const total = Math.ceil(encodedData.byteLength / this.chunkSize);
     if (total <= 1) {
       this.conn.send(encodedData);
       return;
     }
 
-    let id = UUID.generateUuid();
+    const id = UUID.generateUuid();
 
     let sliceData: Uint8Array = null;
     let chank: DataChank = null;
@@ -128,10 +128,10 @@ export class SkyWayDataConnection extends EventEmitter implements WebRTCConnecti
     await this.stats.updateAsync();
     this.candidateType = this.stats.candidateType;
 
-    let deltaTime = performance.now() - this.timestamp;
-    let healthRate = deltaTime <= 10000 ? 1 : 5000 / ((deltaTime - 10000) + 5000);
-    let ping = healthRate < 1 ? deltaTime : this.ping;
-    let pingRate = 500 / (ping + 500);
+    const deltaTime = performance.now() - this.timestamp;
+    const healthRate = deltaTime <= 10000 ? 1 : 5000 / ((deltaTime - 10000) + 5000);
+    const ping = healthRate < 1 ? deltaTime : this.ping;
+    const pingRate = 500 / (ping + 500);
 
     this.peer.session.health = healthRate;
     this.peer.session.ping = ping;
@@ -158,32 +158,32 @@ export class SkyWayDataConnection extends EventEmitter implements WebRTCConnecti
   }
 
   sendPing() {
-    let encodedData: Uint8Array = MessagePack.encode({ from: this.remoteId, ping: performance.now() });
+    const encodedData: Uint8Array = MessagePack.encode({ from: this.remoteId, ping: performance.now() });
     this.conn.send(encodedData);
   }
 
   private receivePing(ping: Ping) {
     if (ping.from === this.remoteId) {
-      let now = performance.now();
-      let rtt = now - ping.ping;
+      const now = performance.now();
+      const rtt = now - ping.ping;
       this.ping = rtt <= this.ping ? (this.ping * 0.5) + (rtt * 0.5) : rtt;
     } else {
-      let encodedData = MessagePack.encode(ping);
+      const encodedData = MessagePack.encode(ping);
       this.conn.send(encodedData);
     }
   }
 
   private onData(data: ArrayBuffer) {
     this.timestamp = performance.now();
-    let decoded: unknown = MessagePack.decode(new Uint8Array(data));
+    const decoded: unknown = MessagePack.decode(new Uint8Array(data));
 
-    let ping: Ping = decoded as Ping;
+    const ping: Ping = decoded as Ping;
     if (ping.ping != null) {
       this.receivePing(ping);
       return;
     }
 
-    let chank: DataChank = decoded as DataChank;
+    const chank: DataChank = decoded as DataChank;
     if (chank.id == null) {
       this.emit('data', decoded);
       return;
@@ -204,15 +204,15 @@ export class SkyWayDataConnection extends EventEmitter implements WebRTCConnecti
     if (received.length < chank.total) return;
     this.receivedMap.delete(chank.id);
 
-    let uint8Array = new Uint8Array(received.byteLength);
+    const uint8Array = new Uint8Array(received.byteLength);
 
     let pos = 0;
-    for (let c of received.chanks) {
+    for (const c of received.chanks) {
       uint8Array.set(c, pos);
       pos += c.byteLength;
     }
 
-    let decodedChank = MessagePack.decode(uint8Array);
+    const decodedChank = MessagePack.decode(uint8Array);
     this.emit('data', decodedChank);
   }
 

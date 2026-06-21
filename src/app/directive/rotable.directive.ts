@@ -35,6 +35,7 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
   get transformCssOffset(): string { return this._transformCssOffset; }
   get grabbingSelecter(): string { return this._grabbingSelecter; }
 
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('rotable.option') set option(option: RotableOption) {
     this.synchronizer.unregister();
 
@@ -47,12 +48,19 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
 
     this.synchronizer.register();
   }
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('rotable.disable') isDisable: boolean = false;
+  // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('rotable.polygonal') polygonal = 24;
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('rotable.onstart') onstart: EventEmitter<PointerEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('rotable.ondragstart') ondragstart: EventEmitter<PointerEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('rotable.ondrag') ondrag: EventEmitter<PointerEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('rotable.ondragend') ondragend: EventEmitter<PointerEvent> = new EventEmitter();
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('rotable.onend') onend: EventEmitter<PointerEvent> = new EventEmitter();
 
   private get nativeElement(): HTMLElement { return this.elementRef.nativeElement; }
@@ -65,7 +73,7 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
   private get isAllowedToRotate(): boolean {
     if (!this.grabbingElement || !this.nativeElement) return false;
     if (this.grabbingSelecter.length < 1) return true;
-    let elements = this.nativeElement.querySelectorAll(this.grabbingSelecter);
+    const elements = this.nativeElement.querySelectorAll(this.grabbingSelecter);
     let macth = false;
     for (let i = 0; i < elements.length; i++) {
       macth = elements[i].contains(this.grabbingElement);
@@ -155,7 +163,7 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
     e.stopPropagation();
     this.onstart.emit(e as PointerEvent);
 
-    let pointer = this.coordinateService.convertLocalToLocal(this.input.pointer, this.grabbingElement, this.nativeElement.parentElement);
+    const pointer = this.coordinateService.convertLocalToLocal(this.input.pointer, this.grabbingElement, this.nativeElement.parentElement);
     this.rotateOffset = this.calcRotate(pointer, this.rotate);
     this.setAnimatedTransition(false);
 
@@ -174,8 +182,8 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
 
     if (e.cancelable) e.preventDefault();
     e.stopPropagation();
-    let pointer3d = this.coordinateService.convertLocalToLocal(this.input.pointer, this.grabbingElement, this.nativeElement.parentElement);
-    let angle = this.calcRotate(pointer3d, this.rotateOffset);
+    const pointer3d = this.coordinateService.convertLocalToLocal(this.input.pointer, this.grabbingElement, this.nativeElement.parentElement);
+    const angle = this.calcRotate(pointer3d, this.rotateOffset);
 
     if (!this.input.isDragging) this.ondragstart.emit(e as PointerEvent);
     this.ondrag.emit(e as PointerEvent);
@@ -202,22 +210,22 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   private calcRotate(pointer: PointerCoordinate, rotateOffset: number): number {
-    let centerX = this.nativeElement.clientWidth / 2;
-    let centerY = this.nativeElement.clientHeight / 2;
-    let x = pointer.x - centerX;
-    let y = pointer.y - centerY;
-    let rad = Math.atan2(y, x);
-    let rotate = (MathUtil.degrees(rad) - rotateOffset + 720) % 360;
+    const centerX = this.nativeElement.clientWidth / 2;
+    const centerY = this.nativeElement.clientHeight / 2;
+    const x = pointer.x - centerX;
+    const y = pointer.y - centerY;
+    const rad = Math.atan2(y, x);
+    const rotate = (MathUtil.degrees(rad) - rotateOffset + 720) % 360;
     return rotate < 180 ? rotate : rotate - 360;
   }
 
   private radianFromMatrix(a, b, c, d, e, f) {
     let radian = 0;
     if (a !== 0 || b !== 0) {
-      let r = Math.sqrt(a * a + b * b);
+      const r = Math.sqrt(a * a + b * b);
       radian = b > 0 ? Math.acos(a / r) : -Math.acos(a / r);
     } else if (c !== 0 || d !== 0) {
-      let s = Math.sqrt(c * c + d * d);
+      const s = Math.sqrt(c * c + d * d);
       radian = Math.PI * 0.5 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s));
     } else {
       // a = b = c = d = 0
@@ -256,32 +264,32 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   stopTransition(nextRotate: number = this.rotate) {
-    let cssTransform = window.getComputedStyle(this.nativeElement).transform;
+    const cssTransform = window.getComputedStyle(this.nativeElement).transform;
 
     if (Math.abs(nextRotate - this.cssRotate) < 180) return;
 
-    let regArray = /matrix\(([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)\)/gi.exec(cssTransform);
+    const regArray = /matrix\(([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)\)/gi.exec(cssTransform);
     if (!regArray) return;
 
-    let currentRad = this.radianFromMatrix(
+    const currentRad = this.radianFromMatrix(
       Number(regArray[1]), Number(regArray[2]), Number(regArray[3]),
       Number(regArray[4]), Number(regArray[5]), Number(regArray[6])
     );
-    let currentRotate = MathUtil.degrees(currentRad);
-    let currentVector = { x: Math.cos(currentRad), y: Math.sin(currentRad) };
+    const currentRotate = MathUtil.degrees(currentRad);
+    const currentVector = { x: Math.cos(currentRad), y: Math.sin(currentRad) };
 
-    let nextRad = MathUtil.radians(nextRotate);
-    let nextVector = { x: Math.cos(nextRad), y: Math.sin(nextRad) };
+    const nextRad = MathUtil.radians(nextRotate);
+    const nextVector = { x: Math.cos(nextRad), y: Math.sin(nextRad) };
 
-    let crossProduct = currentVector.x * nextVector.y - nextVector.x * currentVector.y;
+    const crossProduct = currentVector.x * nextVector.y - nextVector.x * currentVector.y;
 
     let diff = Math.abs(nextRotate - currentRotate);
     if (180 < diff) diff = 360 - diff;
 
-    let expectRotate = nextRotate + (0 < crossProduct ? -diff : diff);
+    const expectRotate = nextRotate + (0 < crossProduct ? -diff : diff);
     if (expectRotate === currentRotate) return;
 
-    let cssTransition = this.nativeElement.style.transition;
+    const cssTransition = this.nativeElement.style.transition;
     this.nativeElement.style.transition = '';
 
     this.cssRotate = expectRotate;
@@ -293,7 +301,7 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
 
   private updateTransformCss() {
     this.cssRotate = this.rotate;
-    let css = `${this.transformCssOffset} rotateZ(${this.rotate.toFixed(4)}deg)`;
+    const css = `${this.transformCssOffset} rotateZ(${this.rotate.toFixed(4)}deg)`;
     this.nativeElement.style.transform = css;
   }
 }

@@ -51,7 +51,7 @@ export class InputHandler {
   constructor(target: HTMLElement, option: InputHandlerOption)
   constructor(target: HTMLElement, option: InputHandlerOption, activate: boolean)
   constructor(...args: any[]) {
-    let target: HTMLElement = args[0];
+    const target: HTMLElement = args[0];
     let option: InputHandlerOption = { capture: false, passive: false, always: false };
     let activate: boolean = true;
 
@@ -79,7 +79,7 @@ export class InputHandler {
   }
 
   initialize() {
-    let option: AddEventListenerOptions = {
+    const option: AddEventListenerOptions = {
       capture: this.option.capture,
       passive: this.option.passive
     }
@@ -92,7 +92,7 @@ export class InputHandler {
     this.cancel();
     this.clearLastPointerTimer.clear();
     this._isDestroyed = true;
-    let option: EventListenerOptions = {
+    const option: EventListenerOptions = {
       capture: this.option.capture
     }
     this.target.removeEventListener('mousedown', this.callbackOnMouse, option);
@@ -112,7 +112,7 @@ export class InputHandler {
   }
 
   private onMouse(e: MouseEvent) {
-    let mosuePointer: PointerData = { x: e.pageX, y: e.pageY, z: 0, identifier: MOUSE_IDENTIFIER };
+    const mosuePointer: PointerData = { x: e.pageX, y: e.pageY, z: 0, identifier: MOUSE_IDENTIFIER };
     if (this.isSyntheticEvent(e)) {
       this.updateLastPointer(e);
       return;
@@ -124,17 +124,17 @@ export class InputHandler {
   }
 
   private onTouch(e: TouchEvent) {
-    let length = e.changedTouches.length;
+    const length = e.changedTouches.length;
     if (length < 1) return;
     this.updateLastPointer(e);
 
     if (e.type === 'touchstart') {
       this.primaryPointer = this.lastStartPointers[0];
     } else {
-      let changedTouches = Array.from(e.changedTouches);
-      let touch = changedTouches.find(touch => touch.identifier === this.primaryPointer.identifier);
+      const changedTouches = Array.from(e.changedTouches);
+      const touch = changedTouches.find(touch => touch.identifier === this.primaryPointer.identifier);
       if (touch == null) {
-        let isTouchContinues = Array.from(e.touches).find(touch => touch.identifier === this.primaryPointer.identifier) != null;
+        const isTouchContinues = Array.from(e.touches).find(touch => touch.identifier === this.primaryPointer.identifier) != null;
         if (!isTouchContinues) {
           // タッチを追跡できなくなったら終了
           if (this.onEnd) this.onEnd(e);
@@ -142,7 +142,7 @@ export class InputHandler {
         }
         return;
       }
-      let touchPointer: PointerData = { x: touch.pageX, y: touch.pageY, z: 0, identifier: touch.identifier };
+      const touchPointer: PointerData = { x: touch.pageX, y: touch.pageY, z: 0, identifier: touch.identifier };
       this.primaryPointer = touchPointer;
     }
 
@@ -181,11 +181,11 @@ export class InputHandler {
   }
 
   private isSyntheticEvent(e: MouseEvent, threshold: number = 15): boolean {
-    let mosuePointer: PointerData = { x: e.pageX, y: e.pageY, z: 0, identifier: MOUSE_IDENTIFIER };
+    const mosuePointer: PointerData = { x: e.pageX, y: e.pageY, z: 0, identifier: MOUSE_IDENTIFIER };
     let lastPointers = this.lastMovePointers;
     if (e.type !== 'mousemove') lastPointers = lastPointers.concat(this.lastStartPointers);
 
-    for (let pointer of lastPointers) {
+    for (const pointer of lastPointers) {
       if (pointer.identifier === mosuePointer.identifier) continue;
       if (MathUtil.sqrMagnitude(mosuePointer, pointer) < threshold ** 2) {
         return true;
@@ -195,15 +195,15 @@ export class InputHandler {
   }
 
   private updateLastPointer(e: MouseEvent | TouchEvent) {
-    let lastPointers: PointerData[] = [];
+    const lastPointers: PointerData[] = [];
     if (e instanceof MouseEvent) {
-      let mosuePointer: PointerData = { x: e.pageX, y: e.pageY, z: 0, identifier: MOUSE_IDENTIFIER };
+      const mosuePointer: PointerData = { x: e.pageX, y: e.pageY, z: 0, identifier: MOUSE_IDENTIFIER };
       lastPointers.push(mosuePointer);
     } else {
-      let length = e.touches.length;
+      const length = e.touches.length;
       for (let i = 0; i < length; i++) {
-        let touch = e.touches[i];
-        let touchPointer: PointerData = { x: touch.pageX, y: touch.pageY, z: 0, identifier: touch.identifier };
+        const touch = e.touches[i];
+        const touchPointer: PointerData = { x: touch.pageX, y: touch.pageY, z: 0, identifier: touch.identifier };
         lastPointers.push(touchPointer);
       }
     }
@@ -218,7 +218,7 @@ export class InputHandler {
   }
 
   private addEventListeners() {
-    let option: AddEventListenerOptions = {
+    const option: AddEventListenerOptions = {
       capture: this.option.capture,
       passive: this.option.passive
     }
@@ -232,7 +232,7 @@ export class InputHandler {
   }
 
   private removeEventListeners() {
-    let option: EventListenerOptions = {
+    const option: EventListenerOptions = {
       capture: this.option.capture
     }
     this.target.ownerDocument.removeEventListener('mousemove', this.callbackOnMouse, option);

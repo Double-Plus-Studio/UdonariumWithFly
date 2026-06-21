@@ -7,7 +7,7 @@
     }
     <select #select style="width: 100%; max-width: 155px" size="19" (change)="selectGameTable(select.value)" [ngModel]="selectedTable?.identifier">
       @for (gameTable of getGameTables(); track gameTable) {
-        <option value="{{gameTable.identifier}}" title="{{gameTable.name}}" [style.color]="gameTable.name == '' ? 'gray' : ''">{{gameTable.name == '' ? '(無名桌面)' : gameTable.name}}</option>
+        <option value="{{gameTable.identifier}}" title="{{gameTable.name}}" [style.color]="gameTable.name === '' ? 'gray' : ''">{{gameTable.name === '' ? '(無名桌面)' : gameTable.name}}</option>
       }
     </select>
   </div>
@@ -21,7 +21,7 @@
       <div class="images-select">
         <div>
           <b>圖片</b>
-          <span (click)="openBgImageModal()" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'">
+          <span (click)="openBgImageModal()" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType === -1) ? 'default' : 'pointer'">
             <img height="120" [src]="tableBackgroundImage.url | safe: 'resourceUrl'" draggable="false">
           </span>
         </div>
@@ -35,7 +35,7 @@
             </div>
           }
           @if (tableDistanceviewImage.url) {
-            <span style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal()">
+            <span style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType === -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal()">
               <img height="120" [src]="tableDistanceviewImage.url | safe: 'resourceUrl'" draggable="false">
             </span>
           }
@@ -48,7 +48,7 @@
             </div>
           }
           @if (tableDistanceviewImage2.url) {
-            <span style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal2()">
+            <span style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType === -1) ? 'default' : 'pointer'" (click)="openDistanceViewImageModal2()">
               <img height="120" [src]="tableDistanceviewImage2.url | safe: 'resourceUrl'" draggable="false">
             </span>
           }
@@ -91,7 +91,7 @@
           </select>
         </div>
         <div style="display: inline; margin-left: 1.2em" class="self-setting">顏色：
-          <select [(ngModel)]="tableGridColor" name="tableGridColor" [disabled]="!isEditable || tableGridType == -1">
+          <select [(ngModel)]="tableGridColor" name="tableGridColor" [disabled]="!isEditable || tableGridType === -1">
             <option value="#000000e6">黑</option>
             <option value="#0000dde6">藍</option>
             <option value="#00dd00e6">綠</option>
@@ -105,8 +105,8 @@
       </div>
       <div>
         <label class="self-setting">
-          <input type="checkbox" [(ngModel)]="tableGridNumberShow" name="tableGridNumberShow" [disabled]="!isEditable || tableGridType == -1" />
-          <span [ngClass]="{disabled: !isEditable || tableGridType == -1}" [style.cursor]="(!isEditable || tableGridType == -1) ? 'default' : 'pointer'">顯示格線座標編號</span>
+          <input type="checkbox" [(ngModel)]="tableGridNumberShow" name="tableGridNumberShow" [disabled]="!isEditable || tableGridType === -1" />
+          <span [ngClass]="{disabled: !isEditable || tableGridType === -1}" [style.cursor]="(!isEditable || tableGridType === -1) ? 'default' : 'pointer'">顯示格線座標編號</span>
         </label>
       </div>
       <div>

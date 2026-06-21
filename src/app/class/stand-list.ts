@@ -30,8 +30,8 @@ export class StandList extends DataElement {
   }
 
   add(identifier: string) {
-    let condition = this.getFirstElementByName('stand') ? StandConditionType.NotConditionStandUp : StandConditionType.Default;
-    let standElement = DataElement.create('stand');
+    const condition = this.getFirstElementByName('stand') ? StandConditionType.NotConditionStandUp : StandConditionType.Default;
+    const standElement = DataElement.create('stand');
     standElement.appendChild(DataElement.create('name', '', { }, 'name_' + standElement.identifier));
     standElement.appendChild(DataElement.create('imageIdentifier', identifier && identifier != ImageFile.Empty.identifier ? identifier : 'stand_no_image', { type: 'image' }, 'imageIdentifier_' + standElement.identifier));
     standElement.appendChild(DataElement.create('conditionType', condition, { }, 'conditionType_' + standElement.identifier));
@@ -74,8 +74,8 @@ export class StandList extends DataElement {
     //} else {
     let maxPriority = 1;
     let isUseDfault = true;  
-    let defautStands: DataElement[] = [];
-    let matchStands: DataElement[] = [];
+    const defautStands: DataElement[] = [];
+    const matchStands: DataElement[] = [];
     // 優先順位を「それ以外→預設」から変更する過程の効率悪い処理
     
     for (const standElement of this.standElements) {
@@ -91,7 +91,7 @@ export class StandList extends DataElement {
         let conditionImage = false;
         if (postfixes 
           && (conditionType == StandConditionType.Postfix || conditionType == StandConditionType.PostfixOrImage || conditionType == StandConditionType.PostfixAndImage)) {
-          for (let postfix of postfixes.split(/[\r\n]+/g)) {
+          for (const postfix of postfixes.split(/[\r\n]+/g)) {
             if (postfix == null || postfix.trim().length == 0) continue;
             if (StringUtil.toHalfWidth(text.replaceAll('＞', '→')).toUpperCase().trimRight().endsWith(StringUtil.toHalfWidth(postfix.replaceAll('＞', '→')).trimRight().toUpperCase())) {
               if ((postfix.slice(0, 1) == '@' || postfix.slice(0, 1) == '＠') && textTagMatch.length < postfix.length) textTagMatch = postfix;
@@ -118,14 +118,14 @@ export class StandList extends DataElement {
         useStands = defautStands;
       } else {
         useStands = matchStands.filter(elm => {
-          let value = elm.getFirstElementByName('conditionType').value;
+          const value = elm.getFirstElementByName('conditionType').value;
           return +value == maxPriority;
         });
       }
     }
     //}
 
-    let ret: StandInfo = {
+    const ret: StandInfo = {
       standElementIdentifier: null,
       matchMostLongText: textTagMatch,
       farewell: farewell

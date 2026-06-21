@@ -41,13 +41,13 @@ export class RoomSettingComponent implements OnInit, OnDestroy {
   }
 
   calcPeerId(roomName: string, password: string) {
-    let userId = Network.peer.userId;
-    let peer = PeerContext.create(userId, PeerContext.generateId('***'), roomName, password);
+    const userId = Network.peer.userId;
+    const peer = PeerContext.create(userId, PeerContext.generateId('***'), roomName, password);
     this.validateLength = peer.peerId.length < 64 ? true : false;
   }
 
   createRoom() {
-    let userId = Network.peer.userId;
+    const userId = Network.peer.userId;
     Network.open(userId, PeerContext.generateId('***'), this.roomName, this.password);
     PeerCursor.myCursor.peerId = Network.peerId;
 

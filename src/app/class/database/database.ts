@@ -15,8 +15,8 @@ export class Database<T> {
   async open(): Promise<IDBDatabase> {
     if (this.openDBPromise) return this.openDBPromise;
 
-    let openFunc = async () => {
-      let request = indexedDB.open(this.databaseName, this.version);
+    const openFunc = async () => {
+      const request = indexedDB.open(this.databaseName, this.version);
       request.onblocked = event => {
         console.warn('request.onblocked');
         // 他のタブがデータベースを読み込んでいる場合は、処理を進める前に
@@ -29,7 +29,7 @@ export class Database<T> {
       };
 
       try {
-        let database = await this.waitFor(request);
+        const database = await this.waitFor(request);
         return this.initializeDB(database);
       } catch (e) {
         console.error(e);
@@ -52,7 +52,7 @@ export class Database<T> {
   async close() {
     if (!this.openDBPromise) return;
     try {
-      let database = await this.open();
+      const database = await this.open();
       database.close();
       this.openDBPromise = null;
     } catch (e) {
@@ -82,15 +82,15 @@ export class Database<T> {
   }
 
   async getObjectStore(mode: IDBTransactionMode = 'readonly'): Promise<IDBObjectStore> {
-    let database = await this.open();
-    let transaction = database.transaction(this.storeName, mode);
+    const database = await this.open();
+    const transaction = database.transaction(this.storeName, mode);
     return transaction.objectStore(this.storeName);
   }
 
   async get(key: IDBValidKey): Promise<T> {
     try {
-      let store = await this.getObjectStore('readonly');
-      let request = store.get(key);
+      const store = await this.getObjectStore('readonly');
+      const request = store.get(key);
       return await this.waitFor<T>(request);
     } catch (e) {
       console.error(e);
@@ -100,8 +100,8 @@ export class Database<T> {
 
   async put(key: IDBValidKey, value: T): Promise<IDBValidKey> {
     try {
-      let store = await this.getObjectStore('readwrite');
-      let request = store.put(value, key);
+      const store = await this.getObjectStore('readwrite');
+      const request = store.put(value, key);
       return await this.waitFor(request);
     } catch (e) {
       console.error(e);
@@ -111,8 +111,8 @@ export class Database<T> {
 
   async delete(key: IDBValidKey): Promise<void> {
     try {
-      let store = await this.getObjectStore('readwrite');
-      let request = store.delete(key);
+      const store = await this.getObjectStore('readwrite');
+      const request = store.delete(key);
       return await this.waitFor(request);
     } catch (e) {
       console.error(e);
@@ -122,8 +122,8 @@ export class Database<T> {
 
   async getAll(): Promise<T[]> {
     try {
-      let store = await this.getObjectStore('readonly');
-      let request = store.getAll();
+      const store = await this.getObjectStore('readonly');
+      const request = store.getAll();
       return await this.waitFor<T[]>(request);
     } catch (e) {
       console.error(e);
@@ -133,8 +133,8 @@ export class Database<T> {
 
   async getAllKeys(): Promise<IDBValidKey[]> {
     try {
-      let store = await this.getObjectStore('readonly');
-      let request = store.getAllKeys();
+      const store = await this.getObjectStore('readonly');
+      const request = store.getAllKeys();
       return await this.waitFor(request);
     } catch (e) {
       console.error(e);

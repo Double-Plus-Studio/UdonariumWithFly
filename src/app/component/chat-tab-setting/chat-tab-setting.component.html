@@ -5,7 +5,7 @@
     </div>
     <select #select style="width: 100%; max-width: 140px" size="10" (change)="onChangeSelectTab(select.value)" [ngModel]="selectedTab?.identifier">
       @for (chatTab of chatTabs; track chatTab) {
-        <option value="{{chatTab.identifier}}" title="{{chatTab.name}}" [style.color]="chatTab.name == '' ? 'gray' : ''">{{chatTab.name == '' ? '(無名分頁)' : chatTab.name}}</option>
+        <option value="{{chatTab.identifier}}" title="{{chatTab.name}}" [style.color]="chatTab.name === '' ? 'gray' : ''">{{chatTab.name === '' ? '(無名分頁)' : chatTab.name}}</option>
       }
     </select>
   </div>

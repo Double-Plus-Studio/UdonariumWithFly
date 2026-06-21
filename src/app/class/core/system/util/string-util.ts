@@ -21,17 +21,17 @@ export enum CompareOption {
 export namespace StringUtil {
 
   const EMOJI_REGEXP = new RegExp([
-    '\ud83c[\udf00-\udfff]',
-    '\ud83d[\udc00-\ude4f]',
-    '\ud83d[\ude80-\udeff]',
-    '\ud7c9[\ude00-\udeff]',
+    '[\u{1F300}-\u{1F3FF}]',
+    '[\u{1F400}-\u{1F64F}]',
+    '[\u{1F680}-\u{1F6FF}]',
+    '[\u{1F000}-\u{1F0FF}]',
     '[\u2600-\u27BF]'
-  ].join('|'));
+  ].join('|'), 'u');
 
   export function isEmote(str: string): boolean {
     if (!str) return false;
     str = this.cr(str).replace(/[\s\r\n]/g, '');
-    return Array.from(str).length <= 3 && !/[「」]/.test(str) && (EMOJI_REGEXP.test(str) || /[$＄\\￥！？❕❢‽‼/!/?♥♪♬♩♫☺🤮❤️☠️]/.test(str)); 
+    return Array.from(str).length <= 3 && !/[「」]/.test(str) && (EMOJI_REGEXP.test(str) || /[$＄\\￥！？❕❢‽‼/!/?♥♪♬♩♫☺🤮❤☠]/u.test(str));
   }
 
   export function cr(str: string): string {
@@ -258,7 +258,7 @@ export namespace StringUtil {
     return textColor && /^\#[0-9a-f]{6}$/i.test(textColor) ? (textColor.substring(1, 7).match(/.{2}/g).reduce((a, c) => { return a + parseInt(c, 16); }, 0) > 255 * 2 ? darkColor : lightColor) : lightColor;
   }
 
-  export function toHalfWidth(str: String): string {
+  export function toHalfWidth(str: string): string {
     if (str == null || str.toString() == '') return '';
     return str.toString().replace(/[！-～]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
   }

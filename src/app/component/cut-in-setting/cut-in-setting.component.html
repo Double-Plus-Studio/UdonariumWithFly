@@ -5,7 +5,7 @@
     </div>
     <select #cutInSelecter style="width: 12em;" size="15" (change)="onChangeCutIn(cutInSelecter.value)">
       @for (cutIn of cutIns; track cutIn) {
-        <option value="{{ cutIn.identifier }}" title="{{ cutIn.name }}" [style.color]="cutIn.isValidAudio ? cutIn.name == '' ? 'gray' : '' : 'red'">{{ (cutIn.isPlayingNow ? '▶ ' : '■ ') + (cutIn.isValidAudio ? '' : '⚠️') + (cutIn.name == '' ? '(無名插圖)' : cutIn.name) }}</option>
+        <option value="{{ cutIn.identifier }}" title="{{ cutIn.name }}" [style.color]="cutIn.isValidAudio ? cutIn.name === '' ? 'gray' : '' : 'red'">{{ (cutIn.isPlayingNow ? '▶ ' : '■ ') + (cutIn.isValidAudio ? '' : '⚠️') + (cutIn.name === '' ? '(無名插圖)' : cutIn.name) }}</option>
       }
     </select>
   </div>
@@ -38,7 +38,7 @@
         <div style="display: flex; flex-direction: column; width: 100%">
           <div style="padding-bottom: 2px">
             <div style="float: right">
-              <label sytle="white-space: nowrap">
+              <label style="white-space: nowrap">
                 <input name="show-hide-images" type="checkbox" value="Show Hides" checked="{{isShowHideImages ? 'checked' : ''}}" (click)="onShowHiddenImages($event)">
                 <i class="material-icons" style="font-size: smaller" [ngClass]="{'red-eye': isShowHideImages}">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
               </label>
@@ -54,13 +54,13 @@
           <div style="padding-left: 2px">
             <b style="font-size: smaller">Cut In: </b>
             <select [(ngModel)]="cutInType" style="min-width: 8em" [attr.disabled]="!isEditable ? '' : null">
-              <option [value]="-1" [selected]="cutInType == -1">立即出現</option>
-              <option [value]="0" [selected]="cutInType == 0">浮現</option>
-              <option [value]="1" [selected]="cutInType == 1">彈出</option>
-              <option [value]="2" [selected]="cutInType == 2">展開（左右）</option>
-              <option [value]="3" [selected]="cutInType == 3">展開（上下）</option>
+              <option [value]="-1" [selected]="cutInType === -1">立即出現</option>
+              <option [value]="0" [selected]="cutInType === 0">浮現</option>
+              <option [value]="1" [selected]="cutInType === 1">彈出</option>
+              <option [value]="2" [selected]="cutInType === 2">展開（左右）</option>
+              <option [value]="3" [selected]="cutInType === 3">展開（上下）</option>
             </select>
-            <label style="margin-left: 1em; font-size: smaller" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="borderStyle" type="checkbox" (click)="borderStyle = borderStyle == 0 ? 1 : 0" [checked]="borderStyle == 1" [attr.disabled]="!isEditable ? '' : null"><b>有外框</b></label>
+            <label style="margin-left: 1em; font-size: smaller" [style.cursor]="isEditable ? 'pointer' : 'default'"><input name="borderStyle" type="checkbox" (click)="borderStyle = borderStyle === 0 ? 1 : 0" [checked]="borderStyle === 1" [attr.disabled]="!isEditable ? '' : null"><b>有外框</b></label>
           </div>
           <div style="padding-left: 2px">
             <b style="font-size: smaller">聊天末尾: </b><br>
@@ -75,7 +75,7 @@
             <button style="margin-right: 0px" [attr.disabled]="!isEditable ? '' : null" (click)="playCutIn()"><b><i class="material-icons" style="font-size: smaller">play_arrow</i>播放</b></button>
             <button style="margin-left: 0px" [attr.disabled]="!isEditable ? '' : null" (click)="stopCutIn()"><b><i class="material-icons" style="font-size: smaller">stop</i>停止</b></button>
             <span style="white-space: nowrap"> ➡
-              <select style="max-width: 10em" [(ngModel)]="sendTo" [ngClass]="{'not-specified': sendTo == ''}" [ngStyle]="{'color': (sendTo == '' ? null : sendToColor), 'font-weight': (sendTo == '' ? 'normal' : 'bolder')}">
+              <select style="max-width: 10em" [(ngModel)]="sendTo" [ngClass]="{'not-specified': sendTo === ''}" [ngStyle]="{'color': (sendTo === '' ? null : sendToColor), 'font-weight': (sendTo === '' ? 'normal' : 'bolder')}">
                 <option value="" class="not-specified">全體</option>
                 @for (peer of otherPeers; track peer) {
                   <option value="{{peer.identifier}}" [style.color]="peer.color" style="font-weight: bolder;">{{peer.name}}
@@ -153,8 +153,8 @@
           <div style="margin-left: 1em">
             <b>與原始圖片比例不符時: </b>
             <select [(ngModel)]="objectFitType" [attr.disabled]="(cutInVideoId && !cutInisSoundOnly) || !isEditable ? '' : null">
-              <option [value]="0" [selected]="objectFitType == 0">拉伸</option>
-              <option [value]="1" [selected]="objectFitType == 1">裁切</option>
+              <option [value]="0" [selected]="objectFitType === 0">拉伸</option>
+              <option [value]="1" [selected]="objectFitType === 1">裁切</option>
               <!-- <option [value]="2" [selected]="objectFitType == 2">縮放至範圍</option> -->
             </select>
           </div>
@@ -171,7 +171,7 @@
               [style.min-width.em]="isValidAudio ? 10 : 5"
               [style.max-width.em]="isValidAudio ? 20 : 5"
               [(ngModel)]="cutInAudioIdentifier"
-              [ngClass]="{'not-specified': cutInAudioIdentifier == ''}"
+              [ngClass]="{'not-specified': cutInAudioIdentifier === ''}"
               [attr.disabled]="cutInIsVideo || !isEditable || isPlaying ? '' : null"
               (change)="onAudioFileChange(audioSelect.value)">
               <option value="" class="not-specified">効果音無</option>

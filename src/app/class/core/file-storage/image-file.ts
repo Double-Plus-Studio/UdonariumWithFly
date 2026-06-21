@@ -55,7 +55,7 @@ export class ImageFile {
   private constructor() { }
 
   static createEmpty(identifier: string): ImageFile {
-    let imageFile = new ImageFile();
+    const imageFile = new ImageFile();
     imageFile.context.identifier = identifier;
 
     return imageFile;
@@ -65,13 +65,13 @@ export class ImageFile {
   static create(context: ImageContext): ImageFile
   static create(arg: any): ImageFile {
     if (typeof arg === 'string') {
-      let imageFile = new ImageFile();
+      const imageFile = new ImageFile();
       imageFile.context.identifier = arg;
       imageFile.context.name = arg;
       imageFile.context.url = arg;
       return imageFile;
     } else {
-      let imageFile = new ImageFile();
+      const imageFile = new ImageFile();
       imageFile.apply(arg);
       return imageFile;
     }
@@ -88,19 +88,15 @@ export class ImageFile {
   }
 
   private static async _createAsync(blob: Blob, name?: string): Promise<ImageFile> {
-    let arrayBuffer = await FileReaderUtil.readAsArrayBufferAsync(blob);
+    const arrayBuffer = await FileReaderUtil.readAsArrayBufferAsync(blob);
 
-    let imageFile = new ImageFile();
+    const imageFile = new ImageFile();
     imageFile.context.identifier = await FileReaderUtil.calcSHA256Async(arrayBuffer);
     imageFile.context.name = name;
     imageFile.context.blob = new Blob([arrayBuffer], { type: blob.type });
     imageFile.context.url = window.URL.createObjectURL(imageFile.context.blob);
 
-    try {
-      imageFile.context.thumbnail = await ImageFile.createThumbnailAsync(imageFile.context);
-    } catch (e) {
-      throw e;
-    }
+    imageFile.context.thumbnail = await ImageFile.createThumbnailAsync(imageFile.context);
 
     if (imageFile.context.name != null) imageFile.context.name = imageFile.context.identifier;
 
@@ -153,14 +149,14 @@ export class ImageFile {
 
   private static createThumbnailAsync(context: ImageContext): Promise<ThumbnailContext> {
     return new Promise((resolve, reject) => {
-      let image: HTMLImageElement = new Image();
+      const image: HTMLImageElement = new Image();
       image.onload = (event) => {
-        let scale: number = Math.min(128 / Math.max(image.width, image.height), 1.0);
-        let dstWidth = image.width * scale;
-        let dstHeight = image.height * scale;
+        const scale: number = Math.min(128 / Math.max(image.width, image.height), 1.0);
+        const dstWidth = image.width * scale;
+        const dstHeight = image.height * scale;
 
-        let canvas: HTMLCanvasElement = document.createElement('canvas');
-        let render: CanvasRenderingContext2D = canvas.getContext('2d');
+        const canvas: HTMLCanvasElement = document.createElement('canvas');
+        const render: CanvasRenderingContext2D = canvas.getContext('2d');
         canvas.width = image.width;
         canvas.height = image.height;
 
@@ -168,7 +164,7 @@ export class ImageFile {
         CanvasUtil.resize(canvas, dstWidth, dstHeight, true);
 
         canvas.toBlob(blob => {
-          let thumbnail: ThumbnailContext = {
+          const thumbnail: ThumbnailContext = {
             type: blob.type,
             blob: blob,
             url: window.URL.createObjectURL(blob),

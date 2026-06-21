@@ -36,7 +36,7 @@ export class GameTable extends ObjectNode {
   gridClipRect: {top: number, right: number, bottom: number, left: number} = null;
 
   get terrains(): Terrain[] {
-    let terrains: Terrain[] = [];
+    const terrains: Terrain[] = [];
     this.children.forEach(object => {
       if (object instanceof Terrain) terrains.push(object);
     });
@@ -44,7 +44,7 @@ export class GameTable extends ObjectNode {
   }
 
   get masks(): GameTableMask[] {
-    let masks: GameTableMask[] = [];
+    const masks: GameTableMask[] = [];
     this.children.forEach(object => {
       if (object instanceof GameTableMask) masks.push(object);
     });

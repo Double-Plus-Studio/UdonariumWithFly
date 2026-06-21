@@ -30,8 +30,8 @@ export class CutInList extends ObjectNode implements InnerXml {
     if (args[0] instanceof CutIn) {
       cutIn = args[0];
     } else {
-      let name: string = args[0];
-      let identifier: string = args[1];
+      const name: string = args[0];
+      const identifier: string = args[1];
       cutIn = new CutIn(identifier);
       cutIn.name = name;
       cutIn.initialize();
@@ -41,11 +41,11 @@ export class CutInList extends ObjectNode implements InnerXml {
 
   parseInnerXml(element: Element) {
     // XMLからの新規作成を許可せず、既存のオブジェクトを更新する
-    for (let child of CutInList.instance.children) {
+    for (const child of CutInList.instance.children) {
       child.destroy();
     }
     
-    let context = CutInList.instance.toContext();
+    const context = CutInList.instance.toContext();
     context.syncData = this.toContext().syncData;
     CutInList.instance.apply(context);
     CutInList.instance.update();
@@ -58,10 +58,10 @@ export class CutInList extends ObjectNode implements InnerXml {
   matchCutInInfo(text: string): CutInInfo {
     //text = StringUtil.toHalfWidth(text).toUpperCase().trimRight();
     let textTagMatch = '';
-    let tagMatch = new Map<string, CutIn>();
+    const tagMatch = new Map<string, CutIn>();
     const matchCutIn: CutIn[] = [];
 
-    let videoFound = false;
+    const videoFound = false;
     // ランダムに並べ替えておく
     for (const cutIn of this.cutIns.map<[number, CutIn]>(cutIn => [Math.random(), cutIn]).sort((a, b) => { return a[0] - b[0]; }).map(pair => pair[1])) {
       if (!cutIn) continue;

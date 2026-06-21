@@ -17,7 +17,7 @@ export class DataElement extends ObjectNode {
   get isUrl(): boolean { return this.type != null && this.type === 'url'; }
 
   oldLoggingValue: string;
-  changeObserver: Function;
+  changeObserver: (...args: unknown[]) => unknown;
 
   public static create(name: string, value: number | string = '', attributes: Attributes = {}, identifier: string = ''): DataElement {
     let dataElement: DataElement;
@@ -57,8 +57,8 @@ export class DataElement extends ObjectNode {
   }
 
   getElementsByName(name: string, option: CompareOption = CompareOption.None): DataElement[] {
-    let children: DataElement[] = [];
-    for (let child of this.children) {
+    const children: DataElement[] = [];
+    for (const child of this.children) {
       if (child instanceof DataElement) {
         if (StringUtil.equals(child.getAttribute('name'), name, option)) children.push(child);
         Array.prototype.push.apply(children, child.getElementsByName(name, option));
@@ -68,8 +68,8 @@ export class DataElement extends ObjectNode {
   }
 
   getElementsByType(type: string, option: CompareOption = CompareOption.None): DataElement[] {
-    let children: DataElement[] = [];
-    for (let child of this.children) {
+    const children: DataElement[] = [];
+    for (const child of this.children) {
       if (child instanceof DataElement) {
         if (StringUtil.equals(child.getAttribute('type'), type, option)) children.push(child);
         Array.prototype.push.apply(children, child.getElementsByType(type, option));
@@ -79,10 +79,10 @@ export class DataElement extends ObjectNode {
   }
 
   getFirstElementByName(name: string, option: CompareOption = CompareOption.None): DataElement {
-    for (let child of this.children) {
+    for (const child of this.children) {
       if (child instanceof DataElement) {
         if (StringUtil.equals(child.getAttribute('name'), name, option)) return child;
-        let match = child.getFirstElementByName(name, option);
+        const match = child.getFirstElementByName(name, option);
         if (match) return match;
       }
     }
@@ -90,12 +90,12 @@ export class DataElement extends ObjectNode {
   }
 
   getFirstElementByNameUnsensitive(name: string, replacePattern: string|RegExp = null, replacement=''): DataElement {
-    for (let child of this.children) {
+    for (const child of this.children) {
       if (child instanceof DataElement) {
         let normalizeName = StringUtil.cr(StringUtil.toHalfWidth(name.replace(/[―ー—‐]/g, '-')).toLowerCase()).replace(/[\s\r\n]+/, ' ').trim();
         if (replacePattern != null) normalizeName = normalizeName.replace(replacePattern, replacement);
         if (StringUtil.cr(StringUtil.toHalfWidth(child.getAttribute('name').replace(/[―ー—‐]/g, '-')).toLowerCase()).replace(/[\s\r\n]+/, ' ').trim() === normalizeName) return child;
-        let match = child.getFirstElementByNameUnsensitive(name, replacePattern, replacement);
+        const match = child.getFirstElementByNameUnsensitive(name, replacePattern, replacement);
         if (match) return match;
       }
     }
@@ -107,10 +107,14 @@ export class DataElement extends ObjectNode {
     let match;
     if (this.currentValue == null) {
       return +this.value;
-    } else if (match = this.currentValue.toString().match(/^div(\d+)$/)) {
+    }
+    match = this.currentValue.toString().match(/^div(\d+)$/);
+    if (match) {
       return Math.floor(+this.value / +match[1]);
     // 現状3.0以降のみ
-    } else if (match = this.currentValue.toString().match(/^DnD/)) {
+    }
+    match = this.currentValue.toString().match(/^DnD/);
+    if (match) {
       return Math.floor((+this.value - 10) / 2);
     } else {
       return +this.value;
@@ -119,7 +123,7 @@ export class DataElement extends ObjectNode {
 
   checkValue(): string {
     if (!this.isCheckProperty) return '0';
-    let pair = (this.currentValue + '').trim().split(/[|｜]/g, 2);
+    const pair = (this.currentValue + '').trim().split(/[|｜]/g, 2);
     if (pair[1] == null) {
       pair[1] = '0'
       if (pair[0] == null || (pair[0].trim() === '' && !/[|｜]/.test(this.currentValue + ''))) pair[0] = '1';

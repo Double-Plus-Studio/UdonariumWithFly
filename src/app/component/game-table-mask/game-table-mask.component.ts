@@ -407,7 +407,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
     e.preventDefault();
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
-    let menuPosition = this.pointerDeviceService.pointers[0];
+    const menuPosition = this.pointerDeviceService.pointers[0];
 
     let menuActions: ContextMenuAction[] = [];
     menuActions = menuActions.concat(this.makeSelectionContextMenu());
@@ -470,13 +470,13 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
   private makeSelectionContextMenu(): ContextMenuAction[] {
     if (this.selectionService.objects.length < 1) return [];
 
-    let actions: ContextMenuAction[] = [];
+    const actions: ContextMenuAction[] = [];
 
-    let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
+    const objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
-      let selectedGameTableMasks = () => this.selectionService.objects.filter(object => object.aliasName === this.gameTableMask.aliasName) as GameTableMask[];
+      const selectedGameTableMasks = () => this.selectionService.objects.filter(object => object.aliasName === this.gameTableMask.aliasName) as GameTableMask[];
       actions.push(
         {
           name: '選取的地圖遮罩', action: null, subActions: [
@@ -489,7 +489,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
             {
               name: '全部建立副本', action: () => {
                 selectedGameTableMasks().forEach(gameTableMask => {
-                  let cloneObject = gameTableMask.clone();
+                  const cloneObject = gameTableMask.clone();
                   cloneObject.location.x += this.gridSize;
                   cloneObject.location.y += this.gridSize;
                   cloneObject.isLock = false;
@@ -507,8 +507,8 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
   }
 
   private makeContextMenu(): ContextMenuAction[] {
-    let objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
-    let actions: ContextMenuAction[] = [
+    const objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
+    const actions: ContextMenuAction[] = [
       (this.isGMMode ?
         this.gameTableMask.isTransparentOnGMMode ? {
           name: '☑ GM時透過顯示', action: () => {
@@ -786,7 +786,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
       (this.gameTableMask.getUrls().length <= 0 ? null : ContextMenuSeparator),
       {
         name: '建立副本', action: () => {
-          let cloneObject = this.gameTableMask.clone();
+          const cloneObject = this.gameTableMask.clone();
           console.log('コピー', cloneObject);
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
@@ -811,11 +811,11 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
   }
 
   private showDetail(gameObject: GameTableMask) {
-    let coordinate = this.pointerDeviceService.pointers[0];
+    const coordinate = this.pointerDeviceService.pointers[0];
     let title = '地圖遮罩設定';
     if (gameObject.name.length) title += ' - ' + gameObject.name;
-    let option: PanelOption = { title: title, left: coordinate.x - 200, top: coordinate.y - 150, width: 400, height: 530 };
-    let component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
+    const option: PanelOption = { title: title, left: coordinate.x - 200, top: coordinate.y - 150, width: 400, height: 530 };
+    const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
   

@@ -34,20 +34,20 @@ export class ChatMessageService {
       console.log('calibrateTimeOffset was canceled.');
       return;
     }
-    let index = Math.floor(Math.random() * this.ntpApiUrls.length);
-    let ntpApiUrl = this.ntpApiUrls[index];
-    let sendTime = performance.now();
+    const index = Math.floor(Math.random() * this.ntpApiUrls.length);
+    const ntpApiUrl = this.ntpApiUrls[index];
+    const sendTime = performance.now();
     fetch(ntpApiUrl)
       .then(response => {
         if (response.ok) return response.json();
         throw new Error('Network response was not ok.');
       })
       .then(jsonObj => {
-        let endTime = performance.now();
-        let latency = (endTime - sendTime) / 2;
-        let timeobj = jsonObj;
-        let st: number = new Date(timeobj.utc_datetime).getTime();
-        let fixedTime = st + latency;
+        const endTime = performance.now();
+        const latency = (endTime - sendTime) / 2;
+        const timeobj = jsonObj;
+        const st: number = new Date(timeobj.utc_datetime).getTime();
+        const fixedTime = st + latency;
         this.timeOffset = fixedTime;
         this.performanceOffset = endTime;
         console.log('latency: ' + latency + 'ms');
@@ -77,8 +77,8 @@ export class ChatMessageService {
 
   sendMessage(chatTab: ChatTab, text: string, gameType: string, sendFrom: string, sendTo?: string, color? :string, isInverseIcon? :boolean, isHollowIcon? :boolean, isBlackPaint? :boolean, aura?: number, isUseFaceIcon?: boolean, characterIdentifier?: string, standIdentifier?: string, standName? :string, isUseStandImage?: boolean): ChatMessage {
     // もうちょとなんとかする
-    let effective = !(isUseFaceIcon && this.findFaceIconIdentifier(sendFrom));
-    let chatMessage: ChatMessageContext = {
+    const effective = !(isUseFaceIcon && this.findFaceIconIdentifier(sendFrom));
+    const chatMessage: ChatMessageContext = {
       from: Network.peer.userId,
       to: ChatMessageService.findId(sendTo),
       //to: this.findId(sendTo),
@@ -108,7 +108,7 @@ export class ChatMessageService {
   sendOperationLog(text: string, logLevel: number=1) {
     for (const chatTab of this.chatTabs) {
       if (chatTab.recieveOperationLogLevel < logLevel) continue;
-      let chatMessage: ChatMessageContext = {
+      const chatMessage: ChatMessageContext = {
         from: Network.peer.userId,
         //to: ChatMessageService.findId(PeerCursor.myCursor.userId),
         //to: this.findId(sendTo),
@@ -126,7 +126,7 @@ export class ChatMessageService {
   }
 
   static findId(identifier: string): string {
-    let object = ObjectStore.instance.get(identifier);
+    const object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter) {
       return object.identifier;
     } else if (object instanceof PeerCursor) {
@@ -136,7 +136,7 @@ export class ChatMessageService {
   }
 
   private findObjectName(identifier: string): string {
-    let object = ObjectStore.instance.get(identifier);
+    const object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter) {
       return object.name && object.name.length ? object.name : '（無名角色）';
     } else if (object instanceof PeerCursor) {
@@ -146,7 +146,7 @@ export class ChatMessageService {
   }
 
   private findObjectColor(identifier: string): string {
-    let object = ObjectStore.instance.get(identifier);
+    const object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter) {
       return object.chatPalette.color;
     } else if (object instanceof PeerCursor) {
@@ -156,15 +156,15 @@ export class ChatMessageService {
   }
 
   private makeMessageName(sendFrom: string, sendTo?: string): string {
-    let sendFromName = this.findObjectName(sendFrom);
+    const sendFromName = this.findObjectName(sendFrom);
     if (sendTo == null || sendTo.length < 1) return sendFromName;
 
-    let sendToName = this.findObjectName(sendTo);
+    const sendToName = this.findObjectName(sendTo);
     return sendFromName + ' ➡ ' + sendToName;
   }
 
   private findImageIdentifier(identifier: string, isUseFaceIcon: boolean = false): string {
-    let object = ObjectStore.instance.get(identifier);
+    const object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter) {
       if (isUseFaceIcon && object.faceIcon && 0 < object.faceIcon.url.length) return object.faceIcon.identifier;
       return object.imageFile ? object.imageFile.identifier : '';
@@ -175,7 +175,7 @@ export class ChatMessageService {
   }
 
   private findFaceIconIdentifier(identifier: string): string {
-    let object = ObjectStore.instance.get(identifier);
+    const object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter && object.faceIcon && 0 < object.faceIcon.url.length) {
       return object.faceIcon.identifier;
     }
@@ -183,8 +183,8 @@ export class ChatMessageService {
   }
 
   private calcTimeStamp(chatTab: ChatTab): number {
-    let now = this.getTime();
-    let latest = chatTab.latestTimeStamp;
+    const now = this.getTime();
+    const latest = chatTab.latestTimeStamp;
     return now <= latest ? latest + 1 : now;
   }
 }

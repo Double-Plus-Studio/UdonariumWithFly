@@ -27,7 +27,7 @@ export class TabletopActionService {
   constructor() { }
 
   createGameCharacter(position: PointerCoordinate): GameCharacter {
-    let character = GameCharacter.create('新角顏色', 1, '');
+    const character = GameCharacter.create('新角顏色', 1, '');
     character.location.x = position.x - 25;
     character.location.y = position.y - 25;
     character.posZ = position.z;
@@ -35,10 +35,10 @@ export class TabletopActionService {
   }
 
   createGameTableMask(position: PointerCoordinate): GameTableMask {
-    let viewTable = this.getViewTable();
+    const viewTable = this.getViewTable();
     if (!viewTable) return;
 
-    let tableMask = GameTableMask.create('地圖遮罩', 5, 5, 100);
+    const tableMask = GameTableMask.create('地圖遮罩', 5, 5, 100);
     tableMask.location.x = position.x - 25;
     tableMask.location.y = position.y - 25;
     tableMask.posZ = position.z;
@@ -48,7 +48,7 @@ export class TabletopActionService {
   }
 
   createTerrain(position: PointerCoordinate): Terrain {
-    let url: string = './assets/images/tex.jpg';
+    const url: string = './assets/images/tex.jpg';
     let image: ImageFile = ImageStorage.instance.get(url);
     //if (!image) image = ImageStorage.instance.add(url);
     if (!image) {
@@ -56,10 +56,10 @@ export class TabletopActionService {
       ImageTag.create(image.identifier).tag = '*default 地形';
     }
 
-    let viewTable = this.getViewTable();
+    const viewTable = this.getViewTable();
     if (!viewTable) return;
 
-    let terrain = Terrain.create('地形', 2, 2, 2, image.identifier, image.identifier);
+    const terrain = Terrain.create('地形', 2, 2, 2, image.identifier, image.identifier);
     terrain.location.x = position.x - 50;
     terrain.location.y = position.y - 50;
     terrain.posZ = position.z;
@@ -69,7 +69,7 @@ export class TabletopActionService {
   }
 
   createTextNote(position: PointerCoordinate): TextNote {
-    let textNote = TextNote.create('共用備注', '請輸入文字', 5, 4, 3);
+    const textNote = TextNote.create('共用備注', '請輸入文字', 5, 4, 3);
     textNote.location.x = position.x;
     textNote.location.y = position.y;
     textNote.posZ = position.z;
@@ -77,11 +77,11 @@ export class TabletopActionService {
   }
 
   createDiceSymbol(position: PointerCoordinate, name: string, diceType: DiceType, imagePathPrefix: string): DiceSymbol {
-    let diceSymbol = DiceSymbol.create(name, diceType, 1);
+    const diceSymbol = DiceSymbol.create(name, diceType, 1);
     let image: ImageFile = null;
 
     diceSymbol.nothingFaces.forEach(face => {
-      let url: string = `./assets/images/dice/${imagePathPrefix}/${imagePathPrefix}[0].png`;
+      const url: string = `./assets/images/dice/${imagePathPrefix}/${imagePathPrefix}[0].png`;
       image = ImageStorage.instance.get(url)
       //if (!image) { image = ImageStorage.instance.add(url); }
       if (!image) {
@@ -92,7 +92,7 @@ export class TabletopActionService {
     });
     
     diceSymbol.faces.forEach(face => {
-      let url: string = `./assets/images/dice/${imagePathPrefix}/${imagePathPrefix}[${face}].png`;
+      const url: string = `./assets/images/dice/${imagePathPrefix}/${imagePathPrefix}[${face}].png`;
       image = ImageStorage.instance.get(url);
       //if (!image) { image = ImageStorage.instance.add(url); }
       if (!image) {
@@ -124,7 +124,7 @@ export class TabletopActionService {
       backImage = ImageStorage.instance.add(backUrl);
       ImageTag.create(backImage.identifier).tag = '*default 牌';
     }
-    let card = Card.create('牌', frontImage.identifier, backImage.identifier);
+    const card = Card.create('牌', frontImage.identifier, backImage.identifier);
     card.location.x = position.x - 25;
     card.location.y = position.y - 25;
     card.posZ = position.z;
@@ -162,22 +162,22 @@ export class TabletopActionService {
   }
 
   createTrump(position: PointerCoordinate): CardStack {
-    let cardStack = CardStack.create('撲克牌堆');
+    const cardStack = CardStack.create('撲克牌堆');
     cardStack.location.x = position.x - 25;
     cardStack.location.y = position.y - 25;
     cardStack.posZ = position.z;
 
-    let back: string = './assets/images/trump/z02.gif';
+    const back: string = './assets/images/trump/z02.gif';
     if (!ImageStorage.instance.get(back)) {
       //ImageStorage.instance.add(back);
       const image = ImageStorage.instance.add(back);
       ImageTag.create(image.identifier).tag = '*default 牌';
     }
 
-    let suits: string[] = ['c', 'd', 'h', 's'];
-    let trumps: string[] = [];
+    const suits: string[] = ['c', 'd', 'h', 's'];
+    const trumps: string[] = [];
 
-    for (let suit of suits) {
+    for (const suit of suits) {
       for (let i = 1; i <= 13; i++) {
         trumps.push(suit + (('00' + i).slice(-2)));
       }
@@ -186,14 +186,14 @@ export class TabletopActionService {
     trumps.push('x01');
     trumps.push('x02');
 
-    for (let trump of trumps) {
-      let url: string = './assets/images/trump/' + trump + '.gif';
+    for (const trump of trumps) {
+      const url: string = './assets/images/trump/' + trump + '.gif';
       if (!ImageStorage.instance.get(url)) {
         //ImageStorage.instance.add(url);
         const image = ImageStorage.instance.add(url);
         ImageTag.create(image.identifier).tag = '*default 牌';
       }
-      let card = Card.create(this.cardName(trump), url, back);
+      const card = Card.create(this.cardName(trump), url, back);
       //let card = Card.create('牌', url, back);
       cardStack.putOnBottom(card);
     }
@@ -225,16 +225,16 @@ export class TabletopActionService {
     range.location.y = position.y;
     range.posZ = position.z;
     range.type = typeName;
-    let data = range.commonDataElement.getFirstElementByName('opacity');
+    const data = range.commonDataElement.getFirstElementByName('opacity');
     //console.log( '射程範圍TEST' + data);
     data.currentValue = 60;
     return range;
   }
 
   makeDefaultTable() {
-    let gameTable = new GameTable('gameTable');
+    const gameTable = new GameTable('gameTable');
     let testBgFile: ImageFile = null;
-    let bgFileContext = ImageFile.createEmpty('testTableBackgroundImage_image').toContext();
+    const bgFileContext = ImageFile.createEmpty('testTableBackgroundImage_image').toContext();
     bgFileContext.url = './assets/images/BG10a_80.jpg';
     testBgFile = ImageStorage.instance.add(bgFileContext);
     ImageTag.create(testBgFile.identifier).tag = '*default 桌面';
@@ -327,7 +327,7 @@ export class TabletopActionService {
   private getCreateCharacterMenu(position: PointerCoordinate): ContextMenuAction {
     return {
       name: '建立角色', action: () => {
-        let character = this.createGameCharacter(position);
+        const character = this.createGameCharacter(position);
         EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: character.identifier, className: character.aliasName });
         SoundEffect.play(PresetSound.piecePut);
       }
@@ -380,7 +380,7 @@ export class TabletopActionService {
   }
 
   private getCreateDiceSymbolMenu(position: PointerCoordinate): ContextMenuAction {
-    let dices: { menuName: string, diceName: string, type: DiceType, imagePathPrefix: string }[] = [
+    const dices: { menuName: string, diceName: string, type: DiceType, imagePathPrefix: string }[] = [
       { menuName: '硬幣 (表/裏)', diceName: '硬幣', type: DiceType.D2, imagePathPrefix: '2_coin' },
       { menuName: 'D4', diceName: 'D4', type: DiceType.D4, imagePathPrefix: '4_dice' },
       { menuName: 'D6', diceName: 'D6', type: DiceType.D6, imagePathPrefix: '6_dice' },
@@ -391,7 +391,7 @@ export class TabletopActionService {
       { menuName: 'D12', diceName: 'D12', type: DiceType.D12, imagePathPrefix: '12_dice' },
       { menuName: 'D20', diceName: 'D20', type: DiceType.D20, imagePathPrefix: '20_dice' },
     ];
-    let subMenus: ContextMenuAction[] = [];
+    const subMenus: ContextMenuAction[] = [];
 
     dices.forEach(item => {
       subMenus.push({
@@ -405,14 +405,14 @@ export class TabletopActionService {
   }
 
   private getCreateRangeMenu(position: PointerCoordinate): ContextMenuAction {
-    let dices: { menuName: string, typeName: string }[] = [
+    const dices: { menuName: string, typeName: string }[] = [
       { menuName: '錐形', typeName: 'CORN'},
       { menuName: '直線', typeName: 'LINE'},
       { menuName: '円', typeName: 'CIRCLE'},
       { menuName: '正方形', typeName: 'SQUARE'},
       { menuName: '菱形', typeName: 'DIAMOND'},
     ];
-    let subMenus: ContextMenuAction[] = [];
+    const subMenus: ContextMenuAction[] = [];
 
     dices.forEach(item => {
       subMenus.push({

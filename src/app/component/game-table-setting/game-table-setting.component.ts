@@ -106,7 +106,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     EventSystem.register(this)
       .on('DELETE_GAME_OBJECT', 2000, event => {
         if (!this.selectedTable || event.data.identifier !== this.selectedTable.identifier) return;
-        let object = ObjectStore.instance.get(event.data.identifier);
+        const object = ObjectStore.instance.get(event.data.identifier);
         if (object !== null) {
           this.selectedTableXml = object.toXml();
         }
@@ -131,7 +131,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   }
 
   createGameTable() {
-    let gameTable = new GameTable();
+    const gameTable = new GameTable();
     gameTable.name = '空白桌面';
     gameTable.imageIdentifier = 'testTableBackgroundImage_image';
     gameTable.initialize();
@@ -163,7 +163,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
 
   restore() {
     if (this.selectedTable && this.selectedTableXml) {
-      let restoreTable = ObjectSerializer.instance.parseXml(this.selectedTableXml);
+      const restoreTable = ObjectSerializer.instance.parseXml(this.selectedTableXml);
       this.selectGameTable(restoreTable.identifier);
       this.selectedTableXml = '';
     }

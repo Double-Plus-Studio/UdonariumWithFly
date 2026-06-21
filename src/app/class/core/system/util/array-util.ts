@@ -1,12 +1,12 @@
 export namespace ArrayUtil {
   export function diff<T>(array1: T[], array2: T[]): { diff1: T[], diff2: T[] } {
-    let diff1: T[] = [];
-    let diff2: T[] = [];
+    const diff1: T[] = [];
+    const diff2: T[] = [];
 
     let includesInArray1: boolean = false;
     let includesInArray2: boolean = false;
 
-    for (let item of array1.concat(array2)) {
+    for (const item of array1.concat(array2)) {
       includesInArray1 = array1.includes(item);
       includesInArray2 = array2.includes(item);
       if (includesInArray1 && !includesInArray2) {

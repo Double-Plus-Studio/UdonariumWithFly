@@ -14,7 +14,7 @@ export interface EventMap {
     identifier: string;
     majorVersion: number;
     minorVersion: number;
-    syncData: Object;
+    syncData: object;
   };
   'DELETE_GAME_OBJECT': {
     aliasName: string;

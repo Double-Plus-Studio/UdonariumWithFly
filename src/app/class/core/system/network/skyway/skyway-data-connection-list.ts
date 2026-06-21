@@ -6,7 +6,7 @@ export class SkyWayDataConnectionList implements Iterable<SkyWayDataConnection> 
   get length(): number { return this.connections.length; }
 
   [Symbol.iterator]() {
-    let connections = this.connections.concat();
+    const connections = this.connections.concat();
     let index = 0;
     return {
       next(): IteratorResult<SkyWayDataConnection> {
@@ -35,8 +35,8 @@ export class SkyWayDataConnectionList implements Iterable<SkyWayDataConnection> 
   get peerIds(): string[] {
     if (this.needsRefreshPeerIds) {
       this.needsRefreshPeerIds = false;
-      let peerIds: string[] = [];
-      for (let conn of this.connections) {
+      const peerIds: string[] = [];
+      for (const conn of this.connections) {
         if (conn.open) peerIds.push(conn.remoteId);
       }
       peerIds.sort((a, b) => {
@@ -50,7 +50,7 @@ export class SkyWayDataConnectionList implements Iterable<SkyWayDataConnection> 
   }
 
   add(conn: SkyWayDataConnection): SkyWayDataConnection {
-    let existConn = this.find(conn.remoteId);
+    const existConn = this.find(conn.remoteId);
     if (existConn != null) {
       console.log('add() is Fail. ' + conn.remoteId + ' is already connecting.', existConn);
       if (existConn !== conn) {
@@ -71,7 +71,7 @@ export class SkyWayDataConnectionList implements Iterable<SkyWayDataConnection> 
 
   remove(conn: SkyWayDataConnection): SkyWayDataConnection {
     conn.close();
-    let index = this.connections.indexOf(conn);
+    const index = this.connections.indexOf(conn);
     if (0 <= index) {
       console.log(conn.remoteId + ' is えんいー' + 'index:' + index + ' length:' + this.connections.length);
       this.connections.splice(index, 1);

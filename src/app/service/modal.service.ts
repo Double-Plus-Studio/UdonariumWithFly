@@ -2,8 +2,8 @@ import { ComponentRef, Injectable, Injector, OnChanges, ViewContainerRef } from 
 
 class ModalContext {
   constructor(
-    private _resolve: Function,
-    private _reject: Function,
+    private _resolve: (value?: unknown) => void,
+    private _reject: (reason?: unknown) => void,
     public option?: any
   ) {
   }
@@ -79,8 +79,8 @@ export class ModalService {
 
       this.count++;
 
-      let panelOnChanges = panelComponentRef.instance as OnChanges;
-      let bodyOnChanges = bodyComponentRef.instance as OnChanges;
+      const panelOnChanges = panelComponentRef.instance as OnChanges;
+      const bodyOnChanges = bodyComponentRef.instance as OnChanges;
       if (panelOnChanges?.ngOnChanges != null || bodyOnChanges?.ngOnChanges != null) {
         queueMicrotask(() => {
           if (bodyComponentRef) bodyOnChanges?.ngOnChanges({});

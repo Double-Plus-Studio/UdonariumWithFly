@@ -36,8 +36,8 @@ export class ObjectSynchronizer {
       .on<CatalogItem[]>('SYNCHRONIZE_GAME_OBJECT', event => {
         if (event.isSendFromSelf) return;
         console.log('SYNCHRONIZE_GAME_OBJECT ' + event.sendFrom);
-        let catalog: CatalogItem[] = event.data;
-        for (let item of catalog) {
+        const catalog: CatalogItem[] = event.data;
+        for (const item of catalog) {
           if (ObjectStore.instance.isDeleted(item.identifier)) {
             EventSystem.call('DELETE_GAME_OBJECT', { aliasName: '', identifier: item.identifier }, event.sendFrom);
           } else {
@@ -51,15 +51,15 @@ export class ObjectSynchronizer {
         if (ObjectStore.instance.isDeleted(event.data)) {
           EventSystem.call('DELETE_GAME_OBJECT', { aliasName: '', identifier: event.data }, event.sendFrom);
         } else {
-          let object: GameObject = ObjectStore.instance.get(event.data);
+          const object: GameObject = ObjectStore.instance.get(event.data);
           if (object) EventSystem.call('UPDATE_GAME_OBJECT', object.toContext(), event.sendFrom);
         }
       })
       .on('UPDATE_GAME_OBJECT', 1000, event => {
-        let context: ObjectContext = event.data;
-        let object: GameObject = ObjectStore.instance.get(context.identifier);
+        const context: ObjectContext = event.data;
+        const object: GameObject = ObjectStore.instance.get(context.identifier);
         if (object) {
-          let updateObject = event.isSendFromSelf ? object : this.updateObject(object, context);
+          const updateObject = event.isSendFromSelf ? object : this.updateObject(object, context);
           if (updateObject) {
             markForChanged(updateObject, event.sendFrom);
           } else if (!event.isSendFromSelf) {
@@ -68,12 +68,12 @@ export class ObjectSynchronizer {
         } else if (ObjectStore.instance.isDeleted(context.identifier)) {
           EventSystem.call('DELETE_GAME_OBJECT', { aliasName: context.aliasName, identifier: context.identifier }, event.sendFrom);
         } else {
-          let newObject = this.createObject(context);
+          const newObject = this.createObject(context);
           if (newObject) markForChanged(newObject, event.sendFrom);
         }
       })
       .on('DELETE_GAME_OBJECT', 1000, event => {
-        let identifier: ObjectIdentifier = event.data.identifier;
+        const identifier: ObjectIdentifier = event.data.identifier;
         ObjectStore.instance.delete(identifier, false);
       });
   }
@@ -83,7 +83,7 @@ export class ObjectSynchronizer {
   }
 
   private updateObject(object: GameObject, context: ObjectContext): GameObject {
-    let version = context.majorVersion + context.minorVersion;
+    const version = context.majorVersion + context.minorVersion;
     if (object.version < version) {
       object.apply(context);
     } else if (version < object.version) {
@@ -93,7 +93,7 @@ export class ObjectSynchronizer {
   }
 
   private createObject(context: ObjectContext): GameObject {
-    let newObject: GameObject = ObjectFactory.instance.create(context.aliasName, context.identifier);
+    const newObject: GameObject = ObjectFactory.instance.create(context.aliasName, context.identifier);
     if (!newObject) {
       console.warn(context.aliasName + ' is Unknown...?', context);
       return null;
@@ -104,16 +104,16 @@ export class ObjectSynchronizer {
   }
 
   private sendCatalog(sendTo: PeerId) {
-    let catalog = ObjectStore.instance.getCatalog();
-    let interval = setInterval(() => {
-      let count = catalog.length < 2048 ? catalog.length : 2048;
+    const catalog = ObjectStore.instance.getCatalog();
+    const interval = setInterval(() => {
+      const count = catalog.length < 2048 ? catalog.length : 2048;
       EventSystem.call('SYNCHRONIZE_GAME_OBJECT', catalog.splice(0, count), sendTo);
       if (catalog.length < 1) clearInterval(interval);
     });
   }
 
   private addRequestMap(item: CatalogItem, sendFrom: PeerId) {
-    let request = this.requestMap.get(item.identifier);
+    const request = this.requestMap.get(item.identifier);
     if (request && request.version === item.version) {
       request.holderIds.push(sendFrom);
       this.addPeerMap(sendFrom);
@@ -139,23 +139,23 @@ export class ObjectSynchronizer {
   }
 
   private runSynchronizeTask() {
-    let targetPeerId = this.getTargetPeerId();
+    const targetPeerId = this.getTargetPeerId();
     if (targetPeerId.length < 1) return false;
-    let requests: SynchronizeRequest[] = this.makeRequestList(targetPeerId);
+    const requests: SynchronizeRequest[] = this.makeRequestList(targetPeerId);
 
     if (requests.length < 1) {
       this.removePeerMap(targetPeerId);
       return 0 < this.peerMap.size;
     }
-    let task = SynchronizeTask.create(targetPeerId, requests);
+    const task = SynchronizeTask.create(targetPeerId, requests);
     this.tasks.push(task);
 
-    let targetPeerIdTasks = this.peerMap.get(targetPeerId);
+    const targetPeerIdTasks = this.peerMap.get(targetPeerId);
     if (targetPeerIdTasks) targetPeerIdTasks.push(task);
 
     task.onfinish = task => {
       this.tasks.splice(this.tasks.indexOf(task), 1);
-      let targetPeerIdTasks = this.peerMap.get(targetPeerId);
+      const targetPeerIdTasks = this.peerMap.get(targetPeerId);
       if (targetPeerIdTasks) targetPeerIdTasks.splice(targetPeerIdTasks.indexOf(task), 1);
       this.synchronize();
     }
@@ -169,13 +169,13 @@ export class ObjectSynchronizer {
   }
 
   private makeRequestList(targetPeerId: PeerId, maxRequest: number = 32): SynchronizeRequest[] {
-    let requests: SynchronizeRequest[] = [];
+    const requests: SynchronizeRequest[] = [];
 
-    for (let [identifier, request] of this.requestMap) {
+    for (const [identifier, request] of this.requestMap) {
       if (maxRequest <= requests.length) break;
       if (!request.holderIds.includes(targetPeerId)) continue;
 
-      let gameObject = ObjectStore.instance.get(request.identifier);
+      const gameObject = ObjectStore.instance.get(request.identifier);
       if (!gameObject || gameObject.version < request.version) requests.push(request);
 
       this.requestMap.delete(identifier);
@@ -186,15 +186,15 @@ export class ObjectSynchronizer {
   private getTargetPeerId(): PeerId {
     let min = 9999;
     let selectPeerId: PeerId = '';
-    let peers = Network.peers;
+    const peers = Network.peers;
 
     for (let i = peers.length - 1; 0 <= i; i--) {
-      let rand = Math.floor(Math.random() * (i + 1));
+      const rand = Math.floor(Math.random() * (i + 1));
       [peers[i], peers[rand]] = [peers[rand], peers[i]];
     }
 
-    for (let peer of peers) {
-      let tasks = this.peerMap.get(peer.peerId);
+    for (const peer of peers) {
+      const tasks = this.peerMap.get(peer.peerId);
       if (peer.isOpen && tasks && tasks.length < min) {
         min = tasks.length;
         selectPeerId = peer.peerId;

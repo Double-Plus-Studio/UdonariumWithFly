@@ -51,7 +51,7 @@ export class Matrix3D {
     if (data == null)
       return;
 
-    let l = data.length;
+    const l = data.length;
     if (l == 16) {
       this.m11 = data[0];
       this.m12 = data[1];
@@ -171,7 +171,7 @@ export class Matrix3D {
     qy /= qw;
     qz /= qw;
 
-    let wz = qz - z;
+    const wz = qz - z;
     if (wz == 0) {
       ret.x = x;
       ret.y = y;
@@ -180,7 +180,7 @@ export class Matrix3D {
       return ret;
     }
 
-    let t = -z / wz;
+    const t = -z / wz;
     x += t * (qx - x);
     y += t * (qy - y);
 
@@ -192,7 +192,7 @@ export class Matrix3D {
   }
 
   project(point: IPoint3D, ret: IPoint3D = { x: 0, y: 0, z: 0, w: 1 }): IPoint3D {
-    let z = point.z;
+    const z = point.z;
     let w = point.x * this.m14 + point.y * this.m24 + z * this.m34 + this.m44;
     let x = point.x * this.m11 + point.y * this.m21 + z * this.m31 + this.m41;
     let y = point.x * this.m12 + point.y * this.m22 + z * this.m32 + this.m42;
@@ -272,19 +272,19 @@ export class Matrix3D {
   */
   invert(target?: Matrix3D): Matrix3D {
     target = target || this;
-    let data: number[] = [];
+    const data: number[] = [];
 
-    let n11 = this.m11, n12 = this.m12, n13 = this.m13, n14 = this.m14;
-    let n21 = this.m21, n22 = this.m22, n23 = this.m23, n24 = this.m24;
-    let n31 = this.m31, n32 = this.m32, n33 = this.m33, n34 = this.m34;
-    let n41 = this.m41, n42 = this.m42, n43 = this.m43, n44 = this.m44;
+    const n11 = this.m11, n12 = this.m12, n13 = this.m13, n14 = this.m14;
+    const n21 = this.m21, n22 = this.m22, n23 = this.m23, n24 = this.m24;
+    const n31 = this.m31, n32 = this.m32, n33 = this.m33, n34 = this.m34;
+    const n41 = this.m41, n42 = this.m42, n43 = this.m43, n44 = this.m44;
 
     data[0] = n23 * n34 * n42 - n24 * n33 * n42 + n24 * n32 * n43 - n22 * n34 * n43 - n23 * n32 * n44 + n22 * n33 * n44;
     data[1] = n14 * n33 * n42 - n13 * n34 * n42 - n14 * n32 * n43 + n12 * n34 * n43 + n13 * n32 * n44 - n12 * n33 * n44;
     data[2] = n13 * n24 * n42 - n14 * n23 * n42 + n14 * n22 * n43 - n12 * n24 * n43 - n13 * n22 * n44 + n12 * n23 * n44;
     data[3] = n14 * n23 * n32 - n13 * n24 * n32 - n14 * n22 * n33 + n12 * n24 * n33 + n13 * n22 * n34 - n12 * n23 * n34;
 
-    let det = n11 * data[0] + n21 * data[1] + n31 * data[2] + n41 * data[3];
+    const det = n11 * data[0] + n21 * data[1] + n31 * data[2] + n41 * data[3];
     if (det == 0) {
       console.warn('Can not invert matrix, determinant is 0');
       return this;
@@ -310,8 +310,8 @@ export class Matrix3D {
 
   setCSS(cssString: string): Matrix3D {
     if (!cssString || cssString == 'none') return this.identity();
-    let trans: any = cssString.replace('matrix3d(', '').replace('matrix(', '').replace(')', '').split(',');
-    let l = trans.length;
+    const trans: any = cssString.replace('matrix3d(', '').replace('matrix(', '').replace(')', '').split(',');
+    const l = trans.length;
     for (let i = 0; i < l; ++i) {
       trans[i] = CSSNumber.parse(trans[i]);
     }
@@ -339,22 +339,22 @@ export class Matrix3D {
   }
 
   static multiply(a: IMatrix3D, b: IMatrix3D, ret: Matrix3D = new Matrix3D()): Matrix3D {
-    let m11 = a.m11 * b.m11 + a.m12 * b.m21 + a.m13 * b.m31 + a.m14 * b.m41;
-    let m12 = a.m11 * b.m12 + a.m12 * b.m22 + a.m13 * b.m32 + a.m14 * b.m42;
-    let m13 = a.m11 * b.m13 + a.m12 * b.m23 + a.m13 * b.m33 + a.m14 * b.m43;
-    let m14 = a.m11 * b.m14 + a.m12 * b.m24 + a.m13 * b.m34 + a.m14 * b.m44;
-    let m21 = a.m21 * b.m11 + a.m22 * b.m21 + a.m23 * b.m31 + a.m24 * b.m41;
-    let m22 = a.m21 * b.m12 + a.m22 * b.m22 + a.m23 * b.m32 + a.m24 * b.m42;
-    let m23 = a.m21 * b.m13 + a.m22 * b.m23 + a.m23 * b.m33 + a.m24 * b.m43;
-    let m24 = a.m21 * b.m14 + a.m22 * b.m24 + a.m23 * b.m34 + a.m24 * b.m44;
-    let m31 = a.m31 * b.m11 + a.m32 * b.m21 + a.m33 * b.m31 + a.m34 * b.m41;
-    let m32 = a.m31 * b.m12 + a.m32 * b.m22 + a.m33 * b.m32 + a.m34 * b.m42;
-    let m33 = a.m31 * b.m13 + a.m32 * b.m23 + a.m33 * b.m33 + a.m34 * b.m43;
-    let m34 = a.m31 * b.m14 + a.m32 * b.m24 + a.m33 * b.m34 + a.m34 * b.m44;
-    let m41 = a.m41 * b.m11 + a.m42 * b.m21 + a.m43 * b.m31 + a.m44 * b.m41;
-    let m42 = a.m41 * b.m12 + a.m42 * b.m22 + a.m43 * b.m32 + a.m44 * b.m42;
-    let m43 = a.m41 * b.m13 + a.m42 * b.m23 + a.m43 * b.m33 + a.m44 * b.m43;
-    let m44 = a.m41 * b.m14 + a.m42 * b.m24 + a.m43 * b.m34 + a.m44 * b.m44;
+    const m11 = a.m11 * b.m11 + a.m12 * b.m21 + a.m13 * b.m31 + a.m14 * b.m41;
+    const m12 = a.m11 * b.m12 + a.m12 * b.m22 + a.m13 * b.m32 + a.m14 * b.m42;
+    const m13 = a.m11 * b.m13 + a.m12 * b.m23 + a.m13 * b.m33 + a.m14 * b.m43;
+    const m14 = a.m11 * b.m14 + a.m12 * b.m24 + a.m13 * b.m34 + a.m14 * b.m44;
+    const m21 = a.m21 * b.m11 + a.m22 * b.m21 + a.m23 * b.m31 + a.m24 * b.m41;
+    const m22 = a.m21 * b.m12 + a.m22 * b.m22 + a.m23 * b.m32 + a.m24 * b.m42;
+    const m23 = a.m21 * b.m13 + a.m22 * b.m23 + a.m23 * b.m33 + a.m24 * b.m43;
+    const m24 = a.m21 * b.m14 + a.m22 * b.m24 + a.m23 * b.m34 + a.m24 * b.m44;
+    const m31 = a.m31 * b.m11 + a.m32 * b.m21 + a.m33 * b.m31 + a.m34 * b.m41;
+    const m32 = a.m31 * b.m12 + a.m32 * b.m22 + a.m33 * b.m32 + a.m34 * b.m42;
+    const m33 = a.m31 * b.m13 + a.m32 * b.m23 + a.m33 * b.m33 + a.m34 * b.m43;
+    const m34 = a.m31 * b.m14 + a.m32 * b.m24 + a.m33 * b.m34 + a.m34 * b.m44;
+    const m41 = a.m41 * b.m11 + a.m42 * b.m21 + a.m43 * b.m31 + a.m44 * b.m41;
+    const m42 = a.m41 * b.m12 + a.m42 * b.m22 + a.m43 * b.m32 + a.m44 * b.m42;
+    const m43 = a.m41 * b.m13 + a.m42 * b.m23 + a.m43 * b.m33 + a.m44 * b.m43;
+    const m44 = a.m41 * b.m14 + a.m42 * b.m24 + a.m43 * b.m34 + a.m44 * b.m44;
 
     ret.m11 = m11;
     ret.m12 = m12;
