@@ -1,0 +1,9 @@
+{
+  "*.ts": [
+    "eslint --fix",
+    "tsc --noEmit"
+  ],
+  "*.html": [
+    "eslint --fix"
+  ]
+}
