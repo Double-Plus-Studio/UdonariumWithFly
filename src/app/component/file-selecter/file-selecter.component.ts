@@ -22,8 +22,8 @@ import { ChatMessageService } from 'service/chat-message.service';
 
 @Component({
     selector: 'file-selector',
-    templateUrl: './file-selector.component.html',
-    styleUrls: ['./file-selector.component.css'],
+    templateUrl: './file-selecter.component.html',
+    styleUrls: ['./file-selecter.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [
         trigger('scaleInOut', [
