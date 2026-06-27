@@ -63,7 +63,7 @@ export class TabletopObject extends ObjectNode {
     if (!this.imageDataElement) return this._imageFile;
     const imageIdElement = this.imageElement;
     if (imageIdElement && this._imageFile.identifier !== imageIdElement.value) {
-      const file: ImageFile = ImageStorage.instance.get(<string>imageIdElement.value);
+      const file: ImageFile | null = ImageStorage.instance.get(<string>imageIdElement.value);
       this._imageFile = file ? file : ImageFile.Empty;
     }
     return this._imageFile;
@@ -72,7 +72,7 @@ export class TabletopObject extends ObjectNode {
     if (!this.imageDataElement) return [];
     const elements = this.imageDataElement.getElementsByName('imageIdentifier');
     return elements.map((element) => {
-      const file: ImageFile = ImageStorage.instance.get(<string>element.value);
+      const file: ImageFile | null = ImageStorage.instance.get(<string>element.value);
       return file ? file : null;
     }).filter((file) => { return file != null });
   }
@@ -93,21 +93,21 @@ export class TabletopObject extends ObjectNode {
     if (!this.imageDataElement) return [];
     const elements = this.imageDataElement.getElementsByName('faceIcon');
     return elements.map((element) => {
-      const file: ImageFile = ImageStorage.instance.get(<string>element.value);
+      const file: ImageFile | null = ImageStorage.instance.get(<string>element.value);
       return file ? file : null;
     }).filter((file) => { return file != null });
   }
 
   get shadowImageFile(): ImageFile {
     if (!this.imageDataElement) return this._shadowImageFile;
-    const imageIdElement: DataElement = this.imageDataElement.getFirstElementByName('shadowImageIdentifier');
+    const imageIdElement: DataElement | null = this.imageDataElement.getFirstElementByName('shadowImageIdentifier');
     if (imageIdElement && this._shadowImageFile.identifier !== imageIdElement.value) {
-      const file: ImageFile = ImageStorage.instance.get(<string>imageIdElement.value);
+      const file: ImageFile | null = ImageStorage.instance.get(<string>imageIdElement.value);
       this._shadowImageFile = file ? file : ImageFile.Empty;
     } else {
-      const imageIdElement: DataElement = this.imageElement;
-      if (imageIdElement && this._shadowImageFile.identifier !== imageIdElement.currentValue) {
-        const file: ImageFile = ImageStorage.instance.get(<string>imageIdElement.currentValue);
+      const imageIdElement2: DataElement | null = this.imageElement;
+      if (imageIdElement2 && this._shadowImageFile.identifier !== imageIdElement2.currentValue) {
+        const file: ImageFile | null = ImageStorage.instance.get(<string>imageIdElement2.currentValue);
         this._shadowImageFile = file ? file : ImageFile.Empty;
       }
     }
@@ -187,7 +187,7 @@ export class TabletopObject extends ObjectNode {
   }
 
   getUrls(): DataElement[] {
-    return this.rootDataElement.getElementsByType('url');
+    return this.rootDataElement?.getElementsByType('url') ?? [];
   }
 
   protected setCommonValue(elementName: string, value: any) {

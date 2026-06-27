@@ -110,7 +110,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   }
 
   get audios(): AudioFile[] { return AudioStorage.instance.audios.filter(audio => !audio.isHidden); }
-  get jukebox(): Jukebox { return ObjectStore.instance.get<Jukebox>('Jukebox'); }
+  get jukebox(): Jukebox { return ObjectStore.instance.get<Jukebox>('Jukebox')!; }
 
   get percentVolume(): number { return Math.floor(this.volume * 100); }
   set percentVolume(percentVolume: number) { this.volume = percentVolume / 100; }

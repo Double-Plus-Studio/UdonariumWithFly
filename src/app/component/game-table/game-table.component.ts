@@ -112,9 +112,9 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
       if (this.tableImage.state === ImageState.THUMBNAIL || this.tableImage.state === ImageState.COMPLETE) {
         this._currentTableImageState = this.tableImage.state;
         if (this._currentTableImageUrl) revokeTableImageUrl = this._currentTableImageUrl;
-        this._currentTableImageUrl = URL.createObjectURL(this.tableImage.blob);
+        this._currentTableImageUrl = URL.createObjectURL(this.tableImage.blob as Blob);
       } else {
-        this._currentTableImageUrl = this.tableImage.url;
+        this._currentTableImageUrl = this.tableImage.url!;
       }
     }
     if (isFlash || this._currentBackgroundImage?.identifier != this.backgroundImage.identifier || this._currentBackgroundImageState != this.backgroundImage.state) {
@@ -123,9 +123,9 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
         this._currentBackgroundImageState = this.backgroundImage.state;
         if (this._currentBackgroundImageUrl) revokeBackgroundImageUrl = this._currentBackgroundImageUrl;
         this.isBackgroundImageLoaded = false;
-        this._currentBackgroundImageUrl = URL.createObjectURL(this.backgroundImage.blob);
+        this._currentBackgroundImageUrl = URL.createObjectURL(this.backgroundImage.blob!);
       } else {
-        this._currentBackgroundImageUrl = this.backgroundImage.url;
+        this._currentBackgroundImageUrl = this.backgroundImage.url!;
       }
     }
     if (isFlash || this._currentBackgroundImage2?.identifier != this.backgroundImage2.identifier || this._currentBackgroundImageState2 != this.backgroundImage2.state) {
@@ -134,9 +134,9 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
         this._currentBackgroundImageState2 = this.backgroundImage2.state;
         if (this._currentBackgroundImageUrl2) revokeBackgroundImageUrl2 = this._currentBackgroundImageUrl2;
         this.isBackgroundImageLoaded2 = false;
-        this._currentBackgroundImageUrl2 = URL.createObjectURL(this.backgroundImage2.blob);
+        this._currentBackgroundImageUrl2 = URL.createObjectURL(this.backgroundImage2.blob!);
       } else {
-        this._currentBackgroundImageUrl2 = this.backgroundImage2.url;
+        this._currentBackgroundImageUrl2 = this.backgroundImage2.url!;
       }
     }
     if (revokeTableImageUrl || revokeBackgroundImageUrl || revokeBackgroundImageUrl2) {

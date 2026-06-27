@@ -61,12 +61,12 @@ export class PanelService {
       panelComponentRef = null;
     });
 
-    bodyComponentRef.onDestroy(() => {
-      bodyComponentRef = null;
+    bodyComponentRef!.onDestroy(() => {
+      bodyComponentRef = null as any;
     });
 
     const panelOnChanges = panelComponentRef.instance as OnChanges;
-    const bodyOnChanges = bodyComponentRef.instance as OnChanges;
+    const bodyOnChanges = bodyComponentRef!.instance as OnChanges;
     if (panelOnChanges?.ngOnChanges != null || bodyOnChanges?.ngOnChanges != null) {
       queueMicrotask(() => {
         if (bodyComponentRef && bodyOnChanges?.ngOnChanges != null) bodyOnChanges?.ngOnChanges({});
@@ -74,7 +74,7 @@ export class PanelService {
       });
     }
 
-    return <T>bodyComponentRef.instance;
+    return <T>bodyComponentRef!.instance;
   }
 
   close() {

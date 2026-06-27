@@ -122,12 +122,14 @@ export class RangeArea extends TabletopObject {
     }
     object.createDataElements();
 
-    object.commonDataElement.appendChild(DataElement.create('name', name, {}, 'name_' + object.identifier));
-    object.commonDataElement.appendChild(DataElement.create('length', length, {}, 'length_' + object.identifier));
-    object.commonDataElement.appendChild(DataElement.create('width', width, {}, 'width_' + object.identifier));
-    object.commonDataElement.appendChild(DataElement.create('opacity', opacity, { type: 'numberResource', currentValue: opacity }, 'opacity_' + object.identifier));
-    object.commonDataElement.appendChild(DataElement.create('color', "#ff0000", { type: 'colors' , currentValue: '#ffff00' }, 'ccolor_' + object.identifier));
-    object.commonDataElement.appendChild(DataElement.create('altitude', 0, {}, 'altitude_' + object.identifier));
+    if (object.commonDataElement) {
+      object.commonDataElement.appendChild(DataElement.create('name', name, {}, 'name_' + object.identifier));
+      object.commonDataElement.appendChild(DataElement.create('length', length, {}, 'length_' + object.identifier));
+      object.commonDataElement.appendChild(DataElement.create('width', width, {}, 'width_' + object.identifier));
+      object.commonDataElement.appendChild(DataElement.create('opacity', opacity, { type: 'numberResource', currentValue: opacity }, 'opacity_' + object.identifier));
+      object.commonDataElement.appendChild(DataElement.create('color', "#ff0000", { type: 'colors' , currentValue: '#ffff00' }, 'ccolor_' + object.identifier));
+      object.commonDataElement.appendChild(DataElement.create('altitude', 0, {}, 'altitude_' + object.identifier));
+    }
     object.initialize();
 
     return object;

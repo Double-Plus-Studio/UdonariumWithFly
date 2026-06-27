@@ -20,7 +20,7 @@ import { PanelOption, PanelService } from 'service/panel.service';
 export class CardStackListComponent implements OnChanges, OnDestroy {
   @Input() cardStack: CardStack | null = null;
 
-  owner: string = Network.peer.userId;
+  owner: string = Network.peer?.userId ?? '';
   
   readonly CardStateFront = CardState.FRONT;
   readonly CardStateBack = CardState.BACK;
@@ -32,16 +32,17 @@ export class CardStackListComponent implements OnChanges, OnDestroy {
   ) { }
 
   ngOnChanges() {
-    Promise.resolve().then(() => this.panelService.title = this.cardStack.name + ' 的牌列表');
+    if (!this.cardStack) return;
+    Promise.resolve().then(() => this.panelService.title = this.cardStack!.name + ' 的牌列表');
     EventSystem.unregister(this);
     EventSystem.register(this)
-      .on(`UPDATE_GAME_OBJECT/identifier/${this.cardStack?.identifier}`, event => {
+      .on(`UPDATE_GAME_OBJECT/identifier/${this.cardStack.identifier}`, event => {
         this.changeDetector.markForCheck();
-        if (this.cardStack.owner !== this.owner) {
+        if (this.cardStack && this.cardStack.owner !== this.owner) {
           this.panelService.close();
         }
       })
-      .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.cardStack?.identifier}`, event => {
+      .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.cardStack.identifier}`, event => {
         this.changeDetector.markForCheck();
       })
       .on('DELETE_GAME_OBJECT', event => {
@@ -53,12 +54,13 @@ export class CardStackListComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy() {
     EventSystem.unregister(this);
-    if (this.cardStack.owner === this.owner) {
+    if (this.cardStack && this.cardStack.owner === this.owner) {
       this.cardStack.owner = '';
     }
   }
 
   drawCard(card: Card) {
+    if (!this.cardStack || !card.parent) return;
     card.parent.removeChild(card);
     card.location.x = this.cardStack.location.x + 100 + (Math.random() * 50);
     card.location.y = this.cardStack.location.y + 25 + (Math.random() * 50);
@@ -76,6 +78,7 @@ export class CardStackListComponent implements OnChanges, OnDestroy {
 
   up(card: Card) {
     const parent = card.parent;
+    if (!parent) return;
     const index: number = parent.children.indexOf(card);
     if (0 < index) {
       const prev = parent.children[index - 1];
@@ -85,6 +88,7 @@ export class CardStackListComponent implements OnChanges, OnDestroy {
 
   down(card: Card) {
     const parent = card.parent;
+    if (!parent) return;
     const index: number = parent.children.indexOf(card);
     if (index < parent.children.length - 1) {
       const next = parent.children[index + 1];
@@ -93,7 +97,7 @@ export class CardStackListComponent implements OnChanges, OnDestroy {
   }
 
   close(needShuffle: boolean = false) {
-    if (needShuffle) {
+    if (this.cardStack && needShuffle) {
       this.cardStack.shuffle();
       EventSystem.call('SHUFFLE_CARD_STACK', { identifier: this.cardStack.identifier });
       SoundEffect.play(PresetSound.cardShuffle);

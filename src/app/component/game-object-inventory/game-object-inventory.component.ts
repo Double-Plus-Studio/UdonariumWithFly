@@ -209,7 +209,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
               const isStealthMode = GameCharacter.isStealthMode;
               gameCharacter.setLocation('table');
               this.selectionService.remove(gameCharacter);
-              if (gameCharacter.isHideIn && gameCharacter.isVisible && !isStealthMode && !PeerCursor.myCursor.isGMMode) {
+              if (gameCharacter.isHideIn && gameCharacter.isVisible && !isStealthMode && !PeerCursor.myCursor!.isGMMode) {
                 this.modalService.open(ConfirmationComponent, {
                   title: '隱身模式',
                   text: '將進入隱身模式。',
@@ -287,7 +287,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
           EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: gameObject.identifier });
           gameObject.setLocation('table');
           this.selectionService.remove(gameObject);
-          if (gameObject.isHideIn && gameObject.isVisible && !isStealthMode && !PeerCursor.myCursor.isGMMode) {
+          if (gameObject.isHideIn && gameObject.isVisible && !isStealthMode && !PeerCursor.myCursor!.isGMMode) {
             this.modalService.open(ConfirmationComponent, {
               title: '隱身模式',
               text: '將進入隱身模式。',
@@ -316,7 +316,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       actions.push({
         name: '只有自己看見位置（隱身）',
         action: () => {
-          if (gameObject.location.name === 'table' && !GameCharacter.isStealthMode && !PeerCursor.myCursor.isGMMode) {
+          if (gameObject.location.name === 'table' && !GameCharacter.isStealthMode && !PeerCursor.myCursor!.isGMMode) {
             this.modalService.open(ConfirmationComponent, {
               title: '隱身模式',
               text: '將進入隱身模式。',
@@ -574,7 +574,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
               EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: gameObject.identifier });
               gameObject.setLocation(location.name);
               this.selectionService.remove(gameObject);
-              if (location.name === 'table' && gameObject.isHideIn && gameObject.isVisible && !isStealthMode && !PeerCursor.myCursor.isGMMode) {
+              if (location.name === 'table' && gameObject.isHideIn && gameObject.isVisible && !isStealthMode && !PeerCursor.myCursor!.isGMMode) {
                 this.modalService.open(ConfirmationComponent, {
                   title: '隱身模式',
                   text: '將進入隱身模式。',

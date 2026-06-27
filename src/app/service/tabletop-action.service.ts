@@ -49,15 +49,17 @@ export class TabletopActionService {
 
   createTerrain(position: PointerCoordinate): Terrain | undefined {
     const url: string = './assets/images/tex.jpg';
-    let image: ImageFile = ImageStorage.instance.get(url);
+    let image: ImageFile | null = ImageStorage.instance.get(url);
     //if (!image) image = ImageStorage.instance.add(url);
     if (!image) {
       image = ImageStorage.instance.add(url);
-      ImageTag.create(image.identifier).tag = '*default 地形';
+      if (image) {
+        ImageTag.create(image.identifier).tag = '*default 地形';
+      }
     }
 
     const viewTable = this.getViewTable();
-    if (!viewTable) return;
+    if (!viewTable || !image) return;
 
     const terrain = Terrain.create('地形', 2, 2, 2, image.identifier, image.identifier);
     terrain.location.x = position.x - 50;
@@ -82,24 +84,34 @@ export class TabletopActionService {
 
     diceSymbol.nothingFaces.forEach(face => {
       const url: string = `./assets/images/dice/${imagePathPrefix}/${imagePathPrefix}[0].png`;
-      image = ImageStorage.instance.get(url)
+      image = ImageStorage.instance.get(url) ?? null;
       //if (!image) { image = ImageStorage.instance.add(url); }
       if (!image) {
         image = ImageStorage.instance.add(url);
-        ImageTag.create(image.identifier).tag = `*default ${ diceType === DiceType.D2 ? '硬幣' : '骰子'}`;
+        if (image) {
+          ImageTag.create(image.identifier).tag = `*default ${ diceType === DiceType.D2 ? '硬幣' : '骰子'}`;
+        }
       }
-      diceSymbol.imageDataElement.getFirstElementByName(face).value = image.identifier;
+      if (image && diceSymbol.imageDataElement) {
+        const elem = diceSymbol.imageDataElement.getFirstElementByName(face);
+        if (elem) elem.value = image.identifier;
+      }
     });
-    
+
     diceSymbol.faces.forEach(face => {
       const url: string = `./assets/images/dice/${imagePathPrefix}/${imagePathPrefix}[${face}].png`;
-      image = ImageStorage.instance.get(url);
+      image = ImageStorage.instance.get(url) ?? null;
       //if (!image) { image = ImageStorage.instance.add(url); }
       if (!image) {
         image = ImageStorage.instance.add(url);
-        ImageTag.create(image.identifier).tag = `*default ${ diceType === DiceType.D2 ? '硬幣' : '骰子'}`;
+        if (image) {
+          ImageTag.create(image.identifier).tag = `*default ${ diceType === DiceType.D2 ? '硬幣' : '骰子'}`;
+        }
       }
-      diceSymbol.imageDataElement.getFirstElementByName(face).value = image.identifier;
+      if (image && diceSymbol.imageDataElement) {
+        const elem = diceSymbol.imageDataElement.getFirstElementByName(face);
+        if (elem) elem.value = image.identifier;
+      }
     });
 
     diceSymbol.location.x = position.x - 25;
@@ -111,20 +123,22 @@ export class TabletopActionService {
   createBlankCard(position: PointerCoordinate): Card {
     const frontUrl = './assets/images/trump/blank_card.png';
     const backUrl = './assets/images/trump/z01.gif';
-    let frontImage: ImageFile;
-    let backImage: ImageFile;
+    let frontImage: ImageFile | null = ImageStorage.instance.get(frontUrl);
+    let backImage: ImageFile | null = ImageStorage.instance.get(backUrl);
 
-    frontImage = ImageStorage.instance.get(frontUrl);
     if (!frontImage) {
       frontImage = ImageStorage.instance.add(frontUrl);
-      ImageTag.create(frontImage.identifier).tag = '*default 牌';
+      if (frontImage) {
+        ImageTag.create(frontImage.identifier).tag = '*default 牌';
+      }
     }
-    backImage = ImageStorage.instance.get(backUrl);
     if (!backImage) {
       backImage = ImageStorage.instance.add(backUrl);
-      ImageTag.create(backImage.identifier).tag = '*default 牌';
+      if (backImage) {
+        ImageTag.create(backImage.identifier).tag = '*default 牌';
+      }
     }
-    const card = Card.create('牌', frontImage.identifier, backImage.identifier);
+    const card = Card.create('牌', frontImage?.identifier ?? '', backImage?.identifier ?? '');
     card.location.x = position.x - 25;
     card.location.y = position.y - 25;
     card.posZ = position.z;
@@ -426,6 +440,6 @@ export class TabletopActionService {
   }
 
   private getViewTable(): GameTable {
-    return TableSelector.instance.viewTable;
+    return TableSelector.instance.viewTable || ({} as GameTable);
   }
 }

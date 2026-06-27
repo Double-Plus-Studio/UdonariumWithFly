@@ -80,12 +80,12 @@ export class StandList extends DataElement {
     
     for (const standElement of this.standElements) {
       if (!standElement.getFirstElementByName('imageIdentifier') || !standElement.getFirstElementByName('conditionType')) continue;
-      const conditionType = standElement.getFirstElementByName('conditionType').value;
+      const conditionType = standElement.getFirstElementByName('conditionType')?.value;
       if (conditionType == StandConditionType.NotConditionStandUp) continue;
       if (conditionType == StandConditionType.Default) {
         defautStands.push(standElement);
       } else {
-        const postfixes = (standElement.getFirstElementByName('postfix') ? standElement.getFirstElementByName('postfix').value.toString() : null);
+        const postfixes = (standElement.getFirstElementByName('postfix')?.value.toString() ?? null);
         const targetImageIdentifiers = (standElement.getFirstElementByName('targetImageIdentifier') ? standElement.getElementsByName('targetImageIdentifier').map(e => e.value) : []);
         let conditionPostfix = false;
         let conditionImage = false;
@@ -118,8 +118,8 @@ export class StandList extends DataElement {
         useStands = defautStands;
       } else {
         useStands = matchStands.filter(elm => {
-          const value = elm.getFirstElementByName('conditionType').value;
-          return +value == maxPriority;
+          const value = elm.getFirstElementByName('conditionType')?.value;
+          return +value! == maxPriority;
         });
       }
     }

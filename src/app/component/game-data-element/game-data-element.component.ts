@@ -38,14 +38,14 @@ export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
   get currentValue(): number | string { return this._currentValue == null ? '' : this._currentValue; }
   set currentValue(currentValue: number | string) { this._currentValue = currentValue; this.setUpdateTimer(); }
 
-  get abilityScore(): number { return this.gameDataElement.calcAbilityScore(); }
+  get abilityScore(): number { return this.gameDataElement?.calcAbilityScore() ?? 0; }
 
   get isTabletopObjectName() {
-    return this.isTagLocked && (this.gameDataElement.name === 'name');
+    return this.isTagLocked && (this.gameDataElement?.name === 'name');
   }
 
   get tabletopObjectName() {
-    const element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
+    const element = this.tabletopObject?.commonDataElement?.getFirstElementByName('name') || this.tabletopObject?.commonDataElement?.getFirstElementByName('title');
     return element ? <string>element.value : '';
   }
 
@@ -55,7 +55,7 @@ export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
     if (ary.length <= 1) return (this.value == null || this.value == '') ? '' : this.currentValue.toString();
     let ret = (this.value == null || this.value == '') ? ary[1] : ary[0];
     if (this.tabletopObject instanceof GameCharacter && this.tabletopObject.chatPalette) {
-      ret = this.tabletopObject.chatPalette.evaluate(ret, this.tabletopObject.rootDataElement);
+      ret = this.tabletopObject.chatPalette.evaluate(ret, this.tabletopObject.rootDataElement!);
     }
     return ret;
   }
@@ -76,14 +76,14 @@ export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   get isNotApplicable(): boolean {
-    return this.isCommonValue && this.descriptionType === 'range-not-width' && this.gameDataElement.name === 'width';
+    return this.isCommonValue && this.descriptionType === 'range-not-width' && this.gameDataElement?.name === 'width';
   }
 
   @HostBinding('class.with-send-button')
   get canSendToChat(): boolean {
     if (this.isEdit || this.isTagLocked || this.isCommonValue || this.isHideText) return false;
     if (!(this.tabletopObject instanceof GameCharacter)) return false;
-    if (this.gameDataElement.children.length > 0) return false;
+    if ((this.gameDataElement?.children?.length ?? 0) > 0) return false;
     return !!this.value?.toString()?.trim();
   }
 
@@ -109,7 +109,7 @@ export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   get identifier(): string {
-    return this.gameDataElement.identifier;
+    return this.gameDataElement?.identifier ?? '';
   }
 
   private updateTimer: NodeJS.Timeout | null = null;
@@ -131,13 +131,13 @@ export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
         if (this.gameDataElement && event.data.identifier === this.gameDataElement.identifier) {
           this.setValues(this.gameDataElement);
           isDetectChange = true;
-        } else if (this.tabletopObject && this.tabletopObject.contains(this.gameDataElement)) {
+        } else if (this.tabletopObject && this.gameDataElement && this.tabletopObject.contains(this.gameDataElement)) {
           isDetectChange = true;
         }
         if (isDetectChange) this.changeDetector.markForCheck();
       })
       .on(`UPDATE_GAME_OBJECT/identifier/${this.gameDataElement?.identifier}`, event => {
-        this.setValues(this.gameDataElement);
+        if (this.gameDataElement) this.setValues(this.gameDataElement);
         this.changeDetector.markForCheck();
       })
       .on('DELETE_GAME_OBJECT', event => {
@@ -152,15 +152,19 @@ export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   addElement() {
-    this.gameDataElement.appendChild(DataElement.create('標籤', '', {}));
+    if (this.gameDataElement) {
+      this.gameDataElement.appendChild(DataElement.create('標籤', '', {}));
+    }
   }
 
   deleteElement() {
-    this.gameDataElement.destroy();
+    this.gameDataElement?.destroy();
   }
 
   upElement() {
+    if (!this.gameDataElement) return;
     const parentElement = this.gameDataElement.parent;
+    if (!parentElement) return;
     const index: number = parentElement.children.indexOf(this.gameDataElement);
     if (0 < index) {
       const prevElement = parentElement.children[index - 1];
@@ -169,7 +173,9 @@ export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   downElement() {
+    if (!this.gameDataElement) return;
     const parentElement = this.gameDataElement.parent;
+    if (!parentElement) return;
     const index: number = parentElement.children.indexOf(this.gameDataElement);
     if (index < parentElement.children.length - 1) {
       const nextElement = parentElement.children[index + 1];
@@ -178,7 +184,9 @@ export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   setElementType(type: string) {
-    this.gameDataElement.setAttribute('type', type);
+    if (this.gameDataElement) {
+      this.gameDataElement.setAttribute('type', type);
+    }
   }
 
   isNum(n: any): boolean {
@@ -200,8 +208,9 @@ export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private setUpdateTimer() {
-    clearTimeout(this.updateTimer);
+    clearTimeout(this.updateTimer as any);
     this.updateTimer = setTimeout(() => {
+      if (!this.gameDataElement) return;
       if (this.gameDataElement.name !== this.name) this.gameDataElement.name = this.name;
       if (this.gameDataElement.currentValue !== this.currentValue) this.gameDataElement.currentValue = this.currentValue;
       if (this.gameDataElement.value !== this.value) this.gameDataElement.value = this.value;

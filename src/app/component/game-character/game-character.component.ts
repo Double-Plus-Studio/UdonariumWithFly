@@ -106,7 +106,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   get height(): number { return MathUtil.clampMin(this.gameCharacter?.height ?? 0); }
 
   
-  get imageFile(): ImageFile { return this.gameCharacter ? this.gameCharacter.imageFile : null as any; }
+  get imageFile(): ImageFile { return this.gameCharacter ? this.gameCharacter.imageFile! : ImageFile.Empty; }
   get rotate(): number { return this.gameCharacter?.rotate ?? 0; }
   set rotate(rotate: number) { if (this.gameCharacter) this.gameCharacter.rotate = rotate; }
   get roll(): number { return this.gameCharacter?.roll ?? 0; }
@@ -135,14 +135,14 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   get isVisible(): boolean { return this.gameCharacter?.isVisible ?? true; }
   get isGMMode(): boolean{ return PeerCursor.myCursor ? PeerCursor.myCursor.isGMMode : false; }
 
-  get faceIcon(): ImageFile { return this.gameCharacter ? this.gameCharacter.faceIcon : null as any; }
+  get faceIcon(): ImageFile | null { return this.gameCharacter ? this.gameCharacter.faceIcon : null; }
 
   get dialogFaceIcon(): ImageFile | null {
     if (!this.dialog || !this.dialog.faceIconIdentifier) return null;
     return ImageStorage.instance.get(<string>this.dialog.faceIconIdentifier);
   }
 
-  get shadowImageFile(): ImageFile { return this.gameCharacter ? this.gameCharacter.shadowImageFile : null as any; }
+  get shadowImageFile(): ImageFile | null { return this.gameCharacter ? this.gameCharacter.shadowImageFile : null; }
 
   get elevation(): number {
     return +((this.gameCharacter!.posZ + (this.altitude * this.gridSize)) / this.gridSize).toFixed(1);
@@ -191,7 +191,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
       this.changeDetector.markForCheck();
     }, Array.from(text).length * speechDelay + 6000);
 
-    this.gameCharacter!.dialog = dialog;
+    if (dialog) this.gameCharacter!.dialog = dialog as any;
     this.gameCharacter!.isEmote = isEmote;
     count = 0;
     let countLength = 0;
@@ -500,17 +500,19 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
       colideLayers: ['terrain', 'text-note', 'character']
     };
     this.rotableOption = {
-      tabletopObject: this.gameCharacter
+      tabletopObject: this.gameCharacter as any
     };
     this.rollOption = {
-      tabletopObject: this.gameCharacter,
+      tabletopObject: this.gameCharacter as any,
       targetPropertyName: 'roll',
     };
   }
 
   ngAfterViewInit() {
     queueMicrotask(() => {
-      this.gameCharacter.isLoaded = true;
+      if (this.gameCharacter) {
+        this.gameCharacter.isLoaded = true;
+      }
     });
   }
 
@@ -681,8 +683,10 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           checkBox: 'check'
         } : {
           name: '☐ 顯示💭', action: () => {
-            this.gameCharacter.isShowChatBubble = true;
-            EventSystem.trigger('UPDATE_INVENTORY', null);
+            if (this.gameCharacter) {
+              this.gameCharacter.isShowChatBubble = true;
+              EventSystem.trigger('UPDATE_INVENTORY', null);
+            }
           },
           checkBox: 'check'
         }),
@@ -795,7 +799,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
             if (!this.isHideIn) SoundEffect.play(PresetSound.sweep);
           }
         },
-        altitudeHande: this.gameCharacter
+        altitudeHande: this.gameCharacter as any
       },
       ContextMenuSeparator,
       { name: '顯示詳細...', action: () => { this.showDetail(this.gameCharacter!); } },

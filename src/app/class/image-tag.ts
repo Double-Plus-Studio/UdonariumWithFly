@@ -63,7 +63,7 @@ export class ImageTag extends ObjectNode {
     return delteingWords;
   }
 
-  static get(imageIdentifier: string): ImageTag {
+  static get(imageIdentifier: string): ImageTag | null {
     return ObjectStore.instance.get<ImageTag>(`imagetag_${imageIdentifier}`);
   }
 

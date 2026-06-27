@@ -95,8 +95,8 @@ export class UIPanelComponent implements OnInit {
     panel.style.transition = 'width 0.1s ease-in-out, height 0.1s ease-in-out';
     cntent.style.overflowY = 'hidden';
     setTimeout(() => {
-      panel.style.transition = null;
-      cntent.style.overflowY = null;
+      panel.style.transition = '';
+      cntent.style.overflowY = '';
     }, 100);
  
     if (!this.isMinimized && !this.isFullScreen) {
@@ -136,8 +136,8 @@ export class UIPanelComponent implements OnInit {
     panel.style.transition = 'width 0.1s ease-in-out, height 0.1s ease-in-out';
     cntent.style.overflowY = 'hidden';
     setTimeout(() => {
-      panel.style.transition = null;
-      cntent.style.overflowY = null;
+      panel.style.transition = '';
+      cntent.style.overflowY = '';
     }, 100);
     //this.isMinimized = false;
     if (!this.isMinimized && !this.isFullScreen) {
@@ -199,8 +199,8 @@ export class UIPanelComponent implements OnInit {
     panel.style.transition = 'width 0.1s ease-in-out, height 0.1s ease-in-out';
     cntent.style.overflowY = 'hidden';
     setTimeout(() => {
-      panel.style.transition = null;
-      cntent.style.overflowY = null;
+      panel.style.transition = '';
+      cntent.style.overflowY = '';
     }, 500);
 
     const saveWidth = panel.offsetWidth;

@@ -124,16 +124,18 @@ export class SkyWayConnection implements Connection {
 
   send(data: any, sendTo?: string) {
     if (this.connections.length < 1) return;
+    const encodedData = MessagePack.encode(data);
+    if (!encodedData) return;
     const container: DataContainer = {
-      data: MessagePack.encode(data),
+      data: encodedData,
       ttl: 1
     }
 
-    const byteLength = container.data.byteLength;
+    const byteLength = container.data!.byteLength;
     this.bandwidthUsage += byteLength;
     this.outboundQueue = this.outboundQueue.then(() => new Promise<void>((resolve, reject) => {
       setZeroTimeout(async () => {
-        if (1 * 1024 < container.data.byteLength && Array.isArray(data) && 1 < data.length) {
+        if (container.data && 1 * 1024 < container.data.byteLength && Array.isArray(data) && 1 < data.length) {
           const compressed = await compressAsync(container.data);
           if (compressed.byteLength < container.data.byteLength) {
             container.data = compressed;
@@ -292,12 +294,12 @@ export class SkyWayConnection implements Connection {
   private onData(conn: SkyWayDataConnection, container: DataContainer) {
     if (container.users && 0 < container.users.length) this.onUpdateUserIds(conn, container.users);
     if (0 < container.ttl) this.onRelay(conn, container);
-    if (!this.callback.onData) return;
+    if (!this.callback.onData || !container.data) return;
     const byteLength = container.data.byteLength;
     this.bandwidthUsage += byteLength;
     this.inboundQueue = this.inboundQueue.then(() => new Promise<void>((resolve, reject) => {
       setZeroTimeout(async () => {
-        if (!this.callback.onData) return;
+        if (!this.callback.onData || !container.data) return;
         const data = container.isCompressed ? await decompressAsync(container.data) : container.data;
         this.callback.onData(conn.peer, MessagePack.decode(data));
         this.bandwidthUsage -= byteLength;

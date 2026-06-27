@@ -41,57 +41,61 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() terrain: Terrain | null = null;
   @Input() is3D: boolean = false;
 
-  get name(): string { return this.terrain.name; }
-  get mode(): TerrainViewState { return this.terrain.mode; }
-  set mode(mode: TerrainViewState) { this.terrain.mode = mode; }
+  get name(): string { return this.terrain?.name ?? ''; }
+  get mode(): TerrainViewState { return this.terrain?.mode ?? TerrainViewState.ALL; }
+  set mode(mode: TerrainViewState) { if (this.terrain) this.terrain.mode = mode; }
 
-  get isLocked(): boolean { return this.terrain.isLocked; }
-  set isLocked(isLocked: boolean) { this.terrain.isLocked = isLocked; }
-  get hasWall(): boolean { return this.terrain.hasWall; }
-  get hasFloor(): boolean { return this.terrain.hasFloor; }
+  get isLocked(): boolean { return this.terrain?.isLocked ?? false; }
+  set isLocked(isLocked: boolean) { if (this.terrain) this.terrain.isLocked = isLocked; }
+  get hasWall(): boolean { return this.terrain?.hasWall ?? false; }
+  get hasFloor(): boolean { return this.terrain?.hasFloor ?? false; }
 
-  get wallImage(): ImageFile { return this.imageService.getSkeletonOr(this.terrain.wallImage); }
-  get floorImage(): ImageFile { return this.imageService.getSkeletonOr(this.terrain.floorImage); }
+  get wallImage(): ImageFile { return this.imageService.getSkeletonOr(this.terrain?.wallImage!); }
+  get floorImage(): ImageFile { return this.imageService.getSkeletonOr(this.terrain?.floorImage!); }
 
-  get height(): number { return MathUtil.clampMin(this.terrain.height); }
-  get width(): number { return MathUtil.clampMin(this.terrain.width); }
-  get depth(): number { return MathUtil.clampMin(this.terrain.depth); }
-  get altitude(): number { return this.terrain.altitude; }
-  set altitude(altitude: number) { this.terrain.altitude = altitude; }
+  get height(): number { return MathUtil.clampMin(this.terrain?.height ?? 1); }
+  get width(): number { return MathUtil.clampMin(this.terrain?.width ?? 1); }
+  get depth(): number { return MathUtil.clampMin(this.terrain?.depth ?? 1); }
+  get altitude(): number { return this.terrain?.altitude ?? 0; }
+  set altitude(altitude: number) { if (this.terrain) this.terrain.altitude = altitude; }
 
-  get isDropShadow(): boolean { return this.terrain.isDropShadow; }
-  set isDropShadow(isDropShadow: boolean) { this.terrain.isDropShadow = isDropShadow; }
-  get isSurfaceShading(): boolean { return this.terrain.isSurfaceShading; }
-  set isSurfaceShading(isSurfaceShading: boolean) { this.terrain.isSurfaceShading = isSurfaceShading; }
+  get isDropShadow(): boolean { return this.terrain?.isDropShadow ?? false; }
+  set isDropShadow(isDropShadow: boolean) { if (this.terrain) this.terrain.isDropShadow = isDropShadow; }
+  get isSurfaceShading(): boolean { return this.terrain?.isSurfaceShading ?? false; }
+  set isSurfaceShading(isSurfaceShading: boolean) { if (this.terrain) this.terrain.isSurfaceShading = isSurfaceShading; }
 
-  get isInteract(): boolean { return this.terrain.isInteract; }
-  set isInteract(isInteract: boolean) { this.terrain.isInteract = isInteract; }
+  get isInteract(): boolean { return this.terrain?.isInteract ?? false; }
+  set isInteract(isInteract: boolean) { if (this.terrain) this.terrain.isInteract = isInteract; }
 
-  get isSlope(): boolean { return this.terrain.isSlope; }
+  get isSlope(): boolean { return this.terrain?.isSlope ?? false; }
   set isSlope(isSlope: boolean) {
-    this.terrain.isSlope = isSlope;
-    if (!isSlope) this.terrain.slopeDirection = SlopeDirection.NONE;
+    if (this.terrain) {
+      this.terrain.isSlope = isSlope;
+      if (!isSlope) this.terrain.slopeDirection = SlopeDirection.NONE;
+    }
   }
 
   get slopeDirection(): number {
-    if (!this.terrain.isSlope) return SlopeDirection.NONE;
+    if (!this.terrain?.isSlope) return SlopeDirection.NONE;
     if (this.terrain.isSlope && this.terrain.slopeDirection === SlopeDirection.NONE) return SlopeDirection.BOTTOM;
-    return this.terrain.slopeDirection;
+    return this.terrain.slopeDirection ?? SlopeDirection.NONE;
   }
   set slopeDirection(slopeDirection: number) {
-    this.terrain.isSlope = (slopeDirection != SlopeDirection.NONE);
-    this.terrain.slopeDirection = slopeDirection;
+    if (this.terrain) {
+      this.terrain.isSlope = (slopeDirection != SlopeDirection.NONE);
+      this.terrain.slopeDirection = slopeDirection;
+    }
   }
-  
-  get isAltitudeIndicate(): boolean { return this.terrain.isAltitudeIndicate; }
-  set isAltitudeIndicate(isAltitudeIndicate: boolean) { this.terrain.isAltitudeIndicate = isAltitudeIndicate; }
+
+  get isAltitudeIndicate(): boolean { return this.terrain?.isAltitudeIndicate ?? false; }
+  set isAltitudeIndicate(isAltitudeIndicate: boolean) { if (this.terrain) this.terrain.isAltitudeIndicate = isAltitudeIndicate; }
 
 
   get isVisibleFloor(): boolean { return 0 < this.width * this.depth; }
   get isVisibleWallTopBottom(): boolean { return 0 < this.width * this.height; }
   get isVisibleWallLeftRight(): boolean { return 0 < this.depth * this.height; }
 
-  get selectionState(): SelectionState { return this.selectionService.state(this.terrain); }
+  get selectionState(): SelectionState { return this.selectionService.state(this.terrain!); }
   get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
   get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
 
@@ -118,9 +122,13 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
       if (this._tmpImages[pos].state === ImageState.THUMBNAIL || this._tmpImages[pos].state === ImageState.COMPLETE) {
         this._tmpImageState[pos] = this._tmpImages[pos].state;
         if (this._tmpImageUrls[pos]) revokeUrl = this._tmpImageUrls[pos];
-        this._tmpImageUrls[pos] = URL.createObjectURL(this._tmpImages[pos].blob);
+        if (this._tmpImages[pos].blob) {
+          this._tmpImageUrls[pos] = URL.createObjectURL(this._tmpImages[pos].blob);
+        } else {
+          this._tmpImageUrls[pos] = this._tmpImages[pos].url ?? '';
+        }
       } else {
-        this._tmpImageUrls[pos] = this._tmpImages[pos].url;
+        this._tmpImageUrls[pos] = this._tmpImages[pos].url ?? '';
       }
     }
     if (revokeUrl) queueMicrotask(() => URL.revokeObjectURL(revokeUrl));
@@ -179,11 +187,11 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
         this.changeDetector.markForCheck();
       });
     this.movableOption = {
-      tabletopObject: this.terrain,
+      tabletopObject: this.terrain as any,
       colideLayers: ['terrain']
     };
     this.rotableOption = {
-      tabletopObject: this.terrain
+      tabletopObject: this.terrain as any
     };
   }
 
@@ -191,11 +199,11 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.ngZone.runOutsideAngular(() => {
       this.input = new InputHandler(this.elementRef.nativeElement);
     });
-    this.input.onStart = this.onInputStart.bind(this);
+    if (this.input) this.input.onStart = this.onInputStart.bind(this);
   }
 
   ngOnDestroy() {
-    this.input.destroy();
+    if (this.input) this.input.destroy();
     EventSystem.unregister(this);
     for (const url of this._tmpImageUrls) {
       if (url) URL.revokeObjectURL(url);
@@ -209,7 +217,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   onInputStart(e: any) {
-    this.input.cancel();
+    if (this.input) this.input.cancel();
 
     // TODO:もっと良い方法考える
     if (this.isLocked) {
@@ -293,8 +301,8 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
     const objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
-    if (this.isSelected) {
-      const selectedGameTableMasks = () => this.selectionService.objects.filter(object => object.aliasName === this.terrain.aliasName) as Terrain[];
+    if (this.isSelected && this.terrain) {
+      const selectedGameTableMasks = () => this.selectionService.objects.filter(object => object.aliasName === this.terrain!.aliasName) as Terrain[];
       actions.push(
         {
           name: '選取的地形', subActions: [
@@ -345,7 +353,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
       ...(this.isLocked ? [] : [{ name: `層疊順序 ${this.height === 0 ? '' : ' (僅限平面地形)' }`, subActions: [
         {
           name: '移至平面地形最上層', action: () => {
-            if (!this.isLocked) {
+            if (!this.isLocked && this.terrain) {
               const parent = this.terrain.parent;
               if (parent) parent.appendChild(this.terrain);
             }
@@ -354,7 +362,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
         },
         {
           name: '移至平面地形最下層', action: () => {
-            if (!this.isLocked) {
+            if (!this.isLocked && this.terrain) {
               const parent = this.terrain.parent;
               if (parent) parent.prependChild(this.terrain);
             }
@@ -415,7 +423,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
         {
           name: `${ !this.hasWall ? '◉' : '○' } 非顯示`, action: () => {
             this.mode = TerrainViewState.FLOOR;
-            if (this.depth * this.width === 0) {
+            if (this.terrain && this.depth * this.width === 0) {
               this.terrain.width = this.width <= 0 ? 1 : this.width;
               this.terrain.depth = this.depth <= 0 ? 1 : this.depth;
             }
@@ -472,13 +480,13 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
             SoundEffect.play(PresetSound.sweep);
           }
         },
-        altitudeHande: this.terrain
+        altitudeHande: this.terrain ?? undefined
       },
       ContextMenuSeparator,
-      { name: '編輯地形設定...', action: () => { this.showDetail(this.terrain); } },
-      ...(this.terrain.getUrls().length <= 0 ? [] : [{
+      { name: '編輯地形設定...', action: () => { this.showDetail(this.terrain!); } },
+      ...(this.terrain?.getUrls().length ?? 0 <= 0 ? [] : [{
         name: '開啟參考URL',
-        subActions: this.terrain.getUrls().map((urlElement) => {
+        subActions: this.terrain!.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
             name: urlElement.name ? urlElement.name : url,
@@ -497,18 +505,22 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
       } as ContextMenuAction, ContextMenuSeparator]),
       {
         name: '建立副本', action: () => {
-          const cloneObject = this.terrain.clone();
-          cloneObject.location.x += this.gridSize;
-          cloneObject.location.y += this.gridSize;
-          cloneObject.isLocked = false;
-          if (this.terrain.parent) this.terrain.parent.appendChild(cloneObject);
-          SoundEffect.play(PresetSound.blockPut);
+          if (this.terrain) {
+            const cloneObject = this.terrain.clone();
+            cloneObject.location.x += this.gridSize;
+            cloneObject.location.y += this.gridSize;
+            cloneObject.isLocked = false;
+            if (this.terrain.parent) this.terrain.parent.appendChild(cloneObject);
+            SoundEffect.play(PresetSound.blockPut);
+          }
         }
       },
       {
         name: '刪除', action: () => {
-          this.terrain.destroy();
-          SoundEffect.play(PresetSound.sweep);
+          if (this.terrain) {
+            this.terrain.destroy();
+            SoundEffect.play(PresetSound.sweep);
+          }
         }
       },
       ContextMenuSeparator,

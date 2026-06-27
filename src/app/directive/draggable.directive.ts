@@ -60,19 +60,21 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
       this.input = new InputHandler(this.elementRef.nativeElement);
       window.addEventListener('resize', this.callbackOnResize, false);
     });
-    this.input.onStart = this.onInputStart.bind(this);
-    this.input.onMove = this.onInputMove.bind(this);
-    this.input.onEnd = this.onInputEnd.bind(this);
-    this.input.onContextMenu = this.onContextMenu.bind(this);
+    if (this.input) {
+      this.input.onStart = this.onInputStart.bind(this);
+      this.input.onMove = this.onInputMove.bind(this);
+      this.input.onEnd = this.onInputEnd.bind(this);
+      this.input.onContextMenu = this.onContextMenu.bind(this);
+    }
   }
 
   cancel() {
-    this.input.cancel();
+    this.input?.cancel();
   }
 
   destroy() {
     window.removeEventListener('resize', this.callbackOnResize, false);
-    this.input.destroy();
+    this.input?.destroy();
   }
 
   private onInputStart(e: MouseEvent | TouchEvent) {
@@ -81,7 +83,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
     this.setForeground();
     this.startPosition = this.calcElementPosition(this.elementRef.nativeElement);
 
-    this.startPointer = this.input.pointer;
+    this.startPointer = this.input?.pointer ?? { x: 0, y: 0, z: 0 };
     this.prevTrans = { x: 0, y: 0, z: 0 };
 
     const isHandle = this.isHandleElement(e.target as HTMLElement);
@@ -100,6 +102,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   }
 
   private onInputMove(e: MouseEvent | TouchEvent) {
+    if (!this.input) return;
     const trans = {
       x: this.input.pointer.x - this.startPointer.x,
       y: this.input.pointer.y - this.startPointer.y,
@@ -138,7 +141,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
     this.elementRef.nativeElement.style.opacity = '';
     this.elementRef.nativeElement.style.cursor = '';
     this.elementRef.nativeElement.style.willChange = '';
-    if (this.input.isDragging && e.cancelable) {
+    if (this.input?.isDragging && e.cancelable) {
       this.preventClickIfNeeded(e);
       e.preventDefault();
     }
@@ -151,6 +154,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
 
   private preventClickIfNeeded(e: MouseEvent | TouchEvent) {
     if ((e as TouchEvent).touches != null) return;
+    if (!this.input) return;
 
     const distance = MathUtil.sqrMagnitude(this.input.pointer, this.startPointer);
 

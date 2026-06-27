@@ -46,7 +46,7 @@ export class ImageTagList extends ObjectNode implements InnerXml {
       let temp = imageTags[0].words;
       for (let i = 1; i < imageTags.length; i++) {
         if (!imageTags[i]) return [];
-        temp = temp.filter(word => imageTags[i].words.includes(word));
+        temp = temp.filter(word => imageTags[i]!.words.includes(word));
         if (temp.length === 0) return temp;
       }
       return temp.sort();
@@ -133,7 +133,7 @@ export class ImageTagList extends ObjectNode implements InnerXml {
     return Array.from(new Set(this.identifiers))
       .map(identifier => ImageTag.get(identifier))
       .filter(imageTag => imageTag)
-      .map(imageTag => imageTag.toXml())
+      .map(imageTag => imageTag!.toXml())
       .join('');
   }
 

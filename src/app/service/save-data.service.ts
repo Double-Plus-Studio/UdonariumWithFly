@@ -59,8 +59,8 @@ export class SaveDataService {
     images = images.concat(this.searchImageFiles(chatXml));
     images = images.concat(this.searchImageFiles(cutInXml));
     for (const image of images) {
-      if (image.state === ImageState.COMPLETE) {
-        files.push(new File([image.blob], image.identifier + '.' + MimeType.extension(image.blob.type), { type: image.blob.type }));
+      if (image.state === ImageState.COMPLETE && image.blob) {
+        files.push(new File([image.blob!], image.identifier + '.' + MimeType.extension(image.blob!.type), { type: image.blob!.type }));
       }
     }
     const imageTagXml = this.convertToXml(ImageTagList.create(images));
@@ -84,8 +84,8 @@ export class SaveDataService {
     let images: ImageFile[] = [];
     images = images.concat(this.searchImageFiles(xml));
     for (const image of images) {
-      if (image.state === ImageState.COMPLETE) {
-        files.push(new File([image.blob], image.identifier + '.' + MimeType.extension(image.blob.type), { type: image.blob.type }));
+      if (image.state === ImageState.COMPLETE && image.blob) {
+        files.push(new File([image.blob!], image.identifier + '.' + MimeType.extension(image.blob!.type), { type: image.blob!.type }));
       }
     }
     const imageTagXml = this.convertToXml(ImageTagList.create(images));
@@ -110,11 +110,11 @@ export class SaveDataService {
   }
 
   private searchImageFiles(xml: string): ImageFile[] {
-    const xmlElement: Element = XmlUtil.xml2element(xml);
+    const xmlElement: Element | null = XmlUtil.xml2element(xml);
     const files: ImageFile[] = [];
-    if (!xmlElement) return files;
+    if (!xmlElement) return files!;
 
-    const images: { [identifier: string]: ImageFile } = {};
+    const images: { [identifier: string]: ImageFile | null } = {};
     let imageElements = xmlElement.ownerDocument.querySelectorAll('*[type="image"]');
 
     for (let i = 0; i < imageElements.length; i++) {
@@ -188,21 +188,21 @@ export class SaveDataService {
     for (const image of images) {
       if (!imageDict[image.identifier]) {
         if (image.state === ImageState.COMPLETE) {
-          const fileName = image.identifier + '.' + MimeType.extension(image.blob.type);
+          const fileName = image.identifier + '.' + MimeType.extension(image.blob!.type);
           imageDict[image.identifier] = 'images/' + fileName;
-          files.push(new File([image.blob], 'images/' + fileName, { type: image.blob.type }));
+          files.push(new File([image.blob!], 'images/' + fileName, { type: image.blob!.type }));
         } else if (image.state === ImageState.URL) {
-          if (image.url.startsWith('http')) {
-            if (StringUtil.validUrl(image.url)) imageDict[image.identifier] = image.url;
+          if (image.url!.startsWith('http')) {
+            if (StringUtil.validUrl(image.url!)) imageDict[image.identifier] = image.url!;
           } else {
-            await fetch(image.url)
+            await fetch(image.url!)
               .then(response => response.blob())
               .then(blob => {
                 const fileName = basename(image.identifier) + '.' + MimeType.extension(blob.type);
                 imageDict[image.identifier] = 'udonarium_assets/' + fileName;
                 files.push(new File([blob], 'udonarium_assets/' + fileName, { type: blob.type }))
               });
-            if (image.url.indexOf('/dice/') >= 0) {
+            if (image.url!.indexOf('/dice/') >= 0) {
               if (!isLicenseIncluded) {
                 await fetch('./assets/images/dice/license.txt')
                   .then(response => response.blob())
@@ -225,7 +225,7 @@ export class SaveDataService {
         }
       }
     }
-    files.push(new File([ChatTabList.instance.log(logFormat, dateFormat, isWriteOerationLog, imageDict, chatTabs)], 'index.html', {type: 'text/html;charset=utf-8'}));
+    files.push(new File([ChatTabList.instance.log(logFormat, dateFormat, isWriteOerationLog, imageDict, chatTabs || [])], 'index.html', {type: 'text/html;charset=utf-8'}));
     return this.saveAsync(files, trueFileName, updateCallback);
   }
 }

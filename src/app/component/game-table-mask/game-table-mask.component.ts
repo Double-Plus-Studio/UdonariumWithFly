@@ -74,7 +74,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
   get width(): number { return MathUtil.clampMin(this.gameTableMask?.width ?? 0); }
   get height(): number { return MathUtil.clampMin(this.gameTableMask?.height ?? 0); }
   get opacity(): number { return this.gameTableMask?.opacity ?? 1; }
-  get imageFile(): ImageFile { return this.gameTableMask ? this.gameTableMask.imageFile : null as any; }
+  get imageFile(): ImageFile { return this.gameTableMask ? this.gameTableMask.imageFile! : ImageFile.Empty; }
   get isLock(): boolean { return this.gameTableMask?.isLock ?? false; }
   set isLock(isLock: boolean) { if (this.gameTableMask) this.gameTableMask.isLock = isLock; }
   get blendType(): number { return this.gameTableMask?.blendType ?? 0; }
@@ -174,7 +174,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
   }
 
   get operateOpacity(): number {
-    const ret = this.opacity * ((this.isGMMode && this.gameTableMask.isTransparentOnGMMode) || (this.isPreview && this.gameTableMask.isMine) ? 0.6 : 1);
+    const ret = this.opacity * ((this.isGMMode && this.gameTableMask?.isTransparentOnGMMode) || (this.isPreview && this.gameTableMask?.isMine) ? 0.6 : 1);
     return (ret < 0.4 && this.isScratching) ? 0.4 : ret;
   }
 
@@ -198,7 +198,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
 
   get isGMMode(): boolean { return this.gameTableMask?.isGMMode ?? false; }
   get isScratching(): boolean { return !!this.gameTableMask?.owner; }
-  get isGMLayerHidden(): boolean { return this.gameTableMask?.isGMLayer && !this.gameTableMask?.isGMLayerMine; }
+  get isGMLayerHidden(): boolean { return this.gameTableMask?.isGMLayer && !this.gameTableMask?.isGMLayerMine! || false; }
 
   get hasOwner(): boolean { return this.gameTableMask?.hasOwner ?? false; }
   get ownerIsOnline(): boolean { return this.gameTableMask?.ownerIsOnline ?? false; }
@@ -229,9 +229,9 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
       if (this._currentimageFile?.state === ImageState.THUMBNAIL || this._currentimageFile?.state === ImageState.COMPLETE) {
         this._currentImageFileState = this._currentimageFile!.state;
         if (this._currentImageFileUrl) revokeUrl = this._currentImageFileUrl;
-        this._currentImageFileUrl = URL.createObjectURL(this._currentimageFile!.blob);
+        this._currentImageFileUrl = URL.createObjectURL(this._currentimageFile!.blob!);
       } else {
-        this._currentImageFileUrl = this._currentimageFile!.url;
+        this._currentImageFileUrl = this._currentimageFile!.url!;
       }
     }
     if (revokeUrl) queueMicrotask(() => URL.revokeObjectURL(revokeUrl));
@@ -385,7 +385,7 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
     }
     clearTimeout(this._scratchingTimerId);
     this._scratchingTimerId = setTimeout(() => {
-      this.scratchingGrids = Array.from(this._currentScratchingSet).filter(grid => grid && /^\d+:\d+$/.test(grid)).sort().join(',');
+      this.scratchingGrids = Array.from((this._currentScratchingSet as any) || new Set<string>()).filter(grid => grid && /^\d+:\d+$/.test(grid as string)).sort().join(',');
       this._currentScratchingSet = null;
     }, 250);
   }
@@ -759,13 +759,13 @@ export class GameTableMaskComponent implements OnChanges, OnDestroy, AfterViewIn
           }
         },
         disabled: this.isScratching,
-        altitudeHande: this.gameTableMask,
+        altitudeHande: this.gameTableMask as any,
         altitudeDisabled: this.isScratching
       },
       ContextMenuSeparator,
-      { name: '編輯地圖遮罩...', action: () => { this.showDetail(this.gameTableMask); } },
+      { name: '編輯地圖遮罩...', action: () => { this.showDetail(this.gameTableMask as GameTableMask); } },
       (this.gameTableMask?.getUrls()?.length ?? 0 <= 0 ? null : {
-        name: '開啟參考URL', action: undefined,
+        name: '開啟參考URL', action: () => {},
         subActions: (this.gameTableMask?.getUrls() ?? []).map((urlElement) => {
           const url = urlElement.value.toString();
           return {

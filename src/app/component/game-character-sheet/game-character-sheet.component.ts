@@ -6,7 +6,7 @@ import { DataElement } from '@udonarium/data-element';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
 import { TabletopObject } from '@udonarium/tabletop-object';
 
-import { FileSelectorComponent } from 'component/file-selector/file-selector.component';
+import { FileSelectorComponent } from 'component/file-selecter/file-selecter.component';
 import { ModalService } from 'service/modal.service';
 import { PanelOption, PanelService } from 'service/panel.service';
 import { SaveDataService } from 'service/save-data.service';
@@ -113,7 +113,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
         const chatTabs = this.chatMessageService.chatTabs;
         if (!chatTabs.length) return;
         const text = character.chatPalette
-          ? character.chatPalette.evaluate(event.data.text, character.rootDataElement)
+          ? character.chatPalette.evaluate(event.data.text, character.rootDataElement!)
           : event.data.text;
         this.chatMessageService.sendMessage(
           chatTabs[0], text,
@@ -181,7 +181,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   addDataElement() {
-    if (this.tabletopObject.detailDataElement) {
+    if (this.tabletopObject?.detailDataElement) {
       const title = DataElement.create('標題', '', {});
       const tag = DataElement.create('標籤', '', {});
       title.appendChild(tag);
@@ -190,6 +190,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   clone() {
+    if (!this.tabletopObject) return;
     const cloneObject = this.tabletopObject.clone();
     cloneObject.location.x += 50;
     cloneObject.location.y += 50;
@@ -227,27 +228,30 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   get tabletopObjectName(): string {
-    const element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
+    if (!this.tabletopObject) return '';
+    const obj = this.tabletopObject;
+    const element = obj.commonDataElement!.getFirstElementByName('name') || obj.commonDataElement!.getFirstElementByName('title');
     return element ? <string>element.value : '';
   }
 
   get imageFile(): ImageFile {
     const tabletopObject = this.tabletopObject;
     if (!tabletopObject) return ImageFile.Empty;
-    if (tabletopObject instanceof Card && this.isVisible) return tabletopObject.frontImage;
-    return tabletopObject.imageFile;
+    if (tabletopObject instanceof Card && this.isVisible) return tabletopObject.frontImage!;
+    return tabletopObject.imageFile!;
   }
 
   get descriptionType(): string {
     if (this.tabletopObject instanceof RangeArea && !this.tabletopObject.isApplyWidth) return 'range-not-width';
-    return this.tabletopObject.aliasName;
+    return this.tabletopObject?.aliasName ?? '';
   }
 
   get isAllowsChat(): boolean {
     if (!(this.tabletopObject instanceof GameCharacter) || !this.tabletopObject.isAllowsChat) return false;
+    if (!PeerCursor.myCursor) return false;
     switch (this.tabletopObject.location.name) {
       case 'table':
-      case PeerCursor.myCursor.peerId:
+      case PeerCursor.myCursor!.peerId:
         return true;
       case 'graveyard':
         return false;
@@ -281,6 +285,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   setLocation(locationName: string) {
+    if (!this.tabletopObject) return;
     EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.tabletopObject.identifier });
     if (locationName == 'graveyard') {
       SoundEffect.play(PresetSound.sweep);
@@ -291,41 +296,43 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   openModal(name: string = '', isAllowedEmpty: boolean = false) {
+    if (!this.tabletopObject) return;
+    const obj = this.tabletopObject;
     let currentImageIdentifires: string[] = [];
     if (name == 'shadowImageIdentifier') {
-      const element = this.tabletopObject.imageElement;
+      const element = obj.imageElement;
       if (element && element.value != 'null' && element.currentValue) currentImageIdentifires = [element.currentValue + ''];
     } else {
-      const elements = this.tabletopObject.imageDataElement.getElementsByName(name);
+      const elements = obj.imageDataElement!.getElementsByName(name);
       if (elements && elements.length > 0) currentImageIdentifires = elements.map(element => element.value + '');
     }
     this.modalService.open<string>(FileSelectorComponent, { isAllowedEmpty: isAllowedEmpty, currentImageIdentifires: currentImageIdentifires }).then(value => {
-      if (!this.tabletopObject || !this.tabletopObject.imageDataElement || !value) return;
+      if (!obj || !obj.imageDataElement || !value) return;
       if (name == 'shadowImageIdentifier') {
         // 影はメイン画像のcurrentValueとする
-        const element = this.tabletopObject.imageElement;
+        const element = obj.imageElement;
         if (element) {
           if (element.value != 'null') element.currentValue = value;
           // 過去の処理で作ったゴミを消す
-          const garbages = this.tabletopObject.imageDataElement.getElementsByName('shadowImageIdentifier');
+          const garbages = obj.imageDataElement.getElementsByName('shadowImageIdentifier');
           for (const garbage of garbages) {
-            this.tabletopObject.imageDataElement.removeChild(garbage);
+            obj.imageDataElement.removeChild(garbage);
           }
         }
       } else if (name === 'faceIcon') {
         // faceIcon特殊処理（ToDo：分ける）
-        const elements = this.tabletopObject.imageDataElement.getElementsByName(name);
+        const elements = obj.imageDataElement.getElementsByName(name);
         if (elements.length >= this.MAX_IMAGE_ICON_COUNT) {
           for (let i = this.MAX_IMAGE_ICON_COUNT; i < elements.length; i++) {
             this.deleteIcon(i);
           }
           elements[this.MAX_IMAGE_ICON_COUNT - 1].value = value;
         } else {
-          this.tabletopObject.imageDataElement.appendChild(DataElement.create(name, value, { type: 'image' }, name + UUID.generateUuid()));
+          obj.imageDataElement.appendChild(DataElement.create(name, value, { type: 'image' }, name + UUID.generateUuid()));
         }
-        if (this.tabletopObject.currntIconIndex < 0) this.tabletopObject.currntIconIndex = 0;
+        if (obj.currntIconIndex < 0) obj.currntIconIndex = 0;
       } else {
-        const element = this.tabletopObject.imageDataElement.getFirstElementByName(name);
+        const element = obj.imageDataElement.getFirstElementByName(name);
         if (element) {
           element.value = value;
         } else {
@@ -337,54 +344,60 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   openModalAddImage() {
+    if (!this.tabletopObject) return;
+    const obj = this.tabletopObject;
     let currentImageIdentifires: string[] = [];
-    const elements = this.tabletopObject.imageDataElement.getElementsByName('imageIdentifier');
+    const elements = obj.imageDataElement!.getElementsByName('imageIdentifier');
     if (elements.length > 0) {
       currentImageIdentifires = elements.map(element => element.value + '');
     }
     this.modalService.open<string>(FileSelectorComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
-      if (!this.tabletopObject || !this.tabletopObject.imageDataElement || !value) return;
-      const elements = this.tabletopObject.imageDataElement.getElementsByName('imageIdentifier');
+      if (!obj || !obj.imageDataElement || !value) return;
+      const elements = obj.imageDataElement.getElementsByName('imageIdentifier');
       if (elements.length >= this.MAX_IMAGE_ICON_COUNT) {
         for (let i = this.MAX_IMAGE_ICON_COUNT; i < elements.length; i++) {
           this.deleteImage(i);
         }
         elements[this.MAX_IMAGE_ICON_COUNT - 1].value = value;
       } else {
-        this.tabletopObject.imageDataElement.appendChild(DataElement.create('imageIdentifier', value, { type: 'image' }, name + UUID.generateUuid()));
+        obj.imageDataElement.appendChild(DataElement.create('imageIdentifier', value, { type: 'image' }, name + UUID.generateUuid()));
       }
-      if (this.tabletopObject.currntImageIndex < 0) this.tabletopObject.currntImageIndex = 0;
+      if (obj.currntImageIndex < 0) obj.currntImageIndex = 0;
     });
   }
 
   openModalReplaceImage(isAllowedEmpty: boolean = false) {
+    if (!this.tabletopObject) return;
+    const obj = this.tabletopObject;
     let currentImageIdentifires: string[] = [];
-    const elements = this.tabletopObject.imageDataElement.getElementsByName('imageIdentifier');
+    const elements = obj.imageDataElement!.getElementsByName('imageIdentifier');
     if (elements.length > 0) {
       currentImageIdentifires = elements.map(element => element.value + '');
     }
     this.modalService.open<string>(FileSelectorComponent, { isAllowedEmpty: isAllowedEmpty, currentImageIdentifires: currentImageIdentifires }).then(value => {
-      if (!this.tabletopObject || !this.tabletopObject.imageDataElement || !value) return;
+      if (!obj || !obj.imageDataElement || !value) return;
       if (value == 'null') {
         //削除
-        if (this.tabletopObject.imageElement && this.tabletopObject.imageFiles.length == 1) {
+        if (obj.imageElement && obj.imageFiles.length == 1) {
           // 互換のため一個残す
-          this.tabletopObject.imageElement.value = value;
-          this.tabletopObject.imageElement.currentValue = value;
+          obj.imageElement.value = value;
+          obj.imageElement.currentValue = value;
         } else {
-          this.deleteImage(this.tabletopObject.currntImageIndex);
+          this.deleteImage(obj.currntImageIndex);
         }
-      } else if (this.tabletopObject.imageElement) {
-        this.tabletopObject.imageElement.value = value;
+      } else if (obj.imageElement) {
+        obj.imageElement.value = value;
       }
     });
   }
 
   openModalChangeAllCardImages() {
+    if (!this.tabletopObject || !(this.tabletopObject instanceof CardStack)) return;
+    const obj = this.tabletopObject;
     this.modalService.open<string>(FileSelectorComponent, { isAllowedEmpty: false }).then(value => {
-      if (!this.tabletopObject || !this.tabletopObject || !(this.tabletopObject instanceof CardStack) || !value) return;
-      this.tabletopObject.cards.forEach(card => {
-        const element = card.imageDataElement.getFirstElementByName('back');
+      if (!obj || !value) return;
+      obj.cards.forEach(card => {
+        const element = card.imageDataElement!.getFirstElementByName('back');
         if (element) {
           element.value = value;
         } else {
@@ -396,14 +409,14 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
 
   //ToDO インデックスも抽象化して汎用にする
   selectImage(index: number, name='imageIdentifier') {
-    if (this.tabletopObject.currntImageIndex == index) return;
+    if (!this.tabletopObject || this.tabletopObject.currntImageIndex == index) return;
     this.tabletopObject.currntImageIndex = index;
     SoundEffect.play(PresetSound.surprise);
     EventSystem.trigger('UPDATE_INVENTORY', null);
   }
 
   selectIcon(index: number) {
-    if (this.tabletopObject.currntIconIndex == index) return;
+    if (!this.tabletopObject || this.tabletopObject.currntIconIndex == index) return;
     this.tabletopObject.currntIconIndex = index;
   }
 
@@ -434,16 +447,18 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   openMainImageModal() {
-    if (this.tabletopObject instanceof CardStack) {
+    if (!this.tabletopObject) return;
+    const obj = this.tabletopObject;
+    if (obj instanceof CardStack) {
       return;
-    } else if (this.tabletopObject instanceof Card) {
-      this.openModal(this.tabletopObject.isVisible ? 'front' : 'back');
-    } else if (this.tabletopObject instanceof DiceSymbol) {
-      this.openModal(this.tabletopObject['face']);
-    } else if (this.tabletopObject instanceof GameCharacter) {
-      this.openModalReplaceImage(this.tabletopObject.imageFiles.length > 1 || 0 < this.tabletopObject.imageFile?.url.length);
+    } else if (obj instanceof Card) {
+      this.openModal(obj.isVisible ? 'front' : 'back');
+    } else if (obj instanceof DiceSymbol) {
+      this.openModal(obj['face']);
+    } else if (obj instanceof GameCharacter) {
+      this.openModalReplaceImage(obj.imageFiles.length > 1 || 0 < (obj.imageFile?.url?.length ?? 0));
     } else {
-      this.openModal('imageIdentifier', this.tabletopObject.imageFile && this.tabletopObject.imageFile.url.length > 0)
+      this.openModal('imageIdentifier', obj.imageFile && ((obj.imageFile.url?.length ?? 0) > 0) || false)
     }
   }
 
@@ -573,12 +588,14 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   showCaseOffset(index: number): number {
+    if (!this.tabletopObject) return 0;
     const len = this.tabletopObject.imageFiles.length;
-    if (len <= 5) return 0; 
+    if (len <= 5) return 0;
     return (50 - (160 / (len - 2))) * (this.tabletopObject.currntImageIndex <= index ? index-1 : index);
   }
 
   showIconOffset(index): number {
+    if (!this.tabletopObject) return 0;
     const len = this.tabletopObject.faceIcons.length;
     if (len <= 5) return 0;
     return (50 - (200 / (len - 1))) * index + 2;

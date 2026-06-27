@@ -23,14 +23,14 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
   selectedTab: ChatTab | null = null;
   selectedTabXml: string = '';
 
-  get tabName(): string { return this.selectedTab.name; }
-  set tabName(tabName: string) { if (this.isEditable) this.selectedTab.name = tabName; }
+  get tabName(): string { return this.selectedTab?.name ?? ''; }
+  set tabName(tabName: string) { if (this.isEditable && this.selectedTab) this.selectedTab.name = tabName; }
 
-  get isUseStandImage(): boolean { return this.selectedTab.isUseStandImage; }
-  set isUseStandImage(isUseStandImage: boolean) { if (this.isEditable) this.selectedTab.isUseStandImage = isUseStandImage; }
+  get isUseStandImage(): boolean { return this.selectedTab?.isUseStandImage ?? false; }
+  set isUseStandImage(isUseStandImage: boolean) { if (this.isEditable && this.selectedTab) this.selectedTab.isUseStandImage = isUseStandImage; }
 
-  get receiveOperationLogLevel(): number { return this.selectedTab.receiveOperationLogLevel; }
-  set receiveOperationLogLevel(receiveOperationLogLevel: number) { if (this.isEditable) this.selectedTab.receiveOperationLogLevel = receiveOperationLogLevel; }
+  get receiveOperationLogLevel(): number { return this.selectedTab?.receiveOperationLogLevel ?? 0; }
+  set receiveOperationLogLevel(receiveOperationLogLevel: number) { if (this.isEditable && this.selectedTab) this.selectedTab.receiveOperationLogLevel = receiveOperationLogLevel; }
 
   get chatTabs(): ChatTab[] { return this.chatMessageService.chatTabs; }
   get isEmpty(): boolean { return this.chatMessageService.chatTabs.length < 1 }
@@ -115,6 +115,7 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
   upTabIndex() {
     if (!this.selectedTab) return;
     const parentElement = this.selectedTab.parent;
+    if (!parentElement) return;
     const index: number = parentElement.children.indexOf(this.selectedTab);
     if (0 < index) {
       const prevElement = parentElement.children[index - 1];
@@ -125,6 +126,7 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
   downTabIndex() {
     if (!this.selectedTab) return;
     const parentElement = this.selectedTab.parent;
+    if (!parentElement) return;
     const index: number = parentElement.children.indexOf(this.selectedTab);
     if (index < parentElement.children.length - 1) {
       const nextElement = parentElement.children[index + 1];
@@ -133,6 +135,7 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
   }
 
   showLogOutput() {
+    if (!this.selectedTab) return;
     const coordinate = this.pointerDeviceService.pointers[0];
     const option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 540, height: 300 };
     const component = this.panelService.open<ChatLogOutputComponent>(ChatLogOutputComponent, option);

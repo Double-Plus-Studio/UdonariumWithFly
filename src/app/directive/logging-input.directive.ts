@@ -37,8 +37,8 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
   type = '物件';
 
   ngAfterViewInit() {
-    let elm = <ObjectNode>this.dataElement;
-    elm = elm.parent;
+    let elm: ObjectNode = <ObjectNode>this.dataElement;
+    elm = elm.parent!;
     while (elm) {
       if (elm instanceof Card) {
         this.type = '牌';
@@ -65,7 +65,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
         this.type = '射程・範圍';
       }
       if (!elm.parentIsAssigned || elm.parentIsUnknown) break;
-      elm = elm.parent;
+      elm = elm.parent!;
     }
     const LoggingValueMap = LoggingInputDirective.LoggingValueMap;
     const identifier = this.dataElement.identifier;

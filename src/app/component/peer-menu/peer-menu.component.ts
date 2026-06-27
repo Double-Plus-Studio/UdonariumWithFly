@@ -6,7 +6,7 @@ import { PeerContext } from '@udonarium/core/system/network/peer-context';
 import { PeerSessionGrade } from '@udonarium/core/system/network/peer-session-state';
 import { PeerCursor } from '@udonarium/peer-cursor';
 
-import { FileSelectorComponent } from 'component/file-selector/file-selector.component';
+import { FileSelectorComponent } from 'component/file-selecter/file-selecter.component';
 import { LobbyComponent } from 'component/lobby/lobby.component';
 import { AppConfig, AppConfigService } from 'service/app-config.service';
 import { ModalService } from 'service/modal.service';
@@ -56,7 +56,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   private _resyncTimeoutId: NodeJS.Timeout;
 
   private interval: NodeJS.Timeout;
-  get myPeer(): PeerCursor { return PeerCursor.myCursor; }
+  get myPeer(): PeerCursor { return PeerCursor.myCursor!; }
 
   get myPeerName(): string | null {
     if (!PeerCursor.myCursor) return null;
@@ -136,7 +136,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy, AfterViewInit {
     this.modalService.open<string>(FileSelectorComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.myPeer || !value) return;
       this.myPeer.imageIdentifier = value;
-      const file: ImageFile = ImageStorage.instance.get(value);
+      const file: ImageFile = ImageStorage.instance.get(value)!;
       if (file) {
         if (file.state === ImageState.COMPLETE) {
           localForage.setItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY, file.blob).catch(e => console.log(e));
@@ -201,7 +201,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy, AfterViewInit {
 
   findPeerImageUrl(peerId: string) {
     const peerCursor = PeerCursor.findByPeerId(peerId);
-    return peerCursor ? peerCursor.image.url : '';
+    return peerCursor ? peerCursor.image!.url : '';
   }
 
   findPeerIsGMMode(peerId: string): boolean {

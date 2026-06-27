@@ -224,7 +224,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
   //writingPeers: Map<string, NodeJS.Timer> = new Map();
   writingPeers: Map<string, ResettableTimeout> = new Map();
-  writingPeerNameAndColors: { name: string, color: string, imageUrl: string }[] = [];
+  writingPeerNameAndColors: { name: string, color: string, imageUrl: string | null }[] = [];
   //writingPeerNames: string[] = [];
 
   get diceBotInfos() { return DiceBot.diceBotInfos }
@@ -314,7 +314,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       return {
         name: (peer ? peer.name : ''),
         color: (peer ? peer.color : PeerCursor.CHAT_TRANSPARENT_COLOR),
-        imageUrl: (peer ? peer.image.url : ''),
+        imageUrl: (peer && peer.image ? peer.image.url : ''),
       };
     });
   }
@@ -460,7 +460,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         if (!targetCharacter) {
           this.chatMessageService.sendOperationLog('命令錯誤：目標不是角色');
         } else {
-          const commandsInfo = StringUtil.parseCommands(targetCharacter.chatPalette!.evaluate(text.substring(1), targetCharacter.rootDataElement));
+          const commandsInfo = StringUtil.parseCommands(targetCharacter.chatPalette!.evaluate(text.substring(1), targetCharacter.rootDataElement!));
           text = commandsInfo.endString;
           if (commandsInfo.commands.length) {
             //await (async () => {
@@ -473,9 +473,9 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   const command = commandsInfo.commands[i];
                   if (command.isIncomplete) throw '→ 命令錯誤：命令不完整：' + command.targetName;
 
-                  const targetName = targetCharacter.chatPalette!.evaluate(command.targetName!, targetCharacter.rootDataElement, delayRefs);
+                  const targetName = targetCharacter.chatPalette!.evaluate(command.targetName!, targetCharacter.rootDataElement!, delayRefs);
                   const operator = StringUtil.toHalfWidth(command.operator!);
-                  const operateValue = targetCharacter.chatPalette!.evaluate(command.value!, targetCharacter.rootDataElement, delayRefs);
+                  const operateValue = targetCharacter.chatPalette!.evaluate(command.value!, targetCharacter.rootDataElement!, delayRefs);
                   let target: DataElement | null;
                   let delayRef: string | undefined = undefined;
                   let isOperateNumber = false;
@@ -657,7 +657,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         }
       }
       if (targetCharacter) {
-        text = targetCharacter.chatPalette!.evaluate(text, targetCharacter.rootDataElement, delayRefs);
+        text = targetCharacter.chatPalette!.evaluate(text, targetCharacter.rootDataElement!, delayRefs);
         // スタンド
         // 空文字でもスタンド反応するのは便利かと思ったがメッセージ送信後にもう一度エンター押すだけで誤爆するので指定時のみ
         if (StringUtil.cr(text).trim() || standName) {

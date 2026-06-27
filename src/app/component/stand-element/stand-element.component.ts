@@ -6,7 +6,7 @@ import { UUID } from '@udonarium/core/system/util/uuid';
 import { DataElement } from '@udonarium/data-element';
 import { GameCharacter } from '@udonarium/game-character';
 import { StandConditionType } from '@udonarium/stand-list';
-import { FileSelectorComponent } from 'component/file-selector/file-selector.component';
+import { FileSelectorComponent } from 'component/file-selecter/file-selecter.component';
 import { ModalService } from 'service/modal.service';
 
 @Component({
@@ -43,8 +43,8 @@ export class StandElementComponent {
       elm = this.standElement.getFirstElementByName('imageIdentifier');
     }
     if (elm) {
-      if (this._imageFile.identifier !== elm.value) { 
-        const file: ImageFile = ImageStorage.instance.get(<string>elm.value);
+      if (this._imageFile.identifier !== elm.value) {
+        const file: ImageFile = ImageStorage.instance.get(<string>elm.value)!;
         this._imageFile = file ? file : ImageFile.Empty;
       }
     } else {
@@ -169,7 +169,7 @@ export class StandElementComponent {
 
   remove() {
     if (!this.standElement) return;
-    this.standElement.parent.removeChild(this.standElement);
+    this.standElement.parent?.removeChild(this.standElement);
   }
 
   selectImage(identifier) {
@@ -196,6 +196,7 @@ export class StandElementComponent {
   }
 
   isSelectedImage(identifier) {
+    if (!this.standElement) return false;
     const elms = this.standElement.getElementsByName('targetImageIdentifier');
     for (const elm of elms) {
       if (elm.value == identifier) return true;
@@ -204,14 +205,15 @@ export class StandElementComponent {
   }
 
   testStandUp() {
-    EventSystem.trigger('POPUP_STAND_IMAGE', { 
-      characterIdentifier: this.gameCharacter.identifier, 
-      standIdentifier: this.standElement.identifier, 
+    if (!this.gameCharacter || !this.standElement) return;
+    EventSystem.trigger('POPUP_STAND_IMAGE', {
+      characterIdentifier: this.gameCharacter.identifier,
+      standIdentifier: this.standElement.identifier,
       color: this.gameCharacter.chatPalette ? this.gameCharacter.chatPalette.color : null
     });
-    EventSystem.trigger('POPUP_CHAT_BALLOON', { 
-      characterIdentifier: this.gameCharacter.identifier, 
-      text: '這是測試，只有你能看見。設定立繪時，可從選單「個人設定」關閉「透明化、自動退場」以便微調。', 
+    EventSystem.trigger('POPUP_CHAT_BALLOON', {
+      characterIdentifier: this.gameCharacter.identifier,
+      text: '這是測試，只有你能看見。設定立繪時，可從選單「個人設定」關閉「透明化、自動退場」以便微調。',
       color: this.gameCharacter.chatPalette ? this.gameCharacter.chatPalette.color : null,
       dialogTest: true
     });

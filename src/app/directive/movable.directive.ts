@@ -174,7 +174,8 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     this.setPointerEvents(true);
     this.setAnimatedTransition(true);
     this.setCollidableLayer(false);
-    if (this.tabletopService.tableSelector.viewTable) this.tabletopService.tableSelector.viewTable.gridHeight = 0;
+    const viewTable = this.tabletopService.tableSelector?.viewTable;
+    if (viewTable) viewTable.gridHeight = 0;
   }
 
   dispose() {
@@ -222,10 +223,12 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     //this.width = this.input.target.clientWidth;
     //this.height = this.input.target.clientHeight;
     this.ratio = 1.0;
-    
+
     const viewTable = TableSelector.instance.viewTable;
-    viewTable.gridClipRect = null as any;
-    viewTable.gridHeight = this.posZ + 0.5;
+    if (viewTable) {
+      viewTable.gridClipRect = null as any;
+      viewTable.gridHeight = this.posZ + 0.5;
+    }
     //this.setUpdateTimer();
 
     this.synchronizer.prepareMove();
@@ -276,8 +279,10 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     
     //let tableSelector = ObjectStore.instance.get<TableSelector>('tableSelector');
     const viewTable = TableSelector.instance.viewTable;
-    viewTable.gridClipRect = null as any;
-    viewTable.gridHeight = this.posZ + 0.5;
+    if (viewTable) {
+      viewTable.gridClipRect = null as any;
+      viewTable.gridHeight = this.posZ + 0.5;
+    }
     const delta = {
       x: pointer3d.x - this.posX,
       y: pointer3d.y - this.posY,

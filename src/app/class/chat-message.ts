@@ -57,7 +57,7 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
   @SyncVar() isUseStandImage: boolean;
   @SyncVar() lastUpdate: number = 0
 
-  get tabIdentifier(): string { return this.parent.identifier; }
+  get tabIdentifier(): string { return this.parent?.identifier ?? ''; }
   get text(): string { return <string>this.value; }
   set text(text: string) { this.value = (text == null) ? '' : text; }
 

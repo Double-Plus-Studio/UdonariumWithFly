@@ -36,7 +36,7 @@ export class SoundEffect extends GameObject {
     super.onStoreAdded();
     EventSystem.register(this)
       .on<string>('SOUND_EFFECT', event => {
-        AudioPlayer.playSoundEffect(AudioStorage.instance.get(event.data));
+        AudioPlayer.playSoundEffect(AudioStorage.instance.get(event.data)!);
       })
       .on('SEND_MESSAGE', event => {
         const chatMessage = ObjectStore.instance.get<ChatMessage>(event.data.messageIdentifier);

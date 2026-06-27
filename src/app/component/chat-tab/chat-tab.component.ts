@@ -180,15 +180,15 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
       this.scrollEventShortTimer = new ResettableTimeout(() => this.lazyScrollUpdate(), 33);
       this.scrollEventLongTimer = new ResettableTimeout(() => this.lazyScrollUpdate(false), 66);
       this.onScroll();
-      this.panelService.scrollablePanel.addEventListener('scroll', this.callbackOnScroll, false);
-      this.panelService.scrollablePanel.addEventListener('scrolltobottom', this.callbackOnScrollToBottom, false);
+      this.panelService.scrollablePanel?.addEventListener('scroll', this.callbackOnScroll, false);
+      this.panelService.scrollablePanel?.addEventListener('scrolltobottom', this.callbackOnScrollToBottom, false);
     });
   }
 
   ngOnDestroy() {
     EventSystem.unregister(this);
-    this.panelService.scrollablePanel.removeEventListener('scroll', this.callbackOnScroll, false);
-    this.panelService.scrollablePanel.removeEventListener('scrolltobottom', this.callbackOnScrollToBottom, false);
+    this.panelService.scrollablePanel?.removeEventListener('scroll', this.callbackOnScroll, false);
+    this.panelService.scrollablePanel?.removeEventListener('scrolltobottom', this.callbackOnScrollToBottom, false);
     this.scrollEventShortTimer?.clear();
     this.scrollEventLongTimer?.clear();
     if (this.addMessageEventTimer) clearTimeout(this.addMessageEventTimer);
@@ -218,7 +218,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
 
   resetMessages() {
     const lastIndex = this.chatTab.chatMessages.length - 1;
-    this.topIndex = lastIndex - Math.floor(this.panelService.scrollablePanel.clientHeight / this.minMessageHeight);
+    this.topIndex = lastIndex - Math.floor((this.panelService.scrollablePanel?.clientHeight ?? 0) / this.minMessageHeight);
     this.bottomIndex = lastIndex;
     this.needUpdate = true;
     this.preScrollTop = -1;
@@ -255,9 +255,9 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
   }
 
   private getScrollPosition(): ScrollPosition {
-    let top = this.panelService.scrollablePanel.scrollTop;
-    const clientHeight = this.panelService.scrollablePanel.clientHeight;
-    const scrollHeight = this.panelService.scrollablePanel.scrollHeight;
+    let top = this.panelService.scrollablePanel?.scrollTop ?? 0;
+    const clientHeight = this.panelService.scrollablePanel?.clientHeight ?? 0;
+    const scrollHeight = this.panelService.scrollablePanel?.scrollHeight ?? 0;
     if (top < 0) top = 0;
     if (scrollHeight - clientHeight < top)
       top = scrollHeight - clientHeight;
@@ -300,7 +300,9 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
     currentBox = elm!.getBoundingClientRect();
     diff = prevBox!.top - currentBox.top - this.scrollSpeed;
     if ((!hasTopBlank || !hasBotomBlank) && 0.5 ** 2 < diff ** 2) {
-      this.panelService.scrollablePanel.scrollTop -= diff;
+      if (this.panelService.scrollablePanel) {
+        this.panelService.scrollablePanel.scrollTop -= diff;
+      }
     }
 
     const logBox: DOMRect = this.logContainerRef.nativeElement.getBoundingClientRect();
@@ -357,7 +359,7 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
     const hasBotomBlank = messageBoxBottom < scrollPosition.bottom && scrollPosition.bottom < scrollPosition.scrollHeight;
 
     if (!isNormalUpdate) {
-      this.scrollEventShortTimer.reset();
+      this.scrollEventShortTimer?.reset();
     }
 
     if (!isNormalUpdate && !hasTopBlank && !hasBotomBlank) {

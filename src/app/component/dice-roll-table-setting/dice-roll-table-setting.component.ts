@@ -22,17 +22,17 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
   selectedDiceRollTable: DiceRollTable | null = null;
   selectedDiceRollTableXml: string = '';
 
-  get diceRollTableName(): string { return this.selectedDiceRollTable.name; }
-  set diceRollTableName(name: string) { if (this.isEditable) this.selectedDiceRollTable.name = name; }
+  get diceRollTableName(): string { return this.selectedDiceRollTable?.name ?? ''; }
+  set diceRollTableName(name: string) { if (this.isEditable && this.selectedDiceRollTable) this.selectedDiceRollTable.name = name; }
 
-  get diceRollTableDice(): string { return this.selectedDiceRollTable.dice; }
-  set diceRollTableDice(dice: string) { if (this.isEditable) this.selectedDiceRollTable.dice = dice; }
+  get diceRollTableDice(): string { return this.selectedDiceRollTable?.dice ?? ''; }
+  set diceRollTableDice(dice: string) { if (this.isEditable && this.selectedDiceRollTable) this.selectedDiceRollTable.dice = dice; }
 
-  get diceRollTableCommand(): string { return this.selectedDiceRollTable.command; }
-  set diceRollTableCommand(command: string) { if (this.isEditable) this.selectedDiceRollTable.command = command; }
+  get diceRollTableCommand(): string { return this.selectedDiceRollTable?.command ?? ''; }
+  set diceRollTableCommand(command: string) { if (this.isEditable && this.selectedDiceRollTable) this.selectedDiceRollTable.command = command; }
 
-  get diceRollTableText(): string { return <string>this.selectedDiceRollTable.value; }
-  set diceRollTableText(text: string) { if (this.isEditable) this.selectedDiceRollTable.value = text; }
+  get diceRollTableText(): string { return <string>(this.selectedDiceRollTable?.value ?? ''); }
+  set diceRollTableText(text: string) { if (this.isEditable && this.selectedDiceRollTable) this.selectedDiceRollTable.value = text; }
 
   get diceRollTables(): DiceRollTable[] { return DiceRollTableList.instance.children as DiceRollTable[]; }
   get isEmpty(): boolean { return this.diceRollTables.length < 1 }
@@ -66,7 +66,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
     if (this.diceRollTables.length > 0) {
       queueMicrotask(() => {
         this.onChangeDiceRollTable(this.diceRollTables[0].identifier);
-        this.diceRollTableSelector.nativeElement.selectedIndex = 0;
+        if (this.diceRollTableSelector) this.diceRollTableSelector.nativeElement.selectedIndex = 0;
       });
     }
   }
@@ -88,7 +88,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
     const diceRollTable = this.create();
     queueMicrotask(() => {
       this.onChangeDiceRollTable(diceRollTable.identifier);
-      this.diceRollTableSelector.nativeElement.value = diceRollTable.identifier;
+      if (this.diceRollTableSelector) this.diceRollTableSelector.nativeElement.value = diceRollTable.identifier;
     })
   }
   
@@ -139,28 +139,30 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
       queueMicrotask(() => {
         const diceRollTables = this.diceRollTables;
         this.onChangeDiceRollTable(diceRollTables[diceRollTables.length - 1].identifier);
-        this.diceRollTableSelector.nativeElement.selectedIndex = diceRollTables.length - 1;
+        if (this.diceRollTableSelector) this.diceRollTableSelector.nativeElement.selectedIndex = diceRollTables.length - 1;
       });
     }
   }
 
   upTabIndex() {
     if (!this.selectedDiceRollTable) return;
-    const parentElement = this.selectedDiceRollTable.parent;
-    const index: number = parentElement.children.indexOf(this.selectedDiceRollTable);
+    const parentElement = this.selectedDiceRollTable.parent!;
+    if (!parentElement) return;
+    const index: number = parentElement!.children.indexOf(this.selectedDiceRollTable);
     if (0 < index) {
-      const prevElement = parentElement.children[index - 1];
-      parentElement.insertBefore(this.selectedDiceRollTable, prevElement);
+      const prevElement = parentElement!.children[index - 1];
+      parentElement!.insertBefore(this.selectedDiceRollTable, prevElement);
     }
   }
 
   downTabIndex() {
     if (!this.selectedDiceRollTable) return;
-    const parentElement = this.selectedDiceRollTable.parent;
-    const index: number = parentElement.children.indexOf(this.selectedDiceRollTable);
-    if (index < parentElement.children.length - 1) {
-      const nextElement = parentElement.children[index + 1];
-      parentElement.insertBefore(nextElement, this.selectedDiceRollTable);
+    const parentElement = this.selectedDiceRollTable.parent!;
+    if (!parentElement) return;
+    const index: number = parentElement!.children.indexOf(this.selectedDiceRollTable);
+    if (index < parentElement!.children.length - 1) {
+      const nextElement = parentElement!.children[index + 1];
+      parentElement!.insertBefore(nextElement, this.selectedDiceRollTable);
     }
   }
 

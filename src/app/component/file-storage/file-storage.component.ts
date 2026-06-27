@@ -357,9 +357,9 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
   chanageImageView(imageFile: ImageFile) {
     if (imageFile.state === ImageState.COMPLETE) {
       if (AppComponent.imageUrl) URL.revokeObjectURL(AppComponent.imageUrl);
-      AppComponent.imageUrl = URL.createObjectURL(imageFile.blob);
+      AppComponent.imageUrl = URL.createObjectURL(imageFile.blob!);
     } else {
-      AppComponent.imageUrl = imageFile.url;
+      AppComponent.imageUrl = imageFile.url!;
     }
   }
 }

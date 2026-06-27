@@ -46,7 +46,7 @@ export class DiceRollTable extends ObjectNode {
       if (match) {
         return {range: { start: null, end: null }, result: match[1]};
       } else {
-        return null;
+        return null as any;
       }
     }).filter((elm): elm is DiceRollTableRow => elm !== null);
   }

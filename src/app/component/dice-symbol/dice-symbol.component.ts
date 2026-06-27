@@ -116,42 +116,42 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   @Input() diceSymbol: DiceSymbol | null = null;
   @Input() is3D: boolean = false;
 
-  get face(): string { return this.diceSymbol.face; }
-  set face(face: string) { this.diceSymbol.face = face; }
-  get owner(): string { return this.diceSymbol.owner; }
-  set owner(owner: string) { this.diceSymbol.owner = owner; }
-  get rotate(): number { return this.diceSymbol.rotate; }
-  set rotate(rotate: number) { this.diceSymbol.rotate = rotate; }
+  get face(): string { return this.diceSymbol?.face ?? ''; }
+  set face(face: string) { if (this.diceSymbol) this.diceSymbol.face = face; }
+  get owner(): string { return this.diceSymbol?.owner ?? ''; }
+  set owner(owner: string) { if (this.diceSymbol) this.diceSymbol.owner = owner; }
+  get rotate(): number { return this.diceSymbol?.rotate ?? 0; }
+  set rotate(rotate: number) { if (this.diceSymbol) this.diceSymbol.rotate = rotate; }
 
-  get name(): string { return this.diceSymbol.name; }
-  set name(name: string) { this.diceSymbol.name = name; }
-  get size(): number { return MathUtil.clampMin(this.diceSymbol.size); }
+  get name(): string { return this.diceSymbol?.name ?? ''; }
+  set name(name: string) { if (this.diceSymbol) this.diceSymbol.name = name; }
+  get size(): number { return MathUtil.clampMin(this.diceSymbol?.size ?? 1); }
 
-  get faces(): string[] { return this.diceSymbol.faces; }
-  get nothingFaces(): string[] { return this.diceSymbol.nothingFaces; }
+  get faces(): string[] { return this.diceSymbol?.faces ?? []; }
+  get nothingFaces(): string[] { return this.diceSymbol?.nothingFaces ?? []; }
   get imageFile(): ImageFile {
-    return this.imageService.getEmptyOr(this.diceSymbol.imageFile);
+    return this.imageService.getEmptyOr(this.diceSymbol?.imageFile!);
   }
   get backFaceImageFile(): ImageFile {
-    return this.imageService.getEmptyOr(this.diceSymbol.backFaceImageFile);
+    return this.imageService.getEmptyOr(this.diceSymbol?.backFaceImageFile!);
   }
 
-  get isGMMode(): boolean { return this.diceSymbol.isGMMode; }
+  get isGMMode(): boolean { return this.diceSymbol?.isGMMode ?? false; }
 
-  get isMine(): boolean { return this.diceSymbol.isMine; }
-  get hasOwner(): boolean { return this.diceSymbol.hasOwner; }
-  get ownerName(): string { return this.diceSymbol.ownerName; }
-  get ownerColor(): string { return this.diceSymbol.ownerColor; }
-  get isVisible(): boolean { return this.diceSymbol.isVisible; }
+  get isMine(): boolean { return this.diceSymbol?.isMine ?? false; }
+  get hasOwner(): boolean { return this.diceSymbol?.hasOwner ?? false; }
+  get ownerName(): string { return this.diceSymbol?.ownerName ?? ''; }
+  get ownerColor(): string { return this.diceSymbol?.ownerColor ?? ''; }
+  get isVisible(): boolean { return this.diceSymbol?.isVisible ?? false; }
 
-  get isDropShadow(): boolean { return this.diceSymbol.isDropShadow; }
-  set isDropShadow(isDropShadow: boolean) { this.diceSymbol.isDropShadow = isDropShadow; }
+  get isDropShadow(): boolean { return this.diceSymbol?.isDropShadow ?? false; }
+  set isDropShadow(isDropShadow: boolean) { if (this.diceSymbol) this.diceSymbol.isDropShadow = isDropShadow; }
 
-  get isLock(): boolean { return this.diceSymbol.isLock; }
-  set isLock(isLock: boolean) { this.diceSymbol.isLock = isLock; }
+  get isLock(): boolean { return this.diceSymbol?.isLock ?? false; }
+  set isLock(isLock: boolean) { if (this.diceSymbol) this.diceSymbol.isLock = isLock; }
 
-  get isCoin(): boolean { return this.diceSymbol.isCoin; }
-  get selectionState(): SelectionState { return this.selectionService.state(this.diceSymbol); }
+  get isCoin(): boolean { return this.diceSymbol?.isCoin ?? false; }
+  get selectionState(): SelectionState { return this.selectionService.state(this.diceSymbol!); }
   get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
   get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
 
@@ -199,7 +199,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   ngOnChanges(): void {
     EventSystem.register(this)
       .on('ROLL_DICE_SYMBOL', event => {
-        if (event.data.identifier === this.diceSymbol.identifier) {
+        if (this.diceSymbol && event.data.identifier === this.diceSymbol.identifier) {
           this.ngZone.run(() => {
             this.animeState = 'inactive';
             this.changeDetector.markForCheck();
@@ -214,7 +214,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
         }
       })
       .on('DICE_ALL_OPEN', event => {
-        if (this.owner && !this.isLock) {
+        if (this.diceSymbol && this.owner && !this.isLock) {
           this.owner = '';
           SoundEffect.play(PresetSound.unlock);
           this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol.name} 的${this.isCoin ? '正面／背面' : '骰面'}公開 → ${this.face}`);
@@ -247,16 +247,18 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       })
       .on('DISCONNECT_PEER', event => {
         const cursor = PeerCursor.findByPeerId(event.data.peerId);
-        if (!cursor || this.diceSymbol.owner === cursor.userId) this.changeDetector.markForCheck();
+        if (!cursor || (this.diceSymbol && this.diceSymbol.owner === cursor.userId)) this.changeDetector.markForCheck();
       });
-    this.movableOption = {
-      tabletopObject: this.diceSymbol,
+    if (this.diceSymbol) {
+      this.movableOption = {
+        tabletopObject: this.diceSymbol,
       transformCssOffset: 'translateZ(1.0px)',
-      colideLayers: ['terrain', 'text-note', 'character']
-    };
-    this.rotableOption = {
-      tabletopObject: this.diceSymbol
-    };
+        colideLayers: ['terrain', 'text-note', 'character']
+      };
+      this.rotableOption = {
+        tabletopObject: this.diceSymbol
+      };
+    }
   }
 
   ngAfterViewInit() {
@@ -264,12 +266,14 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       this.interactGesture = new ObjectInteractGesture(this.elementRef.nativeElement);
     });
 
-    this.interactGesture.onstart = this.onInputStart.bind(this);
-    this.interactGesture.oninteract = this.onDoubleClick.bind(this);
+    if (this.interactGesture) {
+      this.interactGesture.onstart = this.onInputStart.bind(this);
+      this.interactGesture.oninteract = this.onDoubleClick.bind(this);
+    }
   }
 
   ngOnDestroy() {
-    this.interactGesture.destroy();
+    if (this.interactGesture) this.interactGesture.destroy();
     EventSystem.unregister(this);
   }
 
@@ -312,6 +316,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
 
   private makeSelectionContextMenu(): ContextMenuAction[] {
     if (this.selectionService.objects.length < 1) return [];
+    if (!this.diceSymbol) return [];
 
     const actions: ContextMenuAction[] = [];
 
@@ -322,8 +327,8 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
     };
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
-    if (this.isSelected) {
-      const selectedDiceSymbols = () => this.selectionService.objects.filter(object => object.aliasName === this.diceSymbol.aliasName) as DiceSymbol[];
+    if (this.isSelected && this.diceSymbol) {
+      const selectedDiceSymbols = () => this.selectionService.objects.filter(object => object.aliasName === this.diceSymbol!.aliasName) as DiceSymbol[];
       const isContainCoin = selectedDiceSymbols().some(diceSymbol => diceSymbol.isCoin);
       const isContainDice = selectedDiceSymbols().some(diceSymbol => !diceSymbol.isCoin);
       actions.push(
@@ -392,6 +397,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   }
 
   private makeContextMenu(): ContextMenuAction[] {
+    if (!this.diceSymbol) return [];
     const actions: ContextMenuAction[] = [];
 
     //if (this.isVisible) {
@@ -409,7 +415,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
         name: `公開${this.isCoin ? '硬幣' : '骰子'}`, action: () => {
           this.owner = '';
           SoundEffect.play(PresetSound.unlock);
-          this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol.name} 的${this.isCoin ? '正面／背面' : '骰面'}公開 → ${this.face}`);
+          this.chatMessageService.sendOperationLog(`${this.diceSymbol!.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol!.name} 的${this.isCoin ? '正面／背面' : '骰面'}公開 → ${this.face}`);
         }
       });
     }
@@ -417,7 +423,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       actions.push({
         name: '只有自己查看', action: () => {
           this.owner = Network.peer.userId;
-          this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol.name} 只有自己查看`);
+          this.chatMessageService.sendOperationLog(`${this.diceSymbol!.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol!.name} 只有自己查看`);
           SoundEffect.play(PresetSound.lock);
         }
       });
@@ -457,7 +463,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
         subActions.push({
           name: `${this.face == face ? '◉' : '○'} ${face}　`, action: () => {
             if (this.owner === '') SoundEffect.play(PresetSound.dicePut);
-            if (this.owner === '' && this.face != face) this.chatMessageService.sendOperationLog(`${this.diceSymbol.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol.name} 的${this.isCoin ? '正面／背面' : '骰面'}變更 → ${face}`);
+            if (this.owner === '' && this.face != face) this.chatMessageService.sendOperationLog(`${this.diceSymbol!.name == '' ? '(無名的' + (this.isCoin ? '硬幣' : '骰子') + ')' : this.diceSymbol!.name} 的${this.isCoin ? '正面／背面' : '骰面'}變更 → ${face}`);
             this.face = face;
           },
           checkBox: 'radio'
@@ -482,11 +488,11 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       }));
 
     actions.push(ContextMenuSeparator);
-    actions.push({ name: '顯示詳細...', action: () => { this.showDetail(this.diceSymbol); } });
-    if (this.diceSymbol.getUrls().length > 0) {
+    actions.push({ name: '顯示詳細...', action: () => { this.showDetail(this.diceSymbol!); } });
+    if (this.diceSymbol?.getUrls().length ?? 0 > 0) {
       actions.push({
         name: '開啟參考URL', action: undefined,
-        subActions: this.diceSymbol.getUrls().map((urlElement) => {
+        subActions: this.diceSymbol!.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
             name: urlElement.name ? urlElement.name : url,
@@ -494,11 +500,11 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
               if (StringUtil.sameOrigin(url)) {
                 window.open(url.trim(), '_blank', 'noopener');
               } else {
-                this.modalService.open(OpenUrlComponent, { url: url, title: this.diceSymbol.name, subTitle: urlElement.name });
+                this.modalService.open(OpenUrlComponent, { url: url, title: this.diceSymbol!.name, subTitle: urlElement.name });
               }
             },
             disabled: !StringUtil.validUrl(url),
-            error: !StringUtil.validUrl(url) ? 'URL無效' : undefined,
+            error: !StringUtil.validUrl(url) ? 'URL無効' : undefined,
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         }),
@@ -507,7 +513,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
     }
     actions.push({
       name: '建立副本', action: () => {
-        const cloneObject = this.diceSymbol.clone();
+        const cloneObject = this.diceSymbol!.clone();
         cloneObject.location.x += this.gridSize;
         cloneObject.location.y += this.gridSize;
         cloneObject.update();
@@ -516,7 +522,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
     });
     actions.push({
       name: '刪除', action: () => {
-        this.diceSymbol.destroy();
+        this.diceSymbol!.destroy();
         SoundEffect.play(PresetSound.sweep);
       }
     });
@@ -533,6 +539,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   }
 
   diceRoll(): string {
+    if (!this.diceSymbol) return '';
     EventSystem.call('ROLL_DICE_SYMBOL', { identifier: this.diceSymbol.identifier });
     //if (this.owner === '') {
       if (this.isCoin) {
@@ -559,7 +566,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   }
 
   private startIconHiddenTimer() {
-    clearTimeout(this.iconHiddenTimer);
+    if (this.iconHiddenTimer) clearTimeout(this.iconHiddenTimer);
     this.iconHiddenTimer = setTimeout(() => {
       this.iconHiddenTimer = null;
       this.changeDetector.markForCheck();

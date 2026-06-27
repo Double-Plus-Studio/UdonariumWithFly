@@ -167,7 +167,7 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
     this.rotateOffset = this.calcRotate(pointer, this.rotate);
     this.setAnimatedTransition(false);
 
-    if (this.tabletopObject) {
+    if (this.tabletopObject && this.tabletopService.tableSelector.viewTable) {
       this.tabletopService.tableSelector.viewTable.gridHeight = this.tabletopObject.posZ + 0.5;
       //this.setUpdateTimer();
     }

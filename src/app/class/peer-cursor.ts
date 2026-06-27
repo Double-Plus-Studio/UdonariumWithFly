@@ -34,8 +34,8 @@ export class PeerCursor extends GameObject {
   private static userIdMap: Map<UserId, ObjectIdentifier> = new Map();
   private static peerIdMap: Map<PeerId, ObjectIdentifier> = new Map();
 
-  get isMine(): boolean { return (PeerCursor.myCursor && PeerCursor.myCursor === this); }
-  get image(): ImageFile { return ImageStorage.instance.get(this.imageIdentifier); }
+  get isMine(): boolean { return !!(PeerCursor.myCursor && PeerCursor.myCursor === this); }
+  get image(): ImageFile | null { return ImageStorage.instance.get(this.imageIdentifier); }
 
   // GameObject Lifecycle
   onStoreAdded() {
@@ -62,11 +62,11 @@ export class PeerCursor extends GameObject {
     PeerCursor.peerIdMap.delete(this.peerId);
   }
 
-  static findByUserId(userId: UserId): PeerCursor {
+  static findByUserId(userId: UserId): PeerCursor | null {
     return this.find(PeerCursor.userIdMap, userId, true);
   }
 
-  static findByPeerId(peerId: PeerId): PeerCursor {
+  static findByPeerId(peerId: PeerId): PeerCursor | null {
     return this.find(PeerCursor.peerIdMap, peerId, false);
   }
 
@@ -116,14 +116,14 @@ export class PeerCursor extends GameObject {
       }
       // ---
       await localForage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY).then(name => {
-        if (typeof name === 'string') {
+        if (typeof name === 'string' && PeerCursor.myCursor) {
           PeerCursor.myCursor.name = name;
         } else {
           if (name !== undefined) localForage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
         }
       });
       await localForage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY).then(color => {
-        if (typeof color === 'string' && /^\#[0-9a-f]{6}$/.test(color.trim().toLowerCase())) {
+        if (typeof color === 'string' && /^\#[0-9a-f]{6}$/.test(color.trim().toLowerCase()) && PeerCursor.myCursor) {
           PeerCursor.myCursor.color = color.trim().toLowerCase();
         } else {
           if (color !== undefined) localForage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
@@ -136,7 +136,7 @@ export class PeerCursor extends GameObject {
           if (typeof identifierOrImageData === 'string') {
             if (identifierOrImageData.startsWith('data:image/')) {
               const type = identifierOrImageData.substring('data:'.length, identifierOrImageData.indexOf(';'));
-              const bin = atob(identifierOrImageData.replace(/^.*,/, '')); 
+              const bin = atob(identifierOrImageData.replace(/^.*,/, ''));
               const buffer = new Uint8Array(bin.length);
               for (let i = 0; i < bin.length; i++) {
                 buffer[i] = bin.charCodeAt(i);
@@ -144,7 +144,7 @@ export class PeerCursor extends GameObject {
               blob = new Blob([buffer.buffer], { type: type });
             } else {
               const identifier = ImageStorage.instance.images.find(image => image.identifier === identifierOrImageData);
-              if (identifier) {
+              if (identifier && PeerCursor.myCursor) {
                 PeerCursor.myCursor.imageIdentifier = identifierOrImageData;
               } else {
                 localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
@@ -155,9 +155,9 @@ export class PeerCursor extends GameObject {
           } else {
             localForage.removeItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY);
           }
-          if (blob) {
+          if (blob && PeerCursor.myCursor) {
             ImageFile.createAsync(blob).then(imageFile => {
-              if (imageFile.state === ImageState.COMPLETE) {
+              if (imageFile.state === ImageState.COMPLETE && PeerCursor.myCursor) {
                 ImageStorage.instance.add(imageFile);
                 PeerCursor.myCursor.imageIdentifier = imageFile.identifier;
               } else {

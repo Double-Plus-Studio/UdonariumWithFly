@@ -80,7 +80,7 @@ export class ChatMessageService {
     const effective = !(isUseFaceIcon && this.findFaceIconIdentifier(sendFrom));
     const chatMessage: ChatMessageContext = {
       from: Network.peer.userId,
-      to: ChatMessageService.findId(sendTo ?? ''),
+      to: ChatMessageService.findId(sendTo ?? '') || '',
       //to: this.findId(sendTo),
       //name: this.makeMessageName(sendFrom, sendTo),
       name: this.findObjectName(sendFrom),
@@ -90,8 +90,8 @@ export class ChatMessageService {
       timestamp: this.calcTimeStamp(chatTab),
       tag: effective ? `${gameType} noface` : gameType,
       text: StringUtil.cr(text),
-      color: color,
-      toColor: sendTo ? this.findObjectColor(sendTo) : '',
+      color: (color ?? '') || undefined,
+      toColor: (sendTo ? this.findObjectColor(sendTo) : '') || undefined,
       isInverseIcon: effective && isInverseIcon ? 1 : 0,
       isHollowIcon: effective && isHollowIcon ? 1 : 0,
       isBlackPaint: effective && isBlackPaint ? 1 : 0,
@@ -112,13 +112,13 @@ export class ChatMessageService {
         from: Network.peer.userId,
         //to: ChatMessageService.findId(PeerCursor.myCursor.userId),
         //to: this.findId(sendTo),
-        name: PeerCursor.myCursor.name,
-        imageIdentifier: PeerCursor.myCursor.imageIdentifier,
+        name: PeerCursor.myCursor!.name,
+        imageIdentifier: PeerCursor.myCursor!.imageIdentifier,
         timestamp: this.calcTimeStamp(chatTab),
         tag: 'opelog',
         //text: StringUtil.cr(text),
         text: text,
-        color: PeerCursor.myCursor.color
+        color: PeerCursor.myCursor!.color
       };
 
       chatTab.addMessage(chatMessage);
@@ -148,7 +148,7 @@ export class ChatMessageService {
   private findObjectColor(identifier: string): string | null {
     const object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter) {
-      return object.chatPalette.color;
+      return object.chatPalette?.color || null;
     } else if (object instanceof PeerCursor) {
       return object.color;
     }
@@ -166,7 +166,7 @@ export class ChatMessageService {
   private findImageIdentifier(identifier: string, isUseFaceIcon: boolean = false): string {
     const object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter) {
-      if (isUseFaceIcon && object.faceIcon && 0 < object.faceIcon.url.length) return object.faceIcon.identifier;
+      if (isUseFaceIcon && object.faceIcon && 0 < object.faceIcon.url!.length) return object.faceIcon.identifier;
       return object.imageFile ? object.imageFile.identifier : '';
     } else if (object instanceof PeerCursor) {
       return object.imageIdentifier;
@@ -176,7 +176,7 @@ export class ChatMessageService {
 
   private findFaceIconIdentifier(identifier: string): string {
     const object = ObjectStore.instance.get(identifier);
-    if (object instanceof GameCharacter && object.faceIcon && 0 < object.faceIcon.url.length) {
+    if (object instanceof GameCharacter && object.faceIcon && 0 < object.faceIcon.url!.length) {
       return object.faceIcon.identifier;
     }
     return '';

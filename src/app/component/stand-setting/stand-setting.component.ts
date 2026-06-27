@@ -36,15 +36,15 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   ) { }
 
   get standElements(): DataElement[] {
-    return this.character.standList.standElements;
+    return this.character?.standList?.standElements ?? [];
   }
 
   get imageList(): ImageFile[] {
     if (!this.character) return [];
     const ret: ImageFile[] = [];
     const dupe: {[key: string]: boolean} = {};
-    const tmp = this.character.imageDataElement.getElementsByName('imageIdentifier');
-    const elements = tmp.concat(this.character.imageDataElement.getElementsByName('faceIcon'));
+    const tmp = this.character.imageDataElement?.getElementsByName('imageIdentifier') ?? [];
+    const elements = tmp.concat(this.character.imageDataElement?.getElementsByName('faceIcon') ?? []);
     for (const elm of elements) {
       if (dupe[elm.value]) continue;
       const file = this.imageElementToFile(elm);
@@ -122,33 +122,39 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   updatePanelTitle() {
-    this.panelService.title = this.character.name + ' 的立繪設定';
+    this.panelService.title = (this.character?.name ?? '') + ' 的立繪設定';
   }
 
   add() {
-    this.character.standList.add(this.character.imageFile.identifier);
+    if (!this.character) return;
+    this.character.standList?.add(this.character.imageFile?.identifier || '');
     this.standSettingXML = '';
   }
 
   delele(standElement: DataElement, index: number) {
+    if (!this.character) return;
     EventSystem.call('DELETE_STAND_IMAGE', {
       characterIdentifier: this.character.identifier,
       identifier: standElement.identifier
     });
-    if (!this.character || !this.character.standList) return;
+    if (!this.character.standList) return;
     this.modalService.open(ConfirmationComponent, {
-      title: '刪除立繪設定', 
+      title: '刪除立繪設定',
       text: '確定要刪除立繪設定嗎？',
       type: ConfirmationType.OK_CANCEL,
       materialIcon: 'person_off',
       action: () => {
         this.standSettingXML = standElement.toXml();
-        const elm = this.character.standList.removeChild(standElement);
+        const elm = this.character?.standList?.removeChild(standElement);
         if (elm) {
-          if (this.character.standList.overviewIndex == index) {
-            this.character.standList.overviewIndex = -1;
-          } else if (this.character.standList.overviewIndex > index) {
-            this.character.standList.overviewIndex -= 1;
+          if (this.character?.standList?.overviewIndex == index) {
+            if (this.character?.standList) {
+              this.character.standList.overviewIndex = -1;
+            }
+          } else if ((this.character?.standList?.overviewIndex ?? -2) > index) {
+            if (this.character?.standList) {
+              this.character.standList.overviewIndex -= 1;
+            }
           }
         }
       }
@@ -156,39 +162,51 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   restore() {
-    if (!this.standSettingXML) return;
+    if (!this.standSettingXML || !this.character) return;
     const restoreStand = <DataElement>ObjectSerializer.instance.parseXml(this.standSettingXML);
-    this.character.standList.appendChild(restoreStand);
+    this.character.standList?.appendChild(restoreStand);
     this.standSettingXML = '';
   }
 
   upStandIndex(standElement: DataElement) {
+    if (!this.character) return;
     this.standSettingXML = '';
     const parentElement = this.character.standList;
+    if (!parentElement) return;
     const index: number = parentElement.children.indexOf(standElement);
     if (0 < index) {
       const prevElement = parentElement.children[index - 1];
       parentElement.insertBefore(standElement, prevElement);
-      if (this.character.standList.overviewIndex == index) {
-        this.character.standList.overviewIndex -= 1;
-      } else if (this.character.standList.overviewIndex == index - 1) {
-        this.character.standList.overviewIndex += 1;
-      } 
+      if (this.character.standList?.overviewIndex == index) {
+        if (this.character.standList) {
+          this.character.standList.overviewIndex -= 1;
+        }
+      } else if (this.character.standList?.overviewIndex == index - 1) {
+        if (this.character.standList) {
+          this.character.standList.overviewIndex += 1;
+        }
+      }
     }
   }
 
   downStandIndex(standElement: DataElement) {
+    if (!this.character) return;
     this.standSettingXML = '';
     const parentElement = this.character.standList;
+    if (!parentElement) return;
     const index: number = parentElement.children.indexOf(standElement);
     if (index < parentElement.children.length - 1) {
       const nextElement = parentElement.children[index + 1];
       parentElement.insertBefore(nextElement, standElement);
-      if (this.character.standList.overviewIndex == index) {
-        this.character.standList.overviewIndex += 1;
-      } else if (this.character.standList.overviewIndex == index + 1) {
-        this.character.standList.overviewIndex -= 1;
-      } 
+      if (this.character.standList?.overviewIndex == index) {
+        if (this.character.standList) {
+          this.character.standList.overviewIndex += 1;
+        }
+      } else if (this.character.standList?.overviewIndex == index + 1) {
+        if (this.character.standList) {
+          this.character.standList.overviewIndex -= 1;
+        }
+      }
     }
   }
 

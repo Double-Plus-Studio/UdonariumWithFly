@@ -37,7 +37,7 @@ export class BatchService {
         if (0 < this.batchTask.size) {
           this.execBatch();
         } else {
-          clearInterval(this.batchTaskTimer);
+          clearInterval(this.batchTaskTimer!);
           this.batchTaskTimer = null;
         }
       }, 66);

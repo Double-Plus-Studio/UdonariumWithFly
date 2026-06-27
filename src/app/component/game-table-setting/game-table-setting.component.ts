@@ -8,7 +8,7 @@ import { PeerCursor } from '@udonarium/peer-cursor';
 import { FilterType, GameTable, GridType } from '@udonarium/game-table';
 import { TableSelector } from '@udonarium/table-selector';
 
-import { FileSelectorComponent } from 'component/file-selector/file-selector.component';
+import { FileSelectorComponent } from 'component/file-selecter/file-selecter.component';
 import { ChatMessageService } from 'service/chat-message.service';
 import { ImageService } from 'service/image.service';
 import { ModalService } from 'service/modal.service';
@@ -37,22 +37,22 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     return this.imageService.getEmptyOr(this.selectedTable ? this.selectedTable.backgroundImageIdentifier2 : '');
   }
 
-  get tableName(): string { return this.selectedTable.name; }
-  set tableName(tableName: string) { if (this.isEditable) this.selectedTable.name = tableName; }
+  get tableName(): string { return this.selectedTable?.name ?? ''; }
+  set tableName(tableName: string) { if (this.isEditable && this.selectedTable) this.selectedTable.name = tableName; }
 
-  get tableWidth(): number { return this.selectedTable.width; }
-  set tableWidth(tableWidth: number) { if (this.isEditable) this.selectedTable.width = tableWidth; }
+  get tableWidth(): number { return this.selectedTable?.width ?? 0; }
+  set tableWidth(tableWidth: number) { if (this.isEditable && this.selectedTable) this.selectedTable.width = tableWidth; }
 
-  get tableHeight(): number { return this.selectedTable.height; }
-  set tableHeight(tableHeight: number) { if (this.isEditable) this.selectedTable.height = tableHeight; }
+  get tableHeight(): number { return this.selectedTable?.height ?? 0; }
+  set tableHeight(tableHeight: number) { if (this.isEditable && this.selectedTable) this.selectedTable.height = tableHeight; }
 
-  get tableGridColor(): string { return this.selectedTable.gridColor; }
-  set tableGridColor(tableGridColor: string) { if (this.isEditable) this.selectedTable.gridColor = tableGridColor; }
+  get tableGridColor(): string { return this.selectedTable?.gridColor ?? ''; }
+  set tableGridColor(tableGridColor: string) { if (this.isEditable && this.selectedTable) this.selectedTable.gridColor = tableGridColor; }
 
   get tableGridShow(): boolean { return this.tableSelector.gridShow; }
   set tableGridShow(tableGridShow: boolean) {
     this.tableSelector.gridShow = tableGridShow;
-    if (tableGridShow) this.tableSelector.viewTable.gridClipRect = null;
+    if (tableGridShow && this.tableSelector.viewTable) this.tableSelector.viewTable.gridClipRect = null;
     EventSystem.trigger('UPDATE_GAME_OBJECT', this.tableSelector.toContext()); // 自分にだけイベントを発行してグリッド更新を誘発
   }
 
@@ -61,17 +61,19 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     this.tableSelector.gridSnap = tableGridSnap;
   }
 
-  get tableGridType(): GridType { return this.selectedTable.gridType; }
-  set tableGridType(gridType: GridType) { if (this.isEditable) this.selectedTable.gridType = Number(gridType); }
+  get tableGridType(): GridType { return this.selectedTable?.gridType ?? 0; }
+  set tableGridType(gridType: GridType) { if (this.isEditable && this.selectedTable) this.selectedTable.gridType = Number(gridType); }
 
-  get tableGridNumberShow(): boolean { return this.selectedTable.isShowNumber; }
+  get tableGridNumberShow(): boolean { return this.selectedTable?.isShowNumber ?? false; }
   set tableGridNumberShow(isShowNumber: boolean) {
-    this.selectedTable.isShowNumber = isShowNumber;
-    EventSystem.trigger('UPDATE_GAME_OBJECT', this.tableSelector.toContext()); // 自分にだけイベントを発行してグリッド更新を誘発
+    if (this.selectedTable) {
+      this.selectedTable.isShowNumber = isShowNumber;
+      EventSystem.trigger('UPDATE_GAME_OBJECT', this.tableSelector.toContext()); // 自分にだけイベントを発行してグリッド更新を誘発
+    }
   }
 
-  get tableDistanceviewFilter(): FilterType { return this.selectedTable.backgroundFilterType; }
-  set tableDistanceviewFilter(filterType: FilterType) { if (this.isEditable) this.selectedTable.backgroundFilterType = filterType; }
+  get tableDistanceviewFilter(): FilterType { return (this.selectedTable?.backgroundFilterType ?? 0) as FilterType; }
+  set tableDistanceviewFilter(filterType: FilterType) { if (this.isEditable && this.selectedTable) this.selectedTable.backgroundFilterType = filterType; }
 
   get tableSelector(): TableSelector { return TableSelector.instance; }
 
@@ -164,7 +166,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   restore() {
     if (this.selectedTable && this.selectedTableXml) {
       const restoreTable = ObjectSerializer.instance.parseXml(this.selectedTableXml);
-      this.selectGameTable(restoreTable.identifier);
+      if (restoreTable) this.selectGameTable(restoreTable.identifier);
       this.selectedTableXml = '';
     }
   }

@@ -211,8 +211,8 @@ export class ImageSharingSystem {
         context.thumbnail.blob = image.thumbnail.blob;//
         context.thumbnail.type = image.thumbnail.type;
       } else {
-        context.blob = image.blob;//
-        context.type = image.blob.type;
+        context.blob = image.blob!;//
+        context.type = image.blob!.type;
       }
 
       const size = context.blob

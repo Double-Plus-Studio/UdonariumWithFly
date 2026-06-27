@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { FileSelectorComponent } from './file-selector.component';
+import { FileSelectorComponent } from './file-selecter.component';
 
 describe('FileSelectorComponent', () => {
   let component: FileSelectorComponent;

@@ -66,7 +66,7 @@ export class ContextMenuService {
     }
 
     const injector = parentViewContainerRef.injector;
-    const panelComponentRef: ComponentRef<any> = parentViewContainerRef.createComponent(ContextMenuService.ContextMenuComponentClass, { index: parentViewContainerRef.length, injector: injector });
+    const panelComponentRef: ComponentRef<any> = parentViewContainerRef.createComponent(ContextMenuService.ContextMenuComponentClass as any, { index: parentViewContainerRef.length, injector: injector });
 
     const childPanelService: ContextMenuService = panelComponentRef.injector.get(ContextMenuService);
 

@@ -8,11 +8,11 @@ class ModalContext {
   ) {
   }
   resolve(value: any) {
-    this._resolve(value);
+    if (this._resolve) this._resolve(value);
     this._resolve = null;
   }
   reject(reason?: any) {
-    this._reject(reason);
+    if (this._reject) this._reject(reason);
     this._reject = null;
   }
 }
@@ -64,16 +64,19 @@ export class ModalService {
       const parentInjector = parentViewContainerRef.injector;
       const injector = Injector.create({ providers: [{ provide: ModalService, useValue: childModalService }], parent: parentInjector });
 
-      let panelComponentRef: ComponentRef<any> | null = parentViewContainerRef.createComponent(ModalService.ModalComponentClass!, { index: parentViewContainerRef.length, injector: injector });
-      let bodyComponentRef: ComponentRef<any> | null = panelComponentRef.instance.content.createComponent(childComponent);
+      const panelComponentRef: ComponentRef<any> = parentViewContainerRef.createComponent(ModalService.ModalComponentClass!, { index: parentViewContainerRef.length, injector: injector });
+      const bodyComponentRef: ComponentRef<any> = panelComponentRef.instance.content.createComponent(childComponent);
+
+      let panelRef = panelComponentRef;
+      let bodyRef = bodyComponentRef;
 
       panelComponentRef.onDestroy(() => {
-        panelComponentRef = null;
+        panelRef = null as any;
         this.count--;
       });
 
       bodyComponentRef.onDestroy(() => {
-        bodyComponentRef = null;
+        bodyRef = null as any;
         this.count--;
       });
 

@@ -14,8 +14,8 @@ export function markForChanged(object: GameObject, sendFrom: string = Network.pe
   startBatching();
 }
 
-export function markForChildrenChanged(node: ObjectNode) {
-  let current = node;
+export function markForChildrenChanged(node: ObjectNode | null) {
+  let current: ObjectNode | null = node;
   while (current) {
     if (nodeBatches.has(current.identifier)) break;
     nodeBatches.add(current.identifier);

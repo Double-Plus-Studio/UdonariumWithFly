@@ -31,7 +31,7 @@ export class OpenUrlComponent implements OnInit, OnDestroy {
   }
 
   get isOuter(): boolean {
-    if (!this.isValid) return false;
+    if (!this.isValid || !this.urlObj) return false;
     return window.location.origin != this.urlObj.origin;
   }
 

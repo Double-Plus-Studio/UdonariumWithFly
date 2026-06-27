@@ -315,7 +315,7 @@ export class Matrix3D {
     for (let i = 0; i < l; ++i) {
       trans[i] = CSSNumber.parse(trans[i]);
     }
-    return this.setData(trans);
+    return this.setData(trans) || this;
   }
 
   appendCSS(cssString: string, force2D: boolean = false): Matrix3D {

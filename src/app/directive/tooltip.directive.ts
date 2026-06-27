@@ -136,7 +136,9 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
       });
 
     this.tooltipComponentRef.onDestroy(() => {
-      this.removeEventListeners(this.tooltipComponentRef.location.nativeElement);
+      if (this.tooltipComponentRef?.location?.nativeElement) {
+        this.removeEventListeners(this.tooltipComponentRef.location.nativeElement);
+      }
       document.body.removeEventListener('touchstart', this.callbackOnMouseDown, true);
       document.body.removeEventListener('mousedown', this.callbackOnMouseDown, true);
       document.removeEventListener('pickstart', this.callbackOnPick, true);
@@ -151,7 +153,7 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
     const onChanges = this.tooltipComponentRef.instance as OnChanges;
     if (onChanges?.ngOnChanges != null) {
       queueMicrotask(() => {
-        if (this.tooltipComponentRef.instance) onChanges?.ngOnChanges({});
+        if (this.tooltipComponentRef?.instance) onChanges?.ngOnChanges({});
       });
     }
   }

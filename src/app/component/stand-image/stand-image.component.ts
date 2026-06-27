@@ -83,7 +83,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
   private _speakingImageIdentifier: string | null = null;
   private _imageIdentifier: string | null = null;
   private _speakingImageUrl: string | null = null;
-  private _imageUrl: string = ImageFile.Empty.url;
+  private _imageUrl: string = ImageFile.Empty.url!;
 
   constructor(
     private ngZone: NgZone
@@ -133,7 +133,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
   set dialog(dialog) {
     if (!this.gameCharacter || (this.gameCharacter.location.name === 'table' && !this.gameCharacter.isHideIn) || this.gameCharacter.location.name === 'graveyard') return;
     clearTimeout(this._dialogTimeoutId);
-    let text = StringUtil.cr(dialog.text);
+    let text = StringUtil.cr((dialog as any)?.text || '');
     const isEmote = StringUtil.isEmote(text);
     const rubys: {base: string; ruby: string; start: number; end: number}[] = [];
     const re = /[\|｜]([^\|｜\s]+?)《(.+?)》/g;
@@ -287,20 +287,20 @@ export class StandImageComponent implements OnInit, OnDestroy {
       force = true;
       const revokeUrl = this._imageUrl;
       if (imageElement) {
-        const iamgeFile: ImageFile = ImageStorage.instance.get(<string>imageElement.value);
+        const iamgeFile: ImageFile | null = ImageStorage.instance.get(<string>imageElement.value);
         if (iamgeFile) {
-          if (iamgeFile.state === ImageState.COMPLETE) {
+          if (iamgeFile.state === ImageState.COMPLETE && iamgeFile.blob) {
             this._imageUrl = URL.createObjectURL(iamgeFile.blob);
           } else {
-            this._imageUrl = iamgeFile.url;
+            this._imageUrl = iamgeFile.url || ImageFile.Empty.url || '';
           }
         } else {
-          this._imageUrl = ImageFile.Empty.url;
+          this._imageUrl = ImageFile.Empty.url ?? '';
         }
       } else {
-        this._imageUrl = ImageFile.Empty.url;
+        this._imageUrl = ImageFile.Empty.url ?? '';
       }
-      URL.revokeObjectURL(revokeUrl);
+      if (revokeUrl) URL.revokeObjectURL(revokeUrl);
       this._imageIdentifier = (imageElement && imageElement.value) ? imageElement.value.toString() : null;
     }
     this.refleshSpeakingImageUrl(force);
@@ -311,12 +311,12 @@ export class StandImageComponent implements OnInit, OnDestroy {
     if (force || !speakingImageElement || this._speakingImageIdentifier !== speakingImageElement.value) {
       const revokeUrl = this._speakingImageUrl;
       if (speakingImageElement) {
-        const iamgeFile: ImageFile = ImageStorage.instance.get(<string>speakingImageElement.value);
+        const iamgeFile: ImageFile | null = ImageStorage.instance.get(<string>speakingImageElement.value);
         if (iamgeFile) {
-          if (iamgeFile.state === ImageState.COMPLETE) {
+          if (iamgeFile.state === ImageState.COMPLETE && iamgeFile.blob) {
             this._speakingImageUrl = URL.createObjectURL(iamgeFile.blob);
           } else {
-            this._speakingImageUrl = iamgeFile.url;
+            this._speakingImageUrl = iamgeFile.url || '';
           }
         } else {
           this._speakingImageUrl = null;
@@ -324,22 +324,22 @@ export class StandImageComponent implements OnInit, OnDestroy {
       } else {
         this._speakingImageUrl = null;
       }
-      URL.revokeObjectURL(revokeUrl);
-      this._speakingImageIdentifier = (speakingImageElement && speakingImageElement.value) ? speakingImageElement.value.toString() : null;
+      if (revokeUrl) URL.revokeObjectURL(revokeUrl);
+      this._speakingImageIdentifier = (speakingImageElement && speakingImageElement.value) ? speakingImageElement.value.toString() : '';
     }
   }
 
   ngOnDestroy(): void {
     clearTimeout(this._timeoutId);
     clearInterval(this._chatIntervalId);
-    URL.revokeObjectURL(this._speakingImageUrl);
-    URL.revokeObjectURL(this._imageUrl);
+    if (this._speakingImageUrl) URL.revokeObjectURL(this._speakingImageUrl);
+    if (this._imageUrl) URL.revokeObjectURL(this._imageUrl);
   }
 
   get group(): string {
     if (!this.gameCharacter) return '';
     const elm = this.standElement.getFirstElementByName('name');
-    return elm.currentValue && elm.currentValue.toString().length > 0 ? elm.currentValue.toString() : '';
+    return elm?.currentValue && elm.currentValue.toString().length > 0 ? elm.currentValue.toString() : '';
   }
 
   get groupValue(): number {

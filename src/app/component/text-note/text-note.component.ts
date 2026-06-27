@@ -40,12 +40,12 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() textNote: TextNote | null = null;
   @Input() is3D: boolean = false;
 
-  get title(): string { return this.textNote.title; }
-  get text(): string { this.calcFitHeightIfNeeded(); return this.textNote.text; }
-  set text(text: string) { this.calcFitHeightIfNeeded(); this.textNote.text = text; }
+  get title(): string { return this.textNote?.title ?? ''; }
+  get text(): string { this.calcFitHeightIfNeeded(); return this.textNote?.text ?? ''; }
+  set text(text: string) { this.calcFitHeightIfNeeded(); if (this.textNote) this.textNote.text = text; }
 
-  get color(): string { return this.textNote.color; }
-  set color(color: string) { this.textNote.color = color; }
+  get color(): string { return this.textNote?.color ?? ''; }
+  set color(color: string) { if (this.textNote) this.textNote.color = color; }
 
   get textShadowCss(): string {
     const shadow = StringUtil.textShadowColor(this.color, '#f2f2f2', '#000000');
@@ -59,15 +59,15 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
     ${shadow} 0px 0px 0.5px`;
   }
 
-  get fontSize(): number { this.calcFitHeightIfNeeded(); return this.textNote.fontSize; }
-  get imageFile(): ImageFile { return this.textNote.imageFile; }
-  get rotate(): number { return this.textNote.rotate; }
-  set rotate(rotate: number) { this.textNote.rotate = rotate; }
-  get height(): number { return MathUtil.clampMin(this.textNote.height); }
-  get width(): number { return MathUtil.clampMin(this.textNote.width); }
+  get fontSize(): number { this.calcFitHeightIfNeeded(); return this.textNote?.fontSize ?? 0; }
+  get imageFile(): ImageFile { return this.textNote?.imageFile ?? ImageFile.Empty; }
+  get rotate(): number { return this.textNote?.rotate ?? 0; }
+  set rotate(rotate: number) { if (this.textNote) this.textNote.rotate = rotate; }
+  get height(): number { return MathUtil.clampMin(this.textNote?.height ?? 0); }
+  get width(): number { return MathUtil.clampMin(this.textNote?.width ?? 0); }
 
-  get altitude(): number { return this.textNote.altitude; }
-  set altitude(altitude: number) { this.textNote.altitude = altitude; }
+  get altitude(): number { return this.textNote?.altitude ?? 0; }
+  set altitude(altitude: number) { if (this.textNote) this.textNote.altitude = altitude; }
 
   get textNoteAltitude(): number {
     let ret = this.altitude;
@@ -75,28 +75,28 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
       if (-this.height <= this.altitude) return 0;
       ret += this.height;
     }
-    return +ret.toFixed(1); 
+    return +ret.toFixed(1);
   }
 
-  get isUpright(): boolean { return this.textNote.isUpright; }
-  set isUpright(isUpright: boolean) { this.textNote.isUpright = isUpright; }
+  get isUpright(): boolean { return this.textNote?.isUpright ?? false; }
+  set isUpright(isUpright: boolean) { if (this.textNote) this.textNote.isUpright = isUpright; }
 
-  get isAltitudeIndicate(): boolean { return this.textNote.isAltitudeIndicate; }
-  set isAltitudeIndicate(isAltitudeIndicate: boolean) { this.textNote.isAltitudeIndicate = isAltitudeIndicate; }
+  get isAltitudeIndicate(): boolean { return this.textNote?.isAltitudeIndicate ?? false; }
+  set isAltitudeIndicate(isAltitudeIndicate: boolean) { if (this.textNote) this.textNote.isAltitudeIndicate = isAltitudeIndicate; }
 
-  get isLocked(): boolean { return this.textNote.isLocked; }
-  set isLocked(isLocked: boolean) { this.textNote.isLocked = isLocked; }
+  get isLocked(): boolean { return this.textNote?.isLocked ?? false; }
+  set isLocked(isLocked: boolean) { if (this.textNote) this.textNote.isLocked = isLocked; }
 
-  get isShowTitle(): boolean { return this.textNote.isShowTitle; }
-  set isShowTitle(isShowTitle: boolean) { this.textNote.isShowTitle = isShowTitle; }
+  get isShowTitle(): boolean { return this.textNote?.isShowTitle ?? false; }
+  set isShowTitle(isShowTitle: boolean) { if (this.textNote) this.textNote.isShowTitle = isShowTitle; }
 
-  get isWhiteOut(): boolean { return this.textNote.isWhiteOut; }
-  set isWhiteOut(isWhiteOut: boolean) { this.textNote.isWhiteOut = isWhiteOut; }
+  get isWhiteOut(): boolean { return this.textNote?.isWhiteOut ?? false; }
+  set isWhiteOut(isWhiteOut: boolean) { if (this.textNote) this.textNote.isWhiteOut = isWhiteOut; }
 
   get isEditorSelected(): boolean { return document.activeElement === this.textAreaElementRef.nativeElement; }
   get isActive(): boolean { return document.activeElement === this.textAreaElementRef.nativeElement; }
 
-  get selectionState(): SelectionState { return this.selectionService.state(this.textNote); }
+  get selectionState(): SelectionState { return this.textNote ? this.selectionService.state(this.textNote) : SelectionState.NONE; }
   get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
   get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
 
@@ -136,10 +136,10 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   ngOnChanges(): void {
     EventSystem.unregister(this);
     EventSystem.register(this)
-      .on(`UPDATE_GAME_OBJECT/identifier/${this.textNote?.identifier}`, event => {
+      .on(`UPDATE_GAME_OBJECT/identifier/${this.textNote?.identifier ?? ''}`, event => {
         this.changeDetector.markForCheck();
       })
-      .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.textNote?.identifier}`, event => {
+      .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.textNote?.identifier ?? ''}`, event => {
         this.changeDetector.markForCheck();
       })
       .on('SYNCHRONIZE_FILE_LIST', event => {
@@ -154,16 +154,16 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
           this.changeDetector.markForCheck();
         })
       })
-      .on(`UPDATE_SELECTION/identifier/${this.textNote?.identifier}`, event => {
+      .on(`UPDATE_SELECTION/identifier/${this.textNote?.identifier ?? ''}`, event => {
         this.changeDetector.markForCheck();
       });
     this.movableOption = {
-      tabletopObject: this.textNote,
+      tabletopObject: this.textNote ?? undefined,
       transformCssOffset: 'translateZ(0.17px)',
       colideLayers: ['terrain']
     };
     this.rotableOption = {
-      tabletopObject: this.textNote
+      tabletopObject: this.textNote ?? undefined
     };
   }
   
@@ -171,12 +171,12 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
     this.ngZone.runOutsideAngular(() => {
       this.input = new InputHandler(this.elementRef.nativeElement);
     });
-    this.input.onStart = this.onInputStart.bind(this);
+    this.input!.onStart = this.onInputStart.bind(this);
   }
 
   ngOnDestroy() {
     EventSystem.unregister(this);
-    this.input.destroy();
+    this.input?.destroy();
   }
 
   @HostListener('dragstart', ['$event'])
@@ -186,7 +186,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   onInputStart(e: any) {
-    this.input.cancel();
+    this.input?.cancel();
 
     // TODO:もっと良い方法考える
     if (this.isLocked) {
@@ -198,7 +198,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   onMouseDown(e: any) {
     if (this.isActive || this.isLocked) return;
     e.preventDefault();
-    this.textNote.toTopmost();
+    this.textNote?.toTopmost();
 
     // TODO:もっと良い方法考える
     if (e.button === 2) {
@@ -213,7 +213,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (this.pointerDeviceService.isAllowedToOpenContextMenu) {
       const selection = window.getSelection();
       if (selection && !selection.isCollapsed) selection.removeAllRanges();
-      this.textAreaElementRef.nativeElement.focus();
+      this.textAreaElementRef!.nativeElement.focus();
     }
     this.removeMouseEventListeners();
     e.preventDefault();
@@ -255,7 +255,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
 
     const actions: ContextMenuAction[] = [];
 
-    const objectPosition = { x: this.textNote.location.x, y: this.textNote.location.y, z: this.textNote.posZ };
+    const objectPosition = { x: this.textNote!.location.x, y: this.textNote!.location.y, z: this.textNote!.posZ };
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
     actions.push(ContextMenuSeparator);
 
@@ -337,13 +337,13 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
             SoundEffect.play(PresetSound.sweep);
           }
         },
-        altitudeHande: this.textNote
+        altitudeHande: this.textNote ?? undefined
       },
       ContextMenuSeparator,
-      { name: '編輯備注...', action: () => { this.showDetail(this.textNote); } },
-      (this.textNote.getUrls().length <= 0 ? null : {
+      { name: '編輯備注...', action: () => { this.showDetail(this.textNote!); } },
+      (this.textNote?.getUrls().length ?? 0) <= 0 ? null : {
         name: '開啟參考URL', action: undefined,
-        subActions: this.textNote.getUrls().map((urlElement) => {
+        subActions: this.textNote!.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
             name: urlElement.name ? urlElement.name : url,
@@ -351,7 +351,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
               if (StringUtil.sameOrigin(url)) {
                 window.open(url.trim(), '_blank', 'noopener');
               } else {
-                this.modalService.open(OpenUrlComponent, { url: url, title: this.textNote.title, subTitle: urlElement.name });
+                this.modalService.open(OpenUrlComponent, { url: url, title: this.textNote!.title, subTitle: urlElement.name });
               }
             },
             disabled: !StringUtil.validUrl(url),
@@ -359,11 +359,11 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         })
-      }),
-      (this.textNote.getUrls().length <= 0 ? null : ContextMenuSeparator),
+      },
+      (this.textNote?.getUrls().length ?? 0) <= 0 ? null : ContextMenuSeparator,
       {
         name: '建立副本', action: () => {
-          const cloneObject = this.textNote.clone();
+          const cloneObject = this.textNote!.clone();
           cloneObject.isLocked = false;
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
@@ -373,7 +373,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
       },
       {
         name: '刪除', action: () => {
-          this.textNote.destroy();
+          this.textNote!.destroy();
           SoundEffect.play(PresetSound.sweep);
         }
       },
@@ -393,7 +393,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   calcFitHeight() {
-    const textArea: HTMLTextAreaElement = this.textAreaElementRef.nativeElement;
+    const textArea: HTMLTextAreaElement = this.textAreaElementRef!.nativeElement;
     textArea.style.height = '0';
     if (textArea.scrollHeight > textArea.offsetHeight) {
       textArea.style.height = textArea.scrollHeight + 'px';
@@ -413,7 +413,8 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
     document.body.removeEventListener('mouseup', this.callbackOnMouseUp, false);
   }
 
-  private showDetail(gameObject: TextNote) {
+  private showDetail(gameObject: TextNote | null) {
+    if (!gameObject) return;
     EventSystem.trigger('SELECT_TABLETOP_OBJECT', { identifier: gameObject.identifier, className: gameObject.aliasName });
     const coordinate = this.pointerDeviceService.pointers[0];
     let title = '共用備注設定';
@@ -424,6 +425,6 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   activate() {
-    if (!this.isLocked) this.textAreaElementRef.nativeElement.focus();
+    if (!this.isLocked) this.textAreaElementRef!.nativeElement.focus();
   }
 }

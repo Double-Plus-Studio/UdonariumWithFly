@@ -89,7 +89,7 @@ export class ChatLogOutputComponent implements OnInit, AfterViewInit, OnDestroy 
     this.selectedTabs = Array.from(this.select.nativeElement.options)
       .filter(option => option.selected)
       .map(elm => ObjectStore.instance.get<ChatTab>(elm.value))
-      .filter(tab => tab);
+      .filter((tab): tab is ChatTab => tab != null && tab instanceof ChatTab);
   }
 
   selectTabsApplay() {

@@ -66,7 +66,7 @@ export class ObjectNode extends GameObject implements XmlAttributes, InnerXml {
     markForChildrenChanged(this);
     const identifiers = new Set<string>();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    for (let node: ObjectNode = this; node; node = node.parent) {
+    for (let node: ObjectNode | null = this; node; node = node.parent) {
       if (identifiers.has(node.identifier)) break;
       identifiers.add(node.identifier);
       node.onChildAdded(child);
@@ -77,7 +77,7 @@ export class ObjectNode extends GameObject implements XmlAttributes, InnerXml {
     markForChildrenChanged(this);
     const identifiers = new Set<string>();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    for (let node: ObjectNode = this; node; node = node.parent) {
+    for (let node: ObjectNode | null = this; node; node = node.parent) {
       if (identifiers.has(node.identifier)) break;
       identifiers.add(node.identifier);
       node.onChildRemoved(child);

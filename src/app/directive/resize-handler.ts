@@ -100,11 +100,12 @@ export class ResizeHandler {
   }
 
   destroy() {
-    this.handle.remove();
-    this.input.destroy();
+    this.handle?.remove();
+    this.input?.destroy();
   }
 
   cursor(active: boolean) {
+    if (!this.handle) return;
     const style = this.handle.style;
     if (active) {
       switch (this.type) {

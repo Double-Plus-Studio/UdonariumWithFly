@@ -76,7 +76,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
     const userId = Network.peer.userId;
     Network.open(userId, room.id, room.name, password);
-    PeerCursor.myCursor.peerId = Network.peerId;
+    PeerCursor.myCursor!.peerId = Network.peerId;
 
     const triedPeer: string[] = [];
 
@@ -117,7 +117,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   private resetNetwork() {
     if (Network.peers.length < 1) {
       Network.open();
-      PeerCursor.myCursor.peerId = Network.peerId;
+      PeerCursor.myCursor!.peerId = Network.peerId;
     }
   }
 

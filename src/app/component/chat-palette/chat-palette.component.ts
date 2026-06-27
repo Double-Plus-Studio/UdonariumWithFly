@@ -24,7 +24,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   @ViewChild('chatPlette') chatPletteElementRef: ElementRef<HTMLSelectElement>;
   @Input() character: GameCharacter | null = null;
 
-  get palette(): ChatPalette { return this.character.chatPalette; }
+  get palette(): ChatPalette { return this.character?.chatPalette!; }
   
   paletteCache: string[] = [];
   paletteRenewInterval: boolean = true;
@@ -33,7 +33,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   }, 200);
   get filteredPaletteStrings(): string[] {
     this.ngZone.run(() => {
-      if (this.paletteRenewInterval) {
+      if (this.paletteRenewInterval && this.character?.chatPalette) {
         this.paletteRenewInterval = false;
         this.paletteCache = this.character.chatPalette.getPalette().filter(text => this.filter(text));
       }
@@ -49,10 +49,10 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   get gameType(): string { return !this._gameType ? 'DiceBot' : this._gameType; };
   set gameType(gameType: string) {
     this._gameType = gameType;
-    if (this.character.chatPalette) this.character.chatPalette.dicebot = gameType;
+    if (this.character?.chatPalette) this.character.chatPalette.dicebot = gameType;
   };
 
-  get sendFrom(): string { return this.character.identifier; }
+  get sendFrom(): string { return this.character?.identifier ?? ''; }
   set sendFrom(sendFrom: string) {
     this.onSelectedCharacter(sendFrom);
   }
@@ -72,9 +72,9 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
 
   get diceBotInfos() { return DiceBot.diceBotInfos }
 
-  get chatTab(): ChatTab { return ObjectStore.instance.get<ChatTab>(this.chatTabidentifier); }
-  get myPeer(): PeerCursor { return PeerCursor.myCursor; }
-  get otherPeers(): PeerCursor[] { return [PeerCursor.myCursor, ...Network.peers.filter(peer => peer.isOpen).map(peer => PeerCursor.findByPeerId(peer.peerId))].filter(peerCursor => peerCursor); /* ObjectStore.instance.getObjects(PeerCursor); */ }
+  get chatTab(): ChatTab | null { return ObjectStore.instance.get<ChatTab>(this.chatTabidentifier); }
+  get myPeer(): PeerCursor | null { return PeerCursor.myCursor; }
+  get otherPeers(): PeerCursor[] { return [PeerCursor.myCursor, ...Network.peers.filter(peer => peer.isOpen).map(peer => PeerCursor.findByPeerId(peer.peerId))].filter((peerCursor): peerCursor is PeerCursor => peerCursor !== null); /* ObjectStore.instance.getObjects(PeerCursor); */ }
 
   constructor(
     public chatMessageService: ChatMessageService,
@@ -86,7 +86,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   ngOnInit() {
     Promise.resolve().then(() => this.updatePanelTitle());
     this.chatTabidentifier = this.chatMessageService.chatTabs ? this.chatMessageService.chatTabs[0].identifier : '';
-    this.gameType = this.character.chatPalette ? this.character.chatPalette.dicebot : '';
+    this.gameType = this.character?.chatPalette ? this.character.chatPalette.dicebot : '';
     EventSystem.register(this)
       .on('DELETE_GAME_OBJECT', event => {
         if (this.character && this.character.identifier === event.data.identifier) {
@@ -105,7 +105,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   }
 
   updatePanelTitle() {
-    this.panelService.title = this.character.name + ' 的聊天面板';
+    this.panelService.title = (this.character?.name ?? '') + ' 的聊天面板';
   }
 
   onSelectedCharacter(identifier: string) {
@@ -120,12 +120,13 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   }
 
   clickPalette(line: string) {
-    if (!this.chatPletteElementRef.nativeElement) return;
-    const evaluatedLine = this.palette.evaluate(line, this.character.rootDataElement);
+    if (!this.chatPletteElementRef?.nativeElement || !this.character) return;
+    const evaluatedLine = this.palette.evaluate(line, this.character.rootDataElement!);
     if (this.doubleClickTimer && this.selectedPaletteIndex === this.chatPletteElementRef.nativeElement.selectedIndex) {
       clearTimeout(this.doubleClickTimer);
       this.doubleClickTimer = null;
-      this.chatInputComponent.sendChat({ keyCode: 13 });
+      const event = new KeyboardEvent('keydown', { keyCode: 13 });
+      this.chatInputComponent.sendChat(event);
     } else {
       this.selectedPaletteIndex = this.chatPletteElementRef.nativeElement.selectedIndex;
       this.text = evaluatedLine;
@@ -147,11 +148,11 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   }
 
   arrowPalette() {
-    if (!this.chatPletteElementRef.nativeElement) return;
+    if (!this.chatPletteElementRef?.nativeElement || !this.character) return;
     this.selectedPaletteIndex = this.chatPletteElementRef.nativeElement.selectedIndex;
     if (this.selectedPaletteIndex >= 0 && this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex]) {
       this.ngZone.run(() => {
-        this.text = this.palette.evaluate(this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex].value, this.character.rootDataElement);
+        this.text = this.palette.evaluate(this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex].value, this.character?.rootDataElement!);
         const textArea: HTMLTextAreaElement = this.chatInputComponent.textAreaElementRef.nativeElement;
         textArea.value = this.text;
       });
@@ -159,8 +160,8 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   }
 
   enterPalette(line: string, e: Event | null = null) {
-    if (!this.chatPletteElementRef.nativeElement) return;
-    this.text = this.palette.evaluate(line, this.character.rootDataElement);
+    if (!this.chatPletteElementRef?.nativeElement || !this.character) return;
+    this.text = this.palette.evaluate(line, this.character.rootDataElement!);
     //this.chatInputComponent.sendChat(null);
     this.chatInputComponent.focusInput();
     //this.chatPletteElementRef.nativeElement.selectedIndex = -1;
@@ -171,7 +172,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   private _tempText: string;
   moveToPalette(tempText: string) {
     this._tempText = tempText;
-    if (!this.chatPletteElementRef.nativeElement) return;
+    if (!this.chatPletteElementRef?.nativeElement) return;
     if (this.chatPletteElementRef.nativeElement.options.length <= 0) return;
     if (this.chatPletteElementRef.nativeElement.selectedIndex <= 0) this.chatPletteElementRef.nativeElement.options[0].selected = true;
     this.chatPletteElementRef.nativeElement.focus();
@@ -179,8 +180,8 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
 
   sendChat(value: { text: string, gameType: string, sendFrom: string, sendTo: string,
     color?: string, isInverse?:boolean, isHollow?: boolean, isBlackPaint?: boolean, aura?: number, isUseFaceIcon?: boolean, characterIdentifier?: string, standIdentifier?: string, standName?: string, isUseStandImage?: boolean }) {
-    if (this.chatTab) {
-      const text = this.palette.evaluate(value.text, this.character.rootDataElement);
+    if (this.chatTab && this.character) {
+      const text = this.palette.evaluate(value.text, this.character.rootDataElement!);
       this.chatMessageService.sendMessage(
         this.chatTab, 
         text, 
@@ -203,11 +204,12 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   }
 
   resetPletteSelect() {
-    if (!this.chatPletteElementRef.nativeElement) return;
+    if (!this.chatPletteElementRef?.nativeElement) return;
     this.chatPletteElementRef.nativeElement.selectedIndex = -1;
   }
 
   toggleEditMode() {
+    if (!this.character?.chatPalette) return;
     this.isEdit = this.isEdit ? false : true;
     if (this.isEdit) {
       this.editPalette = this.palette.value + '';
@@ -217,11 +219,12 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   }
 
   filter(value: string): boolean {
+    if (!this.character) return false;
     if (this.filterText == null || this.filterText.trim() == '') return true;
     const nomarizeFilterText = StringUtil.toHalfWidth(this.filterText.replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     const nomarizeValue = StringUtil.toHalfWidth(value.replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     if (nomarizeValue.indexOf(nomarizeFilterText) >= 0) return true;
-    const nomarizeEvaluateValue = StringUtil.toHalfWidth(!/[{｛]/.test(value) ? value : this.palette.evaluate(value, this.character.rootDataElement).replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
+    const nomarizeEvaluateValue = StringUtil.toHalfWidth(!/[{｛]/.test(value) ? value : (this.palette.evaluate(value, this.character?.rootDataElement!) as string).replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     return nomarizeEvaluateValue.indexOf(nomarizeFilterText) >= 0;
   }
 

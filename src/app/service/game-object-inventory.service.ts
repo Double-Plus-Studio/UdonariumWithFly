@@ -199,7 +199,7 @@ class ObjectInventory {
       const caches = this.tabletopObjects;
       for (const object of caches) {
         if (!object.detailDataElement) continue;
-        const elements = this.dataTags.map(tag => (this.newLineString === StringUtil.toHalfWidth(tag)) ? this.newLineDataElement : object.detailDataElement.getFirstElementByNameUnsensitive(tag));
+        const elements = this.dataTags.map(tag => (this.newLineString === StringUtil.toHalfWidth(tag)) ? this.newLineDataElement : object.detailDataElement!.getFirstElementByNameUnsensitive(tag)!).filter((el): el is DataElement => el != null);
         this._dataElementMap.set(object.identifier, elements);
       }
       this.needsRefreshElements = false;
@@ -304,7 +304,7 @@ class ObjectInventory {
       value = dataElement.isNumberResource ? dataElement.currentValue : dataElement.value;
     }
     if (value != null && tabletopObject instanceof GameCharacter && tabletopObject.chatPalette) {
-      value = tabletopObject.chatPalette.evaluate(value + '', tabletopObject.rootDataElement);
+      value = tabletopObject.chatPalette.evaluate(value + '', (tabletopObject.rootDataElement as any)!);
     }
     return value;
   }

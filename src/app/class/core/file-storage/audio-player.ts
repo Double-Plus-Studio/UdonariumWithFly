@@ -196,7 +196,7 @@ export class AudioPlayer {
     }
 
     this.mediaElementSource.connect(this.getConnectingAudioNode());
-    this.audioElm.src = url;
+    this.audioElm.src = url ?? '';
     this.audioElm.load();
     this.audioElm.play().catch(reason => { console.warn(reason); });
   }
@@ -306,10 +306,10 @@ export class AudioPlayer {
 
   private static async getBlobAsync(audio: AudioFile): Promise<Blob> {
     if (audio.blob) return audio.blob;
-    if (audio.url.length < 1) throw new Error('えっ なにそれ怖い');
+    if (audio.url!.length < 1) throw new Error('えっ なにそれ怖い');
 
     try {
-      const response = await fetch(audio.url);
+      const response = await fetch(audio.url!);
       if (!response.ok) throw new Error('Network response was not ok.');
       const blob = await response.blob();
       return blob;
@@ -320,7 +320,7 @@ export class AudioPlayer {
   }
 
   private static async createCacheAsync(audio: AudioFile): Promise<AudioCache> {
-    const cache: AudioCache = { url: audio.url, blob: null };
+    const cache: AudioCache = { url: audio.url ?? '', blob: null };
     try {
       cache.blob = await AudioPlayer.getBlobAsync(audio);
     } catch (e) {

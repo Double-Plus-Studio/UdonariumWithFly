@@ -78,7 +78,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   get imageUrl(): string {
     if (!this.tabletopObject) return '';
     if (this.isUseIcon) {
-      return this.tabletopObject.faceIcon.url;
+      return this.tabletopObject.faceIcon?.url ?? '';
     }
     if (this.tabletopObject instanceof GameCharacter && this.tabletopObject.standList && this.tabletopObject.standList.overviewIndex > -1) {
       const standElement = this.tabletopObject.standList.standElements[this.tabletopObject.standList.overviewIndex];
@@ -87,26 +87,26 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
         const element = standElement.getFirstElementByName('imageIdentifier')
         if (!element) return '';
         if (this._imageFile.identifier != element.value) {
-          const file: ImageFile = ImageStorage.instance.get(<string>element.value);
-          this._imageFile = file ? file : ImageFile.Empty;
+          const file: ImageFile | null = ImageStorage.instance.get(<string>element.value);
+          this._imageFile = file || ImageFile.Empty;
         }
       } catch(e) {
         console.log(e);
       }
-      return this._imageFile.url;
+      return this._imageFile.url!;
     }
-    if (this.tabletopObject instanceof Card) { 
+    if (this.tabletopObject instanceof Card) {
       if (this.cardState !== null) {
-        if (this.cardState === this.CardStateFront) return this.tabletopObject.frontImage ? this.tabletopObject.frontImage.url : '';
-        if (this.cardState === this.CardStateBack) return this.tabletopObject.backImage ? this.tabletopObject.backImage.url : '';
+        if (this.cardState === this.CardStateFront) return this.tabletopObject.frontImage ? this.tabletopObject.frontImage.url! : '';
+        if (this.cardState === this.CardStateBack) return this.tabletopObject.backImage ? this.tabletopObject.backImage.url! : '';
       }
-      if (this.tabletopObject.isGMMode) return this.tabletopObject.frontImage ? this.tabletopObject.frontImage.url : '';
+      if (this.tabletopObject.isGMMode) return this.tabletopObject.frontImage ? this.tabletopObject.frontImage.url! : '';
     }
-    return this.tabletopObject.imageFile ? this.tabletopObject.imageFile.url : '';
+    return this.tabletopObject.imageFile ? this.tabletopObject.imageFile.url! : '';
   }
   get hasImage(): boolean { return 0 < this.imageUrl.length; }
   get isUseIcon(): boolean {
-    return (this.tabletopObject instanceof GameCharacter && this.tabletopObject.isUseIconToOverviewImage && this.tabletopObject.faceIcon && 0 < this.tabletopObject.faceIcon.url.length);
+    return (this.tabletopObject instanceof GameCharacter && this.tabletopObject.isUseIconToOverviewImage && this.tabletopObject.faceIcon! && 0 < (this.tabletopObject.faceIcon?.url!?.length ?? 0));
   }
 
   get roll(): number {
@@ -189,7 +189,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
     if (ary.length <= 1) return (dataElm.value == null || dataElm.value == '') ? '' : dataElm.currentValue.toString();
     let ret = (dataElm.value == null || dataElm.value == '') ? ary[1] : ary[0];
     if (this.tabletopObject instanceof GameCharacter && this.tabletopObject.chatPalette) {
-      ret = this.tabletopObject.chatPalette.evaluate(ret, this.tabletopObject.rootDataElement);
+      ret = this.tabletopObject.chatPalette.evaluate(ret, this.tabletopObject.rootDataElement!);
     }
     return ret;
   }
@@ -202,16 +202,19 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   ) { }
 
   moveToCommon() {
+    if (!this.tabletopObject) return;
     this.tabletopObject.setLocation('common');
     SoundEffect.play(PresetSound.lock);
   }
 
   moveToPrivate() {
+    if (!this.tabletopObject) return;
     this.tabletopObject.setLocation(Network.peerId);
     SoundEffect.play(PresetSound.lock);
   }
 
   moveToGraveyard() {
+    if (!this.tabletopObject) return;
     this.tabletopObject.setLocation('graveyard');
     SoundEffect.play(PresetSound.sweep);
   }
@@ -419,9 +422,14 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   get rangeElms(): DataElement[] {
     const ret: DataElement[] = []
     if (!this.tabletopObject || !(this.tabletopObject instanceof RangeArea) || !this.tabletopObject.commonDataElement) return ret;
-    if (this.tabletopObject.commonDataElement.getFirstElementByName('length')) ret.push(this.tabletopObject.commonDataElement.getFirstElementByName('length'));
-    if ((this.tabletopObject.type === 'CORN' || this.tabletopObject.type === 'LINE') && this.tabletopObject.commonDataElement.getFirstElementByName('width')) ret.push(this.tabletopObject.commonDataElement.getFirstElementByName('width'));
-    if (this.tabletopObject.commonDataElement.getFirstElementByName('opacity')) ret.push(this.tabletopObject.commonDataElement.getFirstElementByName('opacity'));
+    const length = this.tabletopObject.commonDataElement.getFirstElementByName('length');
+    if (length) ret.push(length);
+    if ((this.tabletopObject.type === 'CORN' || this.tabletopObject.type === 'LINE')) {
+      const width = this.tabletopObject.commonDataElement.getFirstElementByName('width');
+      if (width) ret.push(width);
+    }
+    const opacity = this.tabletopObject.commonDataElement.getFirstElementByName('opacity');
+    if (opacity) ret.push(opacity);
     return ret;
   }
 

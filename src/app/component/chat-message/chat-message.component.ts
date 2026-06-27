@@ -86,7 +86,7 @@ export class ChatMessageComponent implements OnInit {
       this.changeDetector.markForCheck();
     });
 
-    let file: ImageFile = this.chatMessage.image;
+    let file: ImageFile | null = this.chatMessage.image;
     if (file) this.imageFile = file;
     file = this.chatMessage.toImage;
     if (file) this.toImageFile = file;

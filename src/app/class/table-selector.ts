@@ -38,8 +38,8 @@ export class TableSelector extends GameObject {
     EventSystem.unregister(this);
   }
 
-  get viewTable(): GameTable {
-    let table: GameTable = ObjectStore.instance.get<GameTable>(this.viewTableIdentifier);
+  get viewTable(): GameTable | null {
+    let table: GameTable | null = ObjectStore.instance.get<GameTable>(this.viewTableIdentifier);
     if (!table) {
       table = ObjectStore.instance.getObjects<GameTable>(GameTable)[0];
       if (table && (this.viewTableIdentifier.length < 1 || ObjectStore.instance.isDeleted(this.viewTableIdentifier))) {
