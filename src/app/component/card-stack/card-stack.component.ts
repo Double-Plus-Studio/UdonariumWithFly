@@ -100,7 +100,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   get ownerColor(): string { return this.cardStack?.ownerColor ?? '#000000'; }
 
   get topCard(): Card | null { return this.cardStack ? this.cardStack.topCard : null; }
-  get imageFile(): ImageFile { return this.imageService.getSkeletonOr(this.cardStack?.imageFile!); }
+  get imageFile(): ImageFile { return this.imageService.getSkeletonOr(this.cardStack?.imageFile as ImageFile); }
 
   get selectionState(): SelectionState { return this.selectionService.state(this.cardStack!); }
   get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }

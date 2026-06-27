@@ -124,9 +124,9 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
 
   get isGMMode(): boolean { return this.card?.isGMMode ?? false; }
 
-  get imageFile(): ImageFile { return this.imageService.getSkeletonOr(this.card?.imageFile!); }
-  get frontImage(): ImageFile { return this.imageService.getSkeletonOr(this.card?.frontImage!); }
-  get backImage(): ImageFile { return this.imageService.getSkeletonOr(this.card?.backImage!); }
+  get imageFile(): ImageFile { return this.imageService.getSkeletonOr(this.card?.imageFile as ImageFile); }
+  get frontImage(): ImageFile { return this.imageService.getSkeletonOr(this.card?.frontImage as ImageFile); }
+  get backImage(): ImageFile { return this.imageService.getSkeletonOr(this.card?.backImage as ImageFile); }
 
   get selectionState(): SelectionState { return this.selectionService.state(this.card as TabletopObject); }
   get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }

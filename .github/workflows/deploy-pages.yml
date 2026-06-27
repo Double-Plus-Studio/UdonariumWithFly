@@ -1,9 +1,10 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches:
-      - zh-TW
+  workflow_run:
+    workflows: ["Lint and Type Check", "Unit Tests"]
+    types: [completed]
+    branches: [zh-TW]
   workflow_dispatch:
 
 concurrency:
@@ -13,28 +14,52 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    outputs:
+      ready: ${{ steps.verify.outputs.ready }}
+      sha: ${{ steps.verify.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Verify both Lint and Tests passed for this commit
+        id: verify
+        uses: actions/github-script@v7
         with:
-          node-version: '24'
-          cache: 'npm'
+          script: |
+            if (context.eventName !== 'workflow_run') {
+              core.setOutput('ready', 'true');
+              core.setOutput('sha', context.sha);
+              return;
+            }
+            const sha = context.payload.workflow_run.head_sha;
+            core.setOutput('sha', sha);
+            const required = ['Lint and Type Check', 'Unit Tests'];
 
-      - name: Install dependencies
-        run: npm ci
+            for (const name of required) {
+              const { data } = await github.rest.actions.listWorkflowRunsForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                head_sha: sha,
+              });
+              const run = data.workflow_runs
+                .filter(r => r.name === name)
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
 
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Run TypeScript compiler
-        run: npx tsc --noEmit
+              if (!run || run.conclusion !== 'success') {
+                console.log(`⏳ ${name} not yet passed — skipping deploy`);
+                core.setOutput('ready', 'false');
+                return;
+              }
+              console.log(`✓ ${name} passed`);
+            }
+            core.setOutput('ready', 'true');
 
   deploy:
     needs: check
+    if: needs.check.outputs.ready == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check.outputs.sha }}
 
       - uses: actions/setup-node@v4
         with:
@@ -70,5 +95,5 @@ jobs:
           cp -r dist/udonarium/browser/. pages-repo/
           cd pages-repo
           git add -A
-          git diff --cached --quiet || git commit -m "Deploy from UdonariumWithFly@${{ github.sha }}"
+          git diff --cached --quiet || git commit -m "Deploy from UdonariumWithFly@${{ needs.check.outputs.sha }}"
           git push

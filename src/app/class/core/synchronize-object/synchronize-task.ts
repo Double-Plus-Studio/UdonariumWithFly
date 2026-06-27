@@ -62,7 +62,7 @@ export class SynchronizeTask {
     for (const request of requests) {
       request.ttl--;
       this.requestMap.set(request.identifier, request);
-      let tasks: SynchronizeTask[] = SynchronizeTask.tasksMap.get(request.identifier) ?? [];
+      const tasks: SynchronizeTask[] = SynchronizeTask.tasksMap.get(request.identifier) ?? [];
       tasks.push(this);
       SynchronizeTask.tasksMap.set(request.identifier, tasks);
       const sendTo = this.peerId != null && request.holderIds.includes(this.peerId) ? this.peerId : undefined;

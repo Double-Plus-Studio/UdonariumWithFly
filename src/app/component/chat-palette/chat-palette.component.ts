@@ -24,7 +24,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
   @ViewChild('chatPlette') chatPletteElementRef: ElementRef<HTMLSelectElement>;
   @Input() character: GameCharacter | null = null;
 
-  get palette(): ChatPalette { return this.character?.chatPalette!; }
+  get palette(): ChatPalette { return this.character?.chatPalette as ChatPalette; }
   
   paletteCache: string[] = [];
   paletteRenewInterval: boolean = true;
@@ -152,7 +152,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     this.selectedPaletteIndex = this.chatPletteElementRef.nativeElement.selectedIndex;
     if (this.selectedPaletteIndex >= 0 && this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex]) {
       this.ngZone.run(() => {
-        this.text = this.palette.evaluate(this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex].value, this.character?.rootDataElement!);
+        this.text = this.palette.evaluate(this.chatPletteElementRef.nativeElement.options[this.selectedPaletteIndex].value, this.character?.rootDataElement ?? undefined);
         const textArea: HTMLTextAreaElement = this.chatInputComponent.textAreaElementRef.nativeElement;
         textArea.value = this.text;
       });
@@ -224,7 +224,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     const nomarizeFilterText = StringUtil.toHalfWidth(this.filterText.replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     const nomarizeValue = StringUtil.toHalfWidth(value.replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     if (nomarizeValue.indexOf(nomarizeFilterText) >= 0) return true;
-    const nomarizeEvaluateValue = StringUtil.toHalfWidth(!/[{｛]/.test(value) ? value : (this.palette.evaluate(value, this.character?.rootDataElement!) as string).replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
+    const nomarizeEvaluateValue = StringUtil.toHalfWidth(!/[{｛]/.test(value) ? value : (this.palette.evaluate(value, this.character?.rootDataElement ?? undefined) as string).replace(/[―ー—‐]/g, '-').replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60))).replace(/[\r\n\s]+/, ' ').toUpperCase().trim();
     return nomarizeEvaluateValue.indexOf(nomarizeFilterText) >= 0;
   }
 

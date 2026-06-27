@@ -130,10 +130,10 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   get faces(): string[] { return this.diceSymbol?.faces ?? []; }
   get nothingFaces(): string[] { return this.diceSymbol?.nothingFaces ?? []; }
   get imageFile(): ImageFile {
-    return this.imageService.getEmptyOr(this.diceSymbol?.imageFile!);
+    return this.imageService.getEmptyOr(this.diceSymbol?.imageFile as ImageFile);
   }
   get backFaceImageFile(): ImageFile {
-    return this.imageService.getEmptyOr(this.diceSymbol?.backFaceImageFile!);
+    return this.imageService.getEmptyOr(this.diceSymbol?.backFaceImageFile as ImageFile);
   }
 
   get isGMMode(): boolean { return this.diceSymbol?.isGMMode ?? false; }
