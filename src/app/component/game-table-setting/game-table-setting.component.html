@@ -22,7 +22,7 @@
         <div>
           <b>圖片</b>
           <span (click)="openBgImageModal()" style="display: block; position: relative; overflow: hidden" [style.cursor]="(!isEditable || tableGridType === -1) ? 'default' : 'pointer'">
-            <img height="120" [src]="tableBackgroundImage.url | safe: 'resourceUrl'" draggable="false">
+            <img height="120" [src]="tableBackgroundImage.url! | safe: 'resourceUrl'" draggable="false">
           </span>
         </div>
       </div>

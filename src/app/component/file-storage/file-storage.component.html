@@ -82,10 +82,10 @@
         </div>
       }
       <span style="cursor: pointer">
-        @if (0 < file.url.length) {
-          <img [src]="file.url | safe: 'resourceUrl'" [alt]="file.name" height="120" (click)="onSelectedFile(file)" draggable="false" />
+        @if (0 < file.url!.length) {
+          <img [src]="file.url! | safe: 'resourceUrl'" [alt]="file.name" height="120" (click)="onSelectedFile(file)" draggable="false" />
         }
-        @if (file.url.length <= 0) {
+        @if (file.url!.length <= 0) {
           <img src="assets/images/loading.gif" alt="{{file.name}}" draggable="false" />
         }
       </span>

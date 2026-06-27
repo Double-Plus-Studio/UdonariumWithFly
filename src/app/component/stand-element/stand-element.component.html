@@ -3,13 +3,13 @@
     <div class="stand-image-container">
       @if (standImage) {
         <div>
-          <div [ngStyle]="{'transform': isApplyRoll ? 'rotate(' + gameCharacter.roll + 'deg)' : ''}">
-            <div class="inverser" [ngClass]="{inverse: isApplyImageEffect && gameCharacter.isInverse}">
-              <div class="aura" style="display: inline" [ngClass]="{black: isApplyImageEffect && gameCharacter.aura === 0, blue: isApplyImageEffect && gameCharacter.aura === 1,
-                green: isApplyImageEffect && gameCharacter.aura === 2, cyan: isApplyImageEffect && gameCharacter.aura === 3, red: isApplyImageEffect && gameCharacter.aura === 4,
-                magenta: isApplyImageEffect && gameCharacter.aura === 5, yellow: isApplyImageEffect && gameCharacter.aura === 6, white: isApplyImageEffect && gameCharacter.aura === 7}">
-                <img class="stand-image" (dblclick)="openModal()" [src]="standImage.url | safe: 'resourceUrl'" draggable="false"
-                  [ngClass]="{'black-paint': isApplyImageEffect && gameCharacter.isBlackPaint, 'hollow': isApplyImageEffect && gameCharacter.isHollow}">
+          <div [ngStyle]="{'transform': isApplyRoll ? 'rotate(' + gameCharacter!.roll + 'deg)' : ''}">
+            <div class="inverser" [ngClass]="{inverse: isApplyImageEffect && gameCharacter!.isInverse}">
+              <div class="aura" style="display: inline" [ngClass]="{black: isApplyImageEffect && gameCharacter!.aura === 0, blue: isApplyImageEffect && gameCharacter!.aura === 1,
+                green: isApplyImageEffect && gameCharacter!.aura === 2, cyan: isApplyImageEffect && gameCharacter!.aura === 3, red: isApplyImageEffect && gameCharacter!.aura === 4,
+                magenta: isApplyImageEffect && gameCharacter!.aura === 5, yellow: isApplyImageEffect && gameCharacter!.aura === 6, white: isApplyImageEffect && gameCharacter!.aura === 7}">
+                <img class="stand-image" (dblclick)="openModal()" [src]="standImage.url! | safe: 'resourceUrl'" draggable="false"
+                  [ngClass]="{'black-paint': isApplyImageEffect && gameCharacter!.isBlackPaint, 'hollow': isApplyImageEffect && gameCharacter!.isHollow}">
               </div>
             </div>
           </div>
@@ -95,19 +95,19 @@
       </div>
     }
   </div>
-  @if (postfixElement && (conditionTypeElement.value === standConditionType.Postfix || conditionTypeElement.value === standConditionType.PostfixOrImage || conditionTypeElement.value === standConditionType.PostfixAndImage)) {
+  @if (postfixElement && (conditionTypeElement!.value === standConditionType.Postfix || conditionTypeElement!.value === standConditionType.PostfixOrImage || conditionTypeElement!.value === standConditionType.PostfixAndImage)) {
     <div>
       <textarea [(ngModel)]="postfixElement.value" style="width: 100%; margin-top: 3px; height: 2.4rem" placeholder="每行一個，開頭@時從文字中截取&#13;&#10;@憤怒&#13;&#10;@必殺技"></textarea>
     </div>
   }
-  @if (conditionTypeElement.value === standConditionType.Image || conditionTypeElement.value === standConditionType.PostfixOrImage || conditionTypeElement.value === standConditionType.PostfixAndImage) {
+  @if (conditionTypeElement!.value === standConditionType.Image || conditionTypeElement!.value === standConditionType.PostfixOrImage || conditionTypeElement!.value === standConditionType.PostfixAndImage) {
     <div>
       @if (imageList && imageList.length > 0) {
         <div style="display: flex; flex-wrap: wrap; margin-right: -30px;">
           @for (image of imageList; track image) {
-            @if (0 < image.url.length) {
+            @if (0 < image.url!.length) {
               <span style="display: block" class="icon-image-box" [ngClass]="{'current-icon': isSelectedImage(image.identifier)}">
-                <img [src]="image.url | safe: 'resourceUrl'" style="cursor: pointer" [alt]="image.name" (click)="selectImage(image.identifier)" draggable="false" draggable="false" />
+                <img [src]="image.url! | safe: 'resourceUrl'" style="cursor: pointer" [alt]="image.name" (click)="selectImage(image.identifier)" draggable="false" draggable="false" />
               </span>
             }
           }

@@ -88,7 +88,7 @@
 <!-- value 欄位內容（不含外層 div） -->
 <ng-template #valueCellContent>
   @if (isCommonValue) {
-    @switch (gameDataElement.name) {
+    @switch (gameDataElement!.name) {
       @case ('opacity') {
         <input style="width:90%;" [style]="'font-size: 1.0em; min-width: 90px; width: 90%; --min: 0; --max: ' + value + '; --val:' + currentValue +';' | safe: 'style'"
           [(ngModel)]="currentValue" type="range" title="{{currentValue}}%" min="0" max="100" step="1" />
@@ -96,11 +96,11 @@
         <input style="margin-left: 3.5em; width:4em; text-align:right;" type="number" min="0" max="100" step="1" size="1" [(ngModel)]="currentValue" placeholder="Opacity" /><b class="move" style="font-size: small">%</b>
       }
       @case ('color') {
-        @if (gameDataElement.type === 'colors') {
+        @if (gameDataElement!.type === 'colors') {
           <label class="color-sample" style="padding: 0px 2px 0px 0xp; width: 6.5em" [style.color]="value" [style.background-color]="currentValue" [style.text-shadow]="colorSampleTextShadowCss"><input type="color" style="width: 1em" [(ngModel)]="value" /><div style="display: inline-block; box-sizing: border-box; width: calc(100% - 1em); text-align: center">{{value}}</div></label>
           <label class="color-sample" style="padding: 0px 2px 0px 0xp; width: 7.5em" [style.color]="value" [style.background-color]="currentValue" [style.text-shadow]="colorSampleTextShadowCss"><input type="color" style="width: 1em" [(ngModel)]="currentValue" /><div style="display: inline-block; box-sizing: border-box; width: calc(100% - 1em); text-align: center">({{currentValue}})</div></label>
         }
-        @if (gameDataElement.type === 'color') {
+        @if (gameDataElement!.type === 'color') {
           <label class="color-sample" style="padding: 0px 2px 0px 0xp; width: 6.5em" [style.color]="value" [style.text-shadow]="colorSampleTextShadowCss"><input type="color" style="width: 1em" [(ngModel)]="value" /> {{value}}</label>
         }
       }
@@ -116,22 +116,22 @@
     }
   }
   @if (!isCommonValue) {
-    @switch (gameDataElement.type) {
+    @switch (gameDataElement!.type) {
       @case ('simpleNumber') {
         <!-- size属性がないと小さくならない -->
         <div class="hidden-spacer" style="font-size: 1.0em; font-family: Cambria, Georgia;">{{value}}</div>
-        <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement" [logging.disable]="isNoLogging" type="{{isNum(value) ? 'number' : 'text'}}" style="width:40%; min-width: 3em; max-width:8em; text-align:right" size="1" [(ngModel)]="value" placeholder="Number" />
+        <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement!" [logging.disable]="isNoLogging" type="{{isNum(value) ? 'number' : 'text'}}" style="width:40%; min-width: 3em; max-width:8em; text-align:right" size="1" [(ngModel)]="value" placeholder="Number" />
       }
       @case ('numberResource') {
-        <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement" [logging.disable]="isNoLogging" [style]="'font-size: 1.0em; min-width: 90px; width: 90%; --min: 0; --max: ' + value + '; --val:' + currentValue +';' | safe: 'style'"
+        <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement!" [logging.disable]="isNoLogging" [style]="'font-size: 1.0em; min-width: 90px; width: 90%; --min: 0; --max: ' + value + '; --val:' + currentValue +';' | safe: 'style'"
           [(ngModel)]="currentValue" type="range" title="{{currentValue}}" min="0" max="{{!isNum(value) ? 1000 : value}}" />
         <br>
-          <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement" [logging.disable]="isNoLogging" style="width: 5em; text-align: right;" size="1" type="number" [(ngModel)]="currentValue" placeholder="Value" />
+          <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement!" [logging.disable]="isNoLogging" style="width: 5em; text-align: right;" size="1" type="number" [(ngModel)]="currentValue" placeholder="Value" />
           /
-          <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement" [logging.disable]="isNoLogging" style="width: 5em;" size="1" type="number" [(ngModel)]="value" placeholder="Value" />
+          <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement!" [logging.disable]="isNoLogging" style="width: 5em;" size="1" type="number" [(ngModel)]="value" placeholder="Value" />
         }
         @case ('abilityScore') {
-          <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement" [logging.disable]="isNoLogging" style="width:40%; max-width:5em; text-align:right" type="{{isNum(value) ? 'number' : 'text'}}" size="1" [(ngModel)]="value" placeholder="Value">
+          <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement!" [logging.disable]="isNoLogging" style="width:40%; max-width:5em; text-align:right" type="{{isNum(value) ? 'number' : 'text'}}" size="1" [(ngModel)]="value" placeholder="Value">
           @if (isEdit) {
             <select class="modeifire-type" style="width:40%; max-width:5em" [(ngModel)]="currentValue">
               <option value="">無</option>
@@ -149,7 +149,7 @@
           }
         }
         @case ('checkProperty') {
-          <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement" [logging.disable]="isNoLogging" type="checkbox" [(ngModel)]="value" checked="{{value ? 'checked' : ''}}" (change)="value = (value ? name : '')">
+          <input appLogging [logging.name]="tabletopObjectName" [logging.dataElement]="gameDataElement!" [logging.disable]="isNoLogging" type="checkbox" [(ngModel)]="value" checked="{{value ? 'checked' : ''}}" (change)="value = (value ? name : '')">
           @if (isEdit) {
             <input style="width:50%; max-width:4em" type="text" size="1" [(ngModel)]="currentValue" placeholder="Option">
           }

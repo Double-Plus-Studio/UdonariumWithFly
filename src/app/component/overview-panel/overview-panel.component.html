@@ -1,5 +1,5 @@
 <div class="component is-pointer-events-none" [@fadeInOut]="'in'" appDraggable #draggablePanel>
-  @switch (tabletopObject.aliasName) {
+  @switch (tabletopObject!.aliasName) {
     @case ('numberResource') {
     }
     @case ('card') {
@@ -374,7 +374,7 @@
 
   <ng-template #imageView>
     <div class="image-view-background is-fill" (click)="chanageImageView(false)" [@fadeInOut]="'in'">
-      @if ((tabletopObject.aliasName === 'card' && !(cardState === CardStateBack) && (cardState === CardStateFront || $any(tabletopObject).isFront || $any(tabletopObject).isHand || tabletopObject.isGMMode)) || (tabletopObject.aliasName === 'card-stack' && $any(tabletopObject).topCard.isFront)) {
+      @if ((tabletopObject!.aliasName === 'card' && !(cardState === CardStateBack) && (cardState === CardStateFront || $any(tabletopObject).isFront || $any(tabletopObject).isHand || tabletopObject!.isGMMode)) || (tabletopObject!.aliasName === 'card-stack' && $any(tabletopObject).topCard.isFront)) {
         <div
           class="text" style="z-index: 5"
           [style.width.px]="fullImageAreaRect.width" [style.height.px]="fullImageAreaRect.height" [style.left.px]="fullImageAreaRect.left" [style.top.px]="fullImageAreaRect.top"

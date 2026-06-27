@@ -25,15 +25,15 @@ https://opensource.org/licenses/mit-license.php
       <canvas class="is-fill is-3d" #rangeCanvas></canvas>
     </div>
     <div class="component-content is-3d" style="z-index: 3" [style.opacity]="isMoving ? 0.7 : 1"
-      appRotable [rotable.option]="rotableOption" [rotable.polygonal]="range.subDivisionSnapPolygonal ? 360 : 24"
-      (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()" [rotable.disable]="isLocked || (range.type === 'CIRCLE') || (range.type === 'SQUARE') || (range.type === 'DIAMOND')"
+      appRotable [rotable.option]="rotableOption" [rotable.polygonal]="range!.subDivisionSnapPolygonal ? 360 : 24"
+      (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()" [rotable.disable]="isLocked || (range!.type === 'CIRCLE') || (range!.type === 'SQUARE') || (range!.type === 'DIAMOND')"
       style="transform: rotateZ(0deg);" #rotate>
-      @if ((range.type === 'CIRCLE') || (range.type === 'SQUARE') || (range.type === 'DIAMOND')) {
+      @if ((range!.type === 'CIRCLE') || (range!.type === 'SQUARE') || (range!.type === 'DIAMOND')) {
         <div class="is-3d" class="lock-icon is-center">
           <i class="material-icons" style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isLocked ? 'lock' : 'open_with' }}</i>
         </div>
       }
-      @if ((range.type !== 'CIRCLE') && (range.type !== 'SQUARE') && (range.type !== 'DIAMOND')) {
+      @if ((range!.type !== 'CIRCLE') && (range!.type !== 'SQUARE') && (range!.type !== 'DIAMOND')) {
         <div class="is-3d" style="position: absolute; width: 28px; pointer-events: auto">
           @for (pos of rotateHandlesLeftPos; track pos) {
             <div class="rotate-grab of-corn-tip rotate-grab-icon is-3d will-change" style="position:absolute"
@@ -55,20 +55,20 @@ https://opensource.org/licenses/mit-license.php
 @if (isAltitudeIndicate && (altitude <= -0.5 || 0.5 <= altitude)) {
   <div class="is-3d"
     style="display: flex; flex-flow: column nowrap; justify-content: space-between; border-left: 2px dashed black; transform-origin: top left"
-    [style.border-left-color]="range.rangeColor"
-    [style.height.px]="math.abs(altitude * gridSize) - ((altitude > 0 || !isFollowed) ? 0 : followingCharactor.chatBubbleAltitude + 4)"
+    [style.border-left-color]="range!.rangeColor"
+    [style.height.px]="math.abs(altitude * gridSize) - ((altitude > 0 || !isFollowed) ? 0 : followingCharactor!.chatBubbleAltitude + 4)"
     [ngStyle]="{transform: 'rotateX(-90deg) translateY(' + (altitude > 0 ? -altitude * gridSize : 0) + 'px) rotateY(' + (viewRotateZ) + 'deg)'}">
     <div class="is-3d" [style.visibility]="altitude > 0 ? 'visible' : 'hidden'">
-      <span class="elevation-indicator is-3d" style="position: absolute" [style.color]="range.rangeColor" [style.text-shadow]="textShadowCss"><i>{{ elevation }}</i></span>
-      <span class="elevation-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)" [style.color]="range.rangeColor" [style.text-shadow]="textShadowCss"><i>{{ elevation }}</i></span>
+      <span class="elevation-indicator is-3d" style="position: absolute" [style.color]="range!.rangeColor" [style.text-shadow]="textShadowCss"><i>{{ elevation }}</i></span>
+      <span class="elevation-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)" [style.color]="range!.rangeColor" [style.text-shadow]="textShadowCss"><i>{{ elevation }}</i></span>
     </div>
     <div class="is-3d">
-      <span class="altitude-indicator is-3d" style="position: absolute" [style.color]="range.rangeColor" [style.text-shadow]="textShadowCss">{{ math.abs(altitude) }}</span>
-      <span class="altitude-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)" [style.color]="range.rangeColor" [style.text-shadow]="textShadowCss">{{ math.abs(altitude) }}</span>
+      <span class="altitude-indicator is-3d" style="position: absolute" [style.color]="range!.rangeColor" [style.text-shadow]="textShadowCss">{{ math.abs(altitude) }}</span>
+      <span class="altitude-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)" [style.color]="range!.rangeColor" [style.text-shadow]="textShadowCss">{{ math.abs(altitude) }}</span>
     </div>
-    <div class="is-3d" [style.visibility]="altitude < 0 ? 'visible' : 'hidden'"  [ngStyle]="{transform: 'translateY(' + (isFollowed ? followingCharactor.chatBubbleAltitude + 4 : 0) + 'px)'}">
-      <span class="elevation-indicator is-3d" style="position: absolute" [style.color]="range.rangeColor" [style.text-shadow]="textShadowCss"><i>{{ elevation }}</i></span>
-      <span class="elevation-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)" [style.color]="range.rangeColor" [style.text-shadow]="textShadowCss"><i>{{ elevation }}</i></span>
+    <div class="is-3d" [style.visibility]="altitude < 0 ? 'visible' : 'hidden'"  [ngStyle]="{transform: 'translateY(' + (isFollowed ? followingCharactor!.chatBubbleAltitude + 4 : 0) + 'px)'}">
+      <span class="elevation-indicator is-3d" style="position: absolute" [style.color]="range!.rangeColor" [style.text-shadow]="textShadowCss"><i>{{ elevation }}</i></span>
+      <span class="elevation-indicator is-3d" style="position: absolute; transform: rotateY(-180deg)" [style.color]="range!.rangeColor" [style.text-shadow]="textShadowCss"><i>{{ elevation }}</i></span>
     </div>
   </div>
 }

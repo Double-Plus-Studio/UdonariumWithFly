@@ -12,7 +12,7 @@
             <div class="is-3d" [style.font-size.px]="topCard.fontsize + 9" [style.color]="topCard.color" [style.text-shadow]="textShadowCss(topCard.color)" [innerHTML]="rubiedText | safe: 'html'"></div>
           </div>
         }
-        <img class="card-image chrome-smooth-image-trick" [ngStyle]="{'transform': 'rotateZ(' + topCard.rotate +'deg)'}" [src]="imageFile.url | safe: 'resourceUrl'">
+        <img class="card-image chrome-smooth-image-trick" [ngStyle]="{'transform': 'rotateZ(' + topCard.rotate +'deg)'}" [src]="imageFile.url ?? '' | safe: 'resourceUrl'">
       </div>
     }
     @if (!isIconHidden) {

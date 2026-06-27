@@ -1,4 +1,4 @@
-<div class="component is-3d" [ngClass]="{'is-grab': !isLock && !isScratching, 'is-scratching': isScratching && gameTableMask.isMine, 'is-border': isScratching || (!isLock && borderType >= 1) || borderType >= 2, 'is-gm-layer-hidden': isGMLayerHidden }" style="pointer-events: none"
+<div class="component is-3d" [ngClass]="{'is-grab': !isLock && !isScratching, 'is-scratching': isScratching && gameTableMask!.isMine, 'is-border': isScratching || (!isLock && borderType >= 1) || borderType >= 2, 'is-gm-layer-hidden': isGMLayerHidden }" style="pointer-events: none"
   [style.width.px]="width * gridSize" [style.height.px]="height * gridSize"
   appMovable [movable.option]="movableOption" [movable.disable]="isLock || isScratching" (movable.ondragstart)="onMove()" (movable.ondragend)="onMoved()">
   <div class="is-fit-full is-3d" style="pointer-events: none"  [ngClass]="{fall: altitude === 0}" [ngStyle]="{'transform': 'translateZ(' + (altitude * gridSize) + 'px)'}">
@@ -65,7 +65,7 @@
       </div>
     }
     @if (isScratching) {
-      <div class="draw-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden" [ngClass]="{'is-mine': gameTableMask.isMine}">
+      <div class="draw-icon is-center is-3d" style="pointer-events: none; z-index: 10; backface-visibility: hidden" [ngClass]="{'is-mine': gameTableMask!.isMine}">
         <i class="material-icons" style="pointer-events: none; backface-visibility: hidden; display: inline-block" [ngClass]="{'is-inverse': isInverse}">{{ isPreviewMode ? 'visibility' : 'draw' }}</i>
       </div>
     }
@@ -75,10 +75,10 @@
           <span style="display: inline-block" [ngClass]="{'is-inverse': isInverse}">@if (isPreview) {
             <i style="margin-right: 2px" class="material-icons">visibility</i>
             }<b>{{ownerName}}</b>  刮除中
-            @if (gameTableMask.isMine) {
-              <button class="edit-button" (pointerdown)="prevent($event)" (mousedown)="prevent($event)" (click)="scratchDone($event)" [title]="gameTableMask.scratchingGrids ? '確定' : '結束'"><i class="material-icons small-font">done</i></button>
+            @if (gameTableMask!.isMine) {
+              <button class="edit-button" (pointerdown)="prevent($event)" (mousedown)="prevent($event)" (click)="scratchDone($event)" [title]="gameTableMask!.scratchingGrids ? '確定' : '結束'"><i class="material-icons small-font">done</i></button>
             }
-            @if (gameTableMask.isMine) {
+            @if (gameTableMask!.isMine) {
               <button class="edit-button" (pointerdown)="prevent($event)" (mousedown)="prevent($event)" (click)="scratchCancel($event)" title="取消"><i class="material-icons small-font">clear</i></button>
             }
           </span>

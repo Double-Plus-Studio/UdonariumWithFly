@@ -1,6 +1,6 @@
 <div>
   @if (isValid) {
-    <div class="url"><small><small>{{urlObj.protocol}}//</small></small><span [ngClass]="{'outer': isOuter}">{{urlObj.host}}</span><small>{{urlObj.pathname}}<span class="opt">{{urlObj.search}}{{urlObj.hash}}</span></small></div>
+    <div class="url"><small><small>{{urlObj!.protocol}}//</small></small><span [ngClass]="{'outer': isOuter}">{{urlObj!.host}}</span><small>{{urlObj!.pathname}}<span class="opt">{{urlObj!.search}}{{urlObj!.hash}}</span></small></div>
   }
   @if (!isValid) {
     <div class="url">{{url}}</div>

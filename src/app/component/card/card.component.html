@@ -6,13 +6,13 @@
     <div class="component-content is-pointer-events-auto is-3d"
       appRotable [rotable.option]="rotableOption" [rotable.disable]="isLocked" (rotable.ondragstart)="onMove()" (rotable.ondragend)="onMoved()">
       @if (imageFile) {
-        <img #cardImage [@inverse]="state" (load)="onImageLoad()" class="card-image is-3d chrome-smooth-image-trick" [src]="(isFront ? frontImage.url : backImage.url) | safe: 'resourceUrl'">
+        <img #cardImage [@inverse]="state" (load)="onImageLoad()" class="card-image is-3d chrome-smooth-image-trick" [src]="(isFront ? frontImage.url : backImage.url) ?? '' | safe: 'resourceUrl'">
       }
       <div [style.opacity]="!isFront ? 0.8 : 1.0" [style.transform]="!isFront ? 'scale(0.9)' : ''" class="is-3d is-pointer-events-none" style="position: absolute"
         [style.top.px]="textDivTopPixcel" [style.width.px]="size * gridSize" [style.height]="textDivHeightCss">
         @if (!isFront && (isHand || isGMMode) && frontImage) {
           <img #translucentImage @flipOpen (load)="onImageLoad()"
-            class="card-image is-3d chrome-smooth-image-trick" [src]="frontImage.url | safe: 'resourceUrl'">
+            class="card-image is-3d chrome-smooth-image-trick" [src]="frontImage.url ?? '' | safe: 'resourceUrl'">
         }
         @if (isFront || isHand || isGMMode) {
           <div @flipOpen style="position: absolute" class="card-image text is-3d">

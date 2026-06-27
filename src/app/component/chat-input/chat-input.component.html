@@ -2,20 +2,20 @@
   <div class="table-cell imagebox" [ngClass]="{'not-allow-chat': !isAllowsChat}" (contextmenu)="onContextMenu($event)" style="cursor: context-menu; padding-left: 4px; padding-right: 2px">
     @if (!character) {
       <div class="imagebox">
-        @if (0 < imageFile.url.length) {
-          <img class="image face-icon" [src]="imageFile.url | safe: 'resourceUrl'" />
+        @if (0 < imageFile.url!.length) {
+          <img class="image face-icon" [src]="imageFile.url! | safe: 'resourceUrl'" />
         }
       </div>
     } @else {
-      @if (isUseFaceIcon && character && character.faceIcon != null && 0 < character.faceIcon?.url?.length) {
+      @if (isUseFaceIcon && character && character.faceIcon != null && 0 < character.faceIcon!.url!.length) {
         <div class="imagebox">
-          <img class="image face-icon" [src]="character.faceIcon?.url | safe: 'resourceUrl'" />
+          <img class="image face-icon" [src]="character.faceIcon!.url! | safe: 'resourceUrl'" />
         </div>
       } @else {
-        @if (character && character.imageFile != null && 0 < character.imageFile.url.length) {
+        @if (character && character.imageFile != null && 0 < character.imageFile.url!.length) {
           <div class="inverser" [ngClass]="{inverse: character.isInverse, hollow: character.isHollow}">
             <span class="aura imagebox" [ngClass]="{black: character.aura === 0, blue: character.aura === 1, green: character.aura === 2, cyan: character.aura === 3, red: character.aura === 4, magenta: character.aura === 5, yellow: character.aura === 6, white: character.aura === 7}">
-              <img class="image" [src]="character.imageFile.url | safe: 'resourceUrl'" [ngClass]="{'black-paint': character.isBlackPaint}" />
+              <img class="image" [src]="character.imageFile.url! | safe: 'resourceUrl'" [ngClass]="{'black-paint': character.isBlackPaint}" />
             </span>
           </div>
         }
@@ -97,8 +97,8 @@
           }
         </select>
         <span style="white-space: nowrap; margin-left: 0.6em; display: inline-block">
-          <b style="font-size: smaller;">Pos: </b><input style="width: 176px" (change)="isUseStandImage = true" type="range" min="0" max="100" [(ngModel)]="character.standList.position" [attr.disabled]="!isUseStandImageOnChatTab || !isUseStandImage ? '' : null">
-          <input style="width: 3em; text-align: right; margin-right: 3px;" type="number" min="0" max="100" (change)="isUseStandImage = true" [(ngModel)]="character.standList.position" [attr.disabled]="!isUseStandImageOnChatTab || !isUseStandImage ? '' : null"><b style="font-size: smaller;">％</b>
+          <b style="font-size: smaller;">Pos: </b><input style="width: 176px" (change)="isUseStandImage = true" type="range" min="0" max="100" [(ngModel)]="character!.standList.position" [attr.disabled]="!isUseStandImageOnChatTab || !isUseStandImage ? '' : null">
+          <input style="width: 3em; text-align: right; margin-right: 3px;" type="number" min="0" max="100" (change)="isUseStandImage = true" [(ngModel)]="character!.standList.position" [attr.disabled]="!isUseStandImageOnChatTab || !isUseStandImage ? '' : null"><b style="font-size: smaller;">％</b>
         </span>
         <button style="margin-left: 0.6em; font-size: smaller;" type="button" (click)="farewellStand()">退場</button>
       </div>
@@ -112,7 +112,7 @@
           [ngModelOptions]="{standalone: true}" (input)="onInput()" (focus)="isFilterTextUpdate = true" (blur)="isFilterTextUpdate = false"
           (keydown)="onChatKeydown($event)" [disabled]="!isAllowsChat"
         #textArea></textarea>
-        <button type="submit" (click)="sendChat(null)" [disabled]="!isAllowsChat"><b>SEND</b></button>
+        <button type="submit" (click)="sendChat({})" [disabled]="!isAllowsChat"><b>SEND</b></button>
       </form>
     </div>
     <div class="writing-info">

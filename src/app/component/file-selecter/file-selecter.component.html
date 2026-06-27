@@ -79,10 +79,10 @@
           <b class="grow" style="font-size: 13px; color: red; padding-left: 2px">設定中</b>
         </div>
       }
-      @if (0 < file.url.length) {
-        <img [src]="file.url | safe: 'resourceUrl'" [alt]="file.name" height="120" (click)="getCurrent(file) ? false : onSelectedFile(file)" draggable="false" />
+      @if (0 < file.url!.length) {
+        <img [src]="file.url! | safe: 'resourceUrl'" [alt]="file.name" height="120" (click)="getCurrent(file) ? false : onSelectedFile(file)" draggable="false" />
       }
-      @if (file.url.length <= 0) {
+      @if (file.url!.length <= 0) {
         <img src="assets/images/loading.gif" alt="{{file.name}}" draggable="false" />
       }
     </div>

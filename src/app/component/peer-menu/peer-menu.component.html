@@ -26,7 +26,7 @@
           <span class="id-spacer">{{ networkService.peer.userId }}</span>
           <input class="id-input" type="text" value="{{ networkService.peer.userId }}" readonly>
         </span>
-        @if (isAbleClipboardCopy && canUsePrivateSession) {
+        @if (isAbleClipboardCopy() && canUsePrivateSession) {
           <button (click)="copyPeerId()" [disabled]="isCopied" title="複製到剪貼簿"><b class="material-icons" style="font-size: 1em; vertical-align: bottom">content_copy</b></button>
         }
         <span [@fadeInOut]="isCopied" class="copied" [style.color]="myPeerColor"> {{ isCopied ? '已複製到剪貼簿。' : '' }}</span>
@@ -46,7 +46,7 @@
           <span class="id-spacer room-data">{{ networkService.peer.roomName }}/{{ networkService.peer.roomId }}</span>
           <input class="id-input room-data" type="text" value="{{ networkService.peer.roomName + '/' + networkService.peer.roomId }}" readonly>
         </span>
-        @if (isAbleClipboardCopy) {
+        @if (isAbleClipboardCopy()) {
           <button (click)="copyRoomName()" [disabled]="isRoomNameCopied" title="複製到剪貼簿"><b class="material-icons" style="font-size: 1em; vertical-align: bottom">content_copy</b></button>
         }
         <span [@fadeInOut]="isRoomNameCopied" class="copied" [style.color]="myPeerColor"> {{ isRoomNameCopied ? '已複製到剪貼簿。' : '' }}</span>
@@ -70,11 +70,11 @@
         @if (!isPasswordOpen) {
           <div style="display: inline" class="masked-password" draggable="false">{{ maskedPassword }}</div>
         }
-        @if (isAbleClipboardCopy) {
+        @if (isAbleClipboardCopy()) {
           <button (click)="copyPassword()" [disabled]="isPasswordCopied || isRoomInfoCopied" title="複製到剪貼簿"><b class="material-icons" style="font-size: 1em; vertical-align: bottom">content_copy</b></button>
         }
         <span [@fadeInOut]="isPasswordCopied" class="copied" [style.color]="myPeerColor"> {{ isPasswordCopied ? '已複製到剪貼簿。' : '' }}</span>
-        <br />@if (isAbleClipboardCopy) {
+        <br />@if (isAbleClipboardCopy()) {
         <button style="margin-top: 2px; margin-left: 0px" (click)="copyRoomInfo()" [disabled]="isPasswordCopied || isRoomInfoCopied"><b class="material-icons" style="font-size: 1em; vertical-align: middle">content_copy</b><b style="margin-left: 2px; display: inline-block; font-size: smaller">複製房間資訊到剪貼簿</b></button>
         }<span [@fadeInOut]="isRoomInfoCopied" class="copied" [style.color]="myPeerColor"> {{ isRoomInfoCopied ? '已複製到剪貼簿。' : '' }}</span>
       </div>
