@@ -26,7 +26,7 @@ type TrysteroPeerId = string;
 
 export class TrysteroConnection implements Connection {
   get peerId(): string { return this._peer?.peerId ?? ''; }
-  get peerIds(): string[] { return Array.from(this.trysteroToContext.keys()); }
+  get peerIds(): string[] { return Array.from(this.udonariumToTrystero.keys()); }
   get peer(): PeerContext { return this._peer; }
   get peers(): PeerContext[] { return Array.from(this.trysteroToContext.values()); }
 
@@ -52,6 +52,8 @@ export class TrysteroConnection implements Connection {
   private reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private lastReconnectTime = 0;
   private reconnectRequestedPeers = new Map<string, number>();
+
+  private pendingHelloPeers = new Set<TrysteroPeerId>();
 
   private outboundQueue: Promise<void> = Promise.resolve();
   private inboundQueue: Promise<void> = Promise.resolve();
@@ -85,6 +87,7 @@ export class TrysteroConnection implements Connection {
     this.room = null;
     this.gameAction = null;
     this.helloAction = null;
+    this.pendingHelloPeers.clear();
     this.trysteroToContext.clear();
     this.udonariumToTrystero.clear();
     if (this._peer?.isOpen) {
@@ -219,20 +222,23 @@ export class TrysteroConnection implements Connection {
 
       this.room.onPeerJoin = async (trysteroId: TrysteroPeerId) => {
         console.log('Trystero: peer joined', trysteroId);
-        // 送出 hello 後若對方沒有回應（trysteroToContext 未新增該 peer），
-        // 代表 hello 可能在 data channel 剛建立時遺失，每秒重試一次直到收到對方的 hello。
-        for (let attempt = 0; attempt <= 5; attempt++) {
-          if (this.trysteroToContext.has(trysteroId) || !this.room) break;
+        // 送出 hello 後若對方沒有回應，代表 data channel 尚未建立，每秒重試。
+        // onPeerJoin 可能在 WebRTC data channel 準備好之前就觸發，需要等待。
+        this.pendingHelloPeers.add(trysteroId);
+        for (let attempt = 0; attempt <= 60; attempt++) {
+          if (this.trysteroToContext.has(trysteroId) || !this.room || !this.pendingHelloPeers.has(trysteroId)) break;
           this.helloAction?.send(
             { peerId: this._peer.peerId, userId: this._peer.userId },
             { target: [trysteroId] }
           );
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
+        this.pendingHelloPeers.delete(trysteroId);
       };
 
       this.room.onPeerLeave = (trysteroId: TrysteroPeerId) => {
         console.log('Trystero: peer left', trysteroId);
+        this.pendingHelloPeers.delete(trysteroId);
         this.removePeer(trysteroId);
       };
 
@@ -265,31 +271,38 @@ export class TrysteroConnection implements Connection {
   }
 
   private onHello(trysteroId: TrysteroPeerId, payload: HelloPayload): void {
-    // 已處理過同一個 peer 的 hello，不重複觸發 onConnect，避免 SYNCHRONIZE_GAME_OBJECT 多次執行產生 race condition
-    if (this.trysteroToContext.has(trysteroId)) return;
+    const alreadyRegistered = this.trysteroToContext.has(trysteroId);
 
-    const context = PeerContext.parse(payload.peerId);
-    context.userId = payload.userId;
+    if (!alreadyRegistered) {
+      const context = PeerContext.parse(payload.peerId);
+      context.userId = payload.userId;
 
-    if (this._peer.isRoom && !this._peer.verifyPeer(payload.peerId)) {
-      console.warn('Trystero: invalid peer rejected', payload.peerId);
-      return;
-    }
+      if (this._peer.isRoom && !this._peer.verifyPeer(payload.peerId)) {
+        console.warn('Trystero: invalid peer rejected', payload.peerId);
+        return;
+      }
 
-    context.isOpen = true;
-    context.session.health = 1.0;
-    context.session.grade = PeerSessionGrade.HIGH;
-    context.session.speed = 1.0;
-    context.session.description = 'WebRTC (Trystero)';
+      context.isOpen = true;
+      context.session.health = 1.0;
+      context.session.grade = PeerSessionGrade.HIGH;
+      context.session.speed = 1.0;
+      context.session.description = 'WebRTC (Trystero)';
 
-    this.trysteroToContext.set(trysteroId, context);
-    this.udonariumToTrystero.set(payload.peerId, trysteroId);
+      this.trysteroToContext.set(trysteroId, context);
+      this.udonariumToTrystero.set(payload.peerId, trysteroId);
+      this.pendingHelloPeers.delete(trysteroId);
 
-    if (this.callback.onConnect) this.callback.onConnect(context);
+      if (this.callback.onConnect) this.callback.onConnect(context);
 
-    // Start periodic ping if not already running
-    if (!this.pingInterval) {
-      this.pingInterval = setInterval(() => this.updatePingAll(), 30000);
+      if (!this.pingInterval) {
+        this.pingInterval = setInterval(() => this.updatePingAll(), 30000);
+      }
+
+      // 回傳 hello 讓對方也能完成登錄（若對方的 retry loop 已超時，此 reply 可補救）
+      this.helloAction?.send(
+        { peerId: this._peer.peerId, userId: this._peer.userId },
+        { target: [trysteroId] }
+      );
     }
   }
 
@@ -354,6 +367,7 @@ export class TrysteroConnection implements Connection {
 
       const now = Date.now();
       for (const peer of targetPeers) {
+        if (peer.peerId === this._peer.peerId) continue;
         if (connectedIds.has(peer.peerId)) continue;
         const lastRequest = this.reconnectRequestedPeers.get(peer.peerId) ?? 0;
         if (now - lastRequest < 60_000) continue;

@@ -168,6 +168,7 @@ export class Network {
       : currentRoom.peers;
 
     for (const peer of targetPeers) {
+      if (peer.peerId === this.peerId) continue;
       if (!connectedIds.has(peer.peerId)) {
         console.log('Syncing room peer:', peer.peerId);
         (this.connection as any)?.requestReconnect?.(peer.peerId);
