@@ -12,7 +12,7 @@ export class WebRTCStats {
   constructor(private peerConnection: RTCPeerConnection) { }
 
   async updateAsync() {
-    let stats: RTCStatsReport = null;
+    let stats: RTCStatsReport | null = null;
     try {
       stats = await this.peerConnection.getStats();
     } catch (error) {
@@ -24,14 +24,14 @@ export class WebRTCStats {
       return;
     }
 
-    const candidatePairs = [];
-    const localCandidates = [];
-    const remoteCandidates = [];
+    const candidatePairs: any[] = [];
+    const localCandidates: any[] = [];
+    const remoteCandidates: any[] = [];
 
-    const succeededLocalCandidateIds = [];
-    const succeededRemoteCandidateIds = [];
-    const usedLocalCandidates = [];
-    const usedRemoteCandidates = [];
+    const succeededLocalCandidateIds: any[] = [];
+    const succeededRemoteCandidateIds: any[] = [];
+    const usedLocalCandidates: any[] = [];
+    const usedRemoteCandidates: any[] = [];
 
     stats.forEach(stat => {
       if (0 <= stat.type.indexOf('candidate-pair')) {

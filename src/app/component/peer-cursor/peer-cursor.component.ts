@@ -25,12 +25,12 @@ export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
   get isMine(): boolean { return this.cursor.isMine; }
   get color(): string { return (this.cursor.color && this.cursor.color != '#ffffff') ? this.cursor.color : '#f0dabd'; }
 
-  private cursorElement: HTMLElement = null;
+  private cursorElement: HTMLElement | null = null;
   private opacityElements: HTMLElement[] = [];
-  private rotateElement: HTMLElement = null;
-  private fadeOutTimer: ResettableTimeout = null;
+  private rotateElement: HTMLElement | null = null;
+  private fadeOutTimer: ResettableTimeout | null = null;
 
-  private updateInterval: NodeJS.Timeout = null;
+  private updateInterval: NodeJS.Timeout | null = null;
   private callcack: any = (e) => this.onMouseMove(e);
 
   private _x: number = 0;
@@ -137,7 +137,7 @@ export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private calcLocalCoordinate(x: number, y: number, target: HTMLElement) {
-    if (!document.getElementById('app-table-layer').contains(target)) return;
+    if (!document.getElementById('app-table-layer')?.contains(target)) return;
 
     let coordinate: PointerCoordinate = { x: x, y: y, z: 0 };
     coordinate = this.coordinateService.calcTabletopLocalCoordinate(coordinate, target);
@@ -160,18 +160,18 @@ export class PeerCursorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private stopTransition() {
-    this.cursorElement.style.transform = window.getComputedStyle(this.cursorElement).transform;
+    this.cursorElement!.style.transform = window.getComputedStyle(this.cursorElement!).transform;
   }
 
   private setAnimatedTransition() {
-    this.cursorElement.style.transition = `transform ${this.delayMs + 33}ms linear, opacity 0.5s ease-out`;
+    this.cursorElement!.style.transition = `transform ${this.delayMs + 33}ms linear, opacity 0.5s ease-out`;
   }
 
   private setPosition(x: number, y: number, z: number) {
-    this.cursorElement.style.transform = `translateX(${x.toFixed(4)}px) translateY(${y.toFixed(4)}px) translateZ(${z.toFixed(4)}px)`;
+    this.cursorElement!.style.transform = `translateX(${x.toFixed(4)}px) translateY(${y.toFixed(4)}px) translateZ(${z.toFixed(4)}px)`;
   }
 
   private setRotate() {
-    this.rotateElement.style.transform = `rotateZ(${-this.rotateZ}deg) rotateX(${this.nameTagRotate}deg)`;
+    this.rotateElement!.style.transform = `rotateZ(${-this.rotateZ}deg) rotateX(${this.nameTagRotate}deg)`;
   }
 }

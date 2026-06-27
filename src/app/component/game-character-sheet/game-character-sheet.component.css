@@ -286,11 +286,11 @@ input {
   #fff 0px 0px 2px;
 }
 
-.flex-item button.character-setteings {
+.flex-item button.character-settings {
   font-size: 11px;
   color: #444;
 }
-.flex-item button.character-setteings:disabled {
+.flex-item button.character-settings:disabled {
   background-color: #eee;
   color: #aaa;
   cursor: auto;

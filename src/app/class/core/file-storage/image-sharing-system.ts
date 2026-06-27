@@ -40,7 +40,7 @@ export class ImageSharingSystem {
         const request: CatalogItem[] = [];
 
         for (const item of otherCatalog) {
-          let image: ImageFile = ImageStorage.instance.get(item.identifier);
+          let image: ImageFile | null = ImageStorage.instance.get(item.identifier);
           if (image === null) {
             image = ImageFile.createEmpty(item.identifier);
             ImageStorage.instance.add(image);
@@ -67,7 +67,7 @@ export class ImageSharingSystem {
         const randomRequest: CatalogItem[] = [];
 
         for (const item of request) {
-          const image: ImageFile = ImageStorage.instance.get(item.identifier);
+          const image: ImageFile | null = ImageStorage.instance.get(item.identifier);
           if (image && item.state < image.state)
             randomRequest.push({ identifier: item.identifier, state: item.state });
         }
@@ -103,7 +103,7 @@ export class ImageSharingSystem {
       .on('START_FILE_TRANSMISSION', event => {
         console.log('START_FILE_TRANSMISSION ' + event.data.taskIdentifier);
         const identifier = event.data.taskIdentifier;
-        const image: ImageFile = ImageStorage.instance.get(identifier);
+        const image: ImageFile | null = ImageStorage.instance.get(identifier);
         if (this.receiveTaskMap.has(identifier) || (image && ImageState.COMPLETE <= image.state)) {
           console.warn('CANCEL_TASK_ ' + identifier);
           EventSystem.call('CANCEL_TASK_' + identifier, null, event.sendFrom);
@@ -194,7 +194,7 @@ export class ImageSharingSystem {
 
     for (let i = 0; i < catalog.length; i++) {
       const item: { identifier: string, state: number } = catalog[i];
-      const image: ImageFile = ImageStorage.instance.get(item.identifier);
+      const image: ImageFile = ImageStorage.instance.get(item.identifier)!;
 
       const context: ImageContext = {
         identifier: image.identifier,
@@ -262,7 +262,7 @@ function convertUrlImage(xmlElement: Element) {
   imageElements = xmlElement.querySelectorAll('*[imageIdentifier]');
   for (let i = 0; i < imageElements.length; i++) {
     const url = imageElements[i].getAttribute('imageIdentifier');
-    if (!ImageStorage.instance.get(url) && 0 < MimeType.type(url).length) {
+    if (url != null && !ImageStorage.instance.get(url) && 0 < MimeType.type(url).length) {
       urls.push(url);
     }
   }

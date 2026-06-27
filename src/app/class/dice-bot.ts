@@ -51,9 +51,9 @@ export class DiceBot extends GameObject {
   //private static queue: PromiseQueue = DiceBot.initializeDiceBotQueue();
   //public static loader = new BCDiceLoader();
 
-  public static apiUrl: string = null;
+  public static apiUrl: string | null = null;
   public static apiVersion: number = 2;
-  public static adminUrl: string = null;
+  public static adminUrl: string | null = null;
 
   public static diceBotInfos: DiceBotInfo[] = [];
   public static diceBotInfosIndexed: DiceBotInfosIndexed[] = [];
@@ -205,19 +205,19 @@ export class DiceBot extends GameObject {
 
   constructor(
     identifire,
-    private chatMessageService: ChatMessageService = null
-  ) { 
+    private chatMessageService: ChatMessageService | null = null
+  ) {
     super(identifire);
   }
 
-  static async rollCommandAsync(diceCommand: string, gameType='DiceBot', isTableFormat=false): Promise<DiceRollResult> {
+  static async rollCommandAsync(diceCommand: string, gameType='DiceBot', isTableFormat=false): Promise<DiceRollResult | undefined> {
     //const text: string = StringUtil.toHalfWidth(diceCommand).replace("\u200b", ''); //ゼロ幅スペース削除
     const text: string = diceCommand.replace("\u200b", ''); //ゼロ幅スペース削除
     const regArray = /^(([sＳｓ][rＲｒ][eＥｅ][pＰｐ][eＥｅ][aＡａ][tＴｔ]|[rＲｒ][eＥｅ][pＰｐ][eＥｅ][aＡａ][tＴｔ]|[sＳｓ][rＲｒ][eＥｅ][pＰｐ]|[rＲｒ][eＥｅ][pＰｐ]|[sＳｓ][xＸｘ]|[xＸｘ])?([\d０-９]+)?[ 　]+)?([^\n]*)?/ig.exec(text);
-    const repCommand =  StringUtil.toHalfWidth(regArray[2]);
-    const isRepSecret = repCommand && StringUtil.toHalfWidth(repCommand).toUpperCase().indexOf('S') === 0;
-    const repeat: number = (regArray[3] != null) ? Number(StringUtil.toHalfWidth(regArray[3])) : 1;
-    let rollText: string = (regArray[4] != null) ? regArray[4] : text;
+    const repCommand =  StringUtil.toHalfWidth(regArray![2]);
+    const isRepSecret: boolean = !!(repCommand && StringUtil.toHalfWidth(repCommand).toUpperCase().indexOf('S') === 0);
+    const repeat: number = (regArray![3] != null) ? Number(StringUtil.toHalfWidth(regArray![3])) : 1;
+    let rollText: string = (regArray![4] != null) ? regArray![4] : text;
     let finalResult: DiceRollResult = { id: 'DiceBot', result: '', isSecret: false, isDiceRollTable: false, isEmptyDice: true,
       isSuccess: false, isFailure: true, isCritical: false, isFumble: false };
 
@@ -260,10 +260,10 @@ export class DiceBot extends GameObject {
         finalResult.isSecret = isSecret || isRepSecret;
         const diceRollTableRows = diceRollTable.parseText();
         for (let i = 0; i < repeat && i < 32; i++) {
-          let rollResultNumber = null;
+          let rollResultNumber: number | null = null;
           const rollResult = await DiceBot.diceRollAsync(isFixedRef ? `C(${modStr.substring(1)})` : StringUtil.toHalfWidth(diceRollTable.dice).trim().replace(/[ⅮÐ]/g, 'D').replace(/×/g, '*').replace(/÷/g, '/').replace(/[―ー—‐]/g, '-'), 'DiceBot', 1);
           finalResult.isEmptyDice = finalResult.isEmptyDice && rollResult.isEmptyDice;
-          let match = null;
+          let match: RegExpMatchArray | null = null;
           if (rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
             rollResultNumber = +match[1];
           }
@@ -405,11 +405,11 @@ export class DiceBot extends GameObject {
     const id: string = rollResult.id.split(':')[0];
     const result: string = rollResult.result;
     const isSecret: boolean = rollResult.isSecret;
-    const isEmptyDice: boolean = rollResult.isEmptyDice;
-    const isSuccess: boolean = rollResult.isSuccess;
-    const isFailure: boolean = rollResult.isFailure;
-    const isCritical: boolean = rollResult.isCritical;
-    const isFumble: boolean = rollResult.isFumble;
+    const isEmptyDice: boolean = rollResult.isEmptyDice ?? false;
+    const isSuccess: boolean = rollResult.isSuccess ?? false;
+    const isFailure: boolean = rollResult.isFailure ?? false;
+    const isCritical: boolean = rollResult.isCritical ?? false;
+    const isFumble: boolean = rollResult.isFumble ?? false;
 
     if (result.length < 1) return;
     //if (!rollResult.isDiceRollTable) result = DiceBot.formatRollResult(result, id);
@@ -452,8 +452,8 @@ export class DiceBot extends GameObject {
           if (originalMessage.to) {
             const targetPeer = PeerCursor.findByUserId(originalMessage.to);
             if (targetPeer) {
-              if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('FAREWELL_STAND_IMAGE', sendObj, targetPeer.peerId);
-              EventSystem.call('FAREWELL_STAND_IMAGE', sendObj, PeerCursor.myCursor.peerId);
+              if (targetPeer.peerId != PeerCursor.myCursor!.peerId) EventSystem.call('FAREWELL_STAND_IMAGE', sendObj, targetPeer.peerId);
+              EventSystem.call('FAREWELL_STAND_IMAGE', sendObj, PeerCursor.myCursor!.peerId);
             }
           } else {
             EventSystem.call('FAREWELL_STAND_IMAGE', sendObj);
@@ -461,7 +461,7 @@ export class DiceBot extends GameObject {
         } else if (standInfo && standInfo.standElementIdentifier) {
           const diceBotMatch = <DataElement>ObjectStore.instance.get(standInfo.standElementIdentifier);
           if (diceBotMatch && diceBotMatch.getFirstElementByName('conditionType')) {
-            const conditionType = +diceBotMatch.getFirstElementByName('conditionType').value;
+            const conditionType = +diceBotMatch.getFirstElementByName('conditionType')!.value;
             if (conditionType == StandConditionType.Postfix || conditionType == StandConditionType.PostfixOrImage || conditionType == StandConditionType.PostfixAndImage) {
               const sendObj = {
                 characterIdentifier: gameCharacter.identifier,
@@ -472,8 +472,8 @@ export class DiceBot extends GameObject {
               if (sendObj.secret) {
                 const targetPeer = PeerCursor.findByUserId(originalMessage.to);
                 if (targetPeer) {
-                  if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('POPUP_STAND_IMAGE', sendObj, targetPeer.peerId);
-                  EventSystem.call('POPUP_STAND_IMAGE', sendObj, PeerCursor.myCursor.peerId);
+                  if (targetPeer.peerId != PeerCursor.myCursor!.peerId) EventSystem.call('POPUP_STAND_IMAGE', sendObj, targetPeer.peerId);
+                  EventSystem.call('POPUP_STAND_IMAGE', sendObj, PeerCursor.myCursor!.peerId);
                 }
               } else {
                 EventSystem.call('POPUP_STAND_IMAGE', sendObj);
@@ -488,18 +488,18 @@ export class DiceBot extends GameObject {
     const chatTab = ObjectStore.instance.get<ChatTab>(originalMessage.tabIdentifier);
     // ダイスによる插圖発生
     const cutInInfo = CutInList.instance.matchCutInInfo(result);
-    if (!isSecret && chatTab.isUseStandImage && cutInInfo) {
+    if (!isSecret && chatTab?.isUseStandImage && cutInInfo) {
       for (const identifier of cutInInfo.identifiers) {
         const sendObj = {
           identifier: identifier,
           secret: originalMessage.to ? true : false,
-          sender: PeerCursor.myCursor.peerId
+          sender: PeerCursor.myCursor!.peerId
         };
         if (sendObj.secret) {
           const targetPeer = PeerCursor.findByUserId(originalMessage.to);
           if (targetPeer) {
-            if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('PLAY_CUT_IN', sendObj, targetPeer.peerId);
-            EventSystem.call('PLAY_CUT_IN', sendObj, PeerCursor.myCursor.peerId);
+            if (targetPeer.peerId != PeerCursor.myCursor!.peerId) EventSystem.call('PLAY_CUT_IN', sendObj, targetPeer.peerId);
+            EventSystem.call('PLAY_CUT_IN', sendObj, PeerCursor.myCursor!.peerId);
           }
         } else {
           EventSystem.call('PLAY_CUT_IN', sendObj);
@@ -523,7 +523,7 @@ export class DiceBot extends GameObject {
       diceBotMessage.text = diceBotMessage.text.slice(0, diceBotMessage.text.length - matchMostLongText.length);
     }
     // フォーマット
-    if (!rollResult.isDiceRollTable) diceBotMessage.text = DiceBot.formatRollResult(diceBotMessage.text, id);
+    if (!rollResult.isDiceRollTable) diceBotMessage.text = DiceBot.formatRollResult(diceBotMessage.text ?? '', id);
 
     if (originalMessage.to != null && 0 < originalMessage.to.length) {
       diceBotMessage.to = originalMessage.to;
@@ -540,7 +540,7 @@ export class DiceBot extends GameObject {
       const request = DiceBot.apiVersion == 1
         ? DiceBot.apiUrl + '/v1/diceroll?system=' + (gameType ? encodeURIComponent(gameType) : 'DiceBot') + '&command=' + encodeURIComponent(message)
         : `${DiceBot.apiUrl}/v2/game_system/${(gameType ? encodeURIComponent(gameType) : 'DiceBot')}/roll?command=${encodeURIComponent(message)}`;
-      const promisise = [];
+      const promisise: Promise<{ id: string; result: string; isSecret: boolean; isEmptyDice: boolean; isSuccess?: boolean; isFailure?: boolean; isCritical?: boolean; isFumble?: boolean; }>[] = [];
       for (let i = 1; i <= repeat; i++) {
         promisise.push(
           fetch(request, {mode: 'cors'})
@@ -671,16 +671,16 @@ export class DiceBot extends GameObject {
     let coc7thFARCount = 0; //ToDo CoC他ゲームごとの処理メソッド分離
     let coc7thBonusDiceCount = 0; //ToDo CoC他ゲームごとの処理メソッド分離
     return result.split("\n").map(resultLine => {
-      let addDiceInfos = [];
-      let barabaraDiceInfos = [];
-      let rerollDiceInfos = [];
-      let upperDiceInfos = [];
+      let addDiceInfos: RegExpExecArray[] = [];
+      let barabaraDiceInfos: RegExpExecArray[] = [];
+      let rerollDiceInfos: RegExpExecArray[] = [];
+      let upperDiceInfos: RegExpExecArray[] = [];
       if (id === 'Cthulhu7th' && /^\d+(:?回目|次|번째): ＞/.test(resultLine)) {
         coc7thFARCount += 1;
         resultLine = '🎲' + resultLine;
       } 
       return resultLine.split(/\s＞\s/).map((resultFragment, i, a) => {
-        let matchBonusDiceCount = null;
+        let matchBonusDiceCount: RegExpExecArray | null = null;
         if (id === 'Cthulhu7th' && (matchBonusDiceCount = /(?:ボーナス・ペナルティダイス|獎勵、懲罰骰値|보너스, 패널티 주사위)\[(?<bonusDice>\-?\d+)\]/.exec(resultFragment))) {
           if (matchBonusDiceCount && matchBonusDiceCount.groups) coc7thBonusDiceCount = +matchBonusDiceCount.groups['bonusDice'];
         }
@@ -722,34 +722,34 @@ export class DiceBot extends GameObject {
               diceArrayInfos.forEach((diceArrayInfo, j) => {
                 placeString = diceArrayInfo[0];
                 if (addDiceInfos.length) {
-                  const {diceCount, keepDrop, keepDropCount} = addDiceInfos[j].groups;
-                  const {total, diceArrayString} = diceArrayInfo.groups;
+                  const {diceCount, keepDrop, keepDropCount} = addDiceInfos[j].groups!;
+                  const {total, diceArrayString} = diceArrayInfo.groups!;
                   if (keepDrop) {
                     const dice_ary = diceArrayString != null ? diceArrayString.split(',').sort((a, b) => (+a) - (+b)) : [];
-                    const keep_count = keepDrop.startsWith('K') ? keepDropCount : (diceCount - keepDropCount);
+                    const keep_count = keepDrop.startsWith('K') ? +keepDropCount : (+diceCount - +keepDropCount);
                     if (keepDrop === 'KH' || keepDrop === 'DL') dice_ary.reverse();
                     const dice_ary_place = dice_ary.map((die, k) => (k + 1) <= keep_count ? `${die}` : `~~~${die}~~~`);
                     if (keepDrop === 'DH' || keepDrop === 'DL') dice_ary_place.reverse();
                     placeString = `${total}[${ dice_ary_place.join(',') }]`;
                   }
                 } else if (barabaraDiceInfos.length) {
-                  const {sign, criteria} = barabaraDiceInfos[0].groups;
-                  const {diceArrayString} = diceArrayInfo.groups;
+                  const {sign, criteria} = barabaraDiceInfos[0].groups!;
+                  const {diceArrayString} = diceArrayInfo.groups!;
                   placeString = diceArrayString.split(',').map(die => DiceBot.isPass(die, sign, criteria) ? `${die}` : `~~~${die}~~~`).join(',');
                 } else if (rerollDiceInfos.length) {
-                  let {rerollSign, rerollCriteria} = rerollDiceInfos[0].groups;
-                  const {sign, criteria} = rerollDiceInfos[0].groups;
+                  let {rerollSign, rerollCriteria} = rerollDiceInfos[0].groups!;
+                  const {sign, criteria} = rerollDiceInfos[0].groups!;
                   if (!rerollSign) rerollSign = sign;
                   if (!rerollCriteria) rerollCriteria = criteria;
-                  const {diceArrayString} = diceArrayInfo.groups;
+                  const {diceArrayString} = diceArrayInfo.groups!;
                   //console.log(rerollDiceInfos[0], dice_ary_str)
                   placeString = diceArrayString.split(',')
                     .map(die => DiceBot.isPass(die, rerollSign, rerollCriteria) ? `###${die}###` : die)
                     .map(die => DiceBot.isPass(die, sign, criteria, false) ? die : `~~~${die}~~~`)
                     .join(',');
                 } else if (upperDiceInfos.length) {
-                  const {rerollCriteria, modifier, sign, criteria} = upperDiceInfos[0].groups;
-                  const {total, diceArrayString, modifier2, dieString} = diceArrayInfo.groups;
+                  const {rerollCriteria, modifier, sign, criteria} = upperDiceInfos[0].groups!;
+                  const {total, diceArrayString, modifier2, dieString} = diceArrayInfo.groups!;
                   console.log(upperDiceInfos[0], diceArrayInfo)
                   if (modifier2) {
                     placeString = ` (${modifier2})`;
@@ -778,7 +778,7 @@ export class DiceBot extends GameObject {
         } else if (id == 'BladeOfArcana' && (i == 1 || i == 2)) {
           const match = a[0].match(/^\(\d+A(?<deficult>\d+)C(?<critical>\d+)F(?<fumble>\d+)\)$/i);
           if (match) {
-            const {deficult, critical, fumble} = match.groups;
+            const {deficult, critical, fumble} = match.groups!;
             resultFragment = resultFragment.split(',').map(diceStr => {
               const diceNum = parseInt(diceStr.trim());
               if (diceNum === 1) {
@@ -823,8 +823,8 @@ export class DiceBot extends GameObject {
             if (match1) {
               const match2 = a[0].match(/\(\d+DX(?<critical>\d+)/i);
               if (match2) {
-                const {result, diceArrayString} = match1.groups;
-                const {critical} = match2.groups;
+                const {result, diceArrayString} = match1.groups!;
+                const {critical} = match2.groups!;
                 let isCritical = false;
                 const formatedDiceArrayString = diceArrayString.split(',').map((num, i, a) => {
                   if (parseInt(num) >= parseInt(critical)) {
@@ -846,8 +846,8 @@ export class DiceBot extends GameObject {
           if (isAdvantage || isDisadvantage) {
             const match = resultFragment.match(/\[(?<diceArrayString>\d+(?:,\d+)*)?\](?<modifier>[\-+]\d+)?/i);
             if (!match) return resultFragment;
-            const {diceArrayString, modifier} = match.groups;
-            const numbers = diceArrayString.split(',').map(n => parseInt(n));
+            const {diceArrayString, modifier} = match.groups!;
+            const numbers = diceArrayString!.split(',').map(n => parseInt(n));
             const liveNumber = isAdvantage ? Math.max(...numbers) : Math.min(...numbers);
             let isDone = false;
             resultFragment = '[' + numbers.map(n => {
@@ -862,7 +862,7 @@ export class DiceBot extends GameObject {
           } else if (isAttackRoll) {
             const match = resultFragment.match(/(?<diceString>\d+)?(?<modifier>[\-+]\d+)?/i);
             if (match) {
-              const {diceString, modifier} = match.groups;
+              const {diceString, modifier} = match.groups!;
               if (diceString && (parseInt(diceString) === 20 || parseInt(diceString) === 1)) resultFragment = `###${diceString}###${modifier ? modifier : ''}`;
             }
           }
@@ -960,7 +960,7 @@ function initializeDiceBotQueue(): PromiseQueue {
       };
     });
     DiceBot.diceBotInfos.forEach((info) => {
-      let normalize = info.sort_key.normalize('NFKD');
+      let normalize = info.sort_key!.normalize('NFKD');
       for (const replaceData of DiceBot.replaceData) {
         if (replaceData[2] && info.game === replaceData[0]) {
           normalize = replaceData[1];
@@ -991,14 +991,14 @@ function initializeDiceBotQueue(): PromiseQueue {
       } else if (b.lang) {
         return -1;
       }
-      return a.sort_key == b.sort_key ? 0 
-      : a.sort_key < b.sort_key ? -1 : 1;
+      return a.sort_key! == b.sort_key! ? 0
+      : a.sort_key! < b.sort_key! ? -1 : 1;
     });
-    let sentinel = DiceBot.diceBotInfos[0].sort_key[0];
-    let group = { index: sentinel, infos: [] };
+    let sentinel = DiceBot.diceBotInfos[0].sort_key![0];
+    let group: { index: string; infos: { id: string; game: string }[] } = { index: sentinel, infos: [] };
     for (const info of DiceBot.diceBotInfos) {
-      if ((info.lang ? info.lang : info.sort_key[0]) !== sentinel) {
-        sentinel = info.lang ? info.lang : info.sort_key[0];
+      if ((info.lang ? info.lang : info.sort_key![0]) !== sentinel) {
+        sentinel = info.lang ? info.lang : info.sort_key![0];
         DiceBot.diceBotInfosIndexed.push(group);
         group = { index: sentinel, infos: [] };
       }

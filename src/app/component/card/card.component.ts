@@ -79,27 +79,27 @@ import { ChatMessageService } from 'service/chat-message.service';
     standalone: false
 })
 export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
-  @Input() card: Card = null;
+  @Input() card: Card | null = null;
   @Input() is3D: boolean = false;
   @ViewChild('cardImage', { static: false }) cardImageElement: ElementRef<HTMLImageElement>;
   @ViewChild('translucentImage', { static: false }) translucentImageElement: ElementRef<HTMLImageElement>;
 
-  get name(): string { return this.card.name; }
-  get state(): CardState { return this.card.state; }
-  set state(state: CardState) { this.card.state = state; }
-  get rotate(): number { return this.card.rotate; }
-  set rotate(rotate: number) { this.card.rotate = rotate; }
-  get owner(): string { return this.card.owner; }
-  set owner(owner: string) { this.card.owner = owner; }
-  get zindex(): number { return this.card.zindex; }
-  get size(): number { return MathUtil.clampMin(this.card.size); }
+  get name(): string { return this.card?.name ?? ''; }
+  get state(): CardState { return this.card?.state ?? CardState.NORMAL; }
+  set state(state: CardState) { if (this.card) this.card.state = state; }
+  get rotate(): number { return this.card?.rotate ?? 0; }
+  set rotate(rotate: number) { if (this.card) this.card.rotate = rotate; }
+  get owner(): string { return this.card?.owner ?? ''; }
+  set owner(owner: string) { if (this.card) this.card.owner = owner; }
+  get zindex(): number { return this.card?.zindex ?? 0; }
+  get size(): number { return MathUtil.clampMin(this.card?.size ?? 0); }
 
-  get fontSize(): number { return this.card.fontsize; }
-  set fontSize(fontSize: number) { this.card.fontsize = fontSize; }
-  get text(): string { return this.card.text; }
-  set text(text: string) { this.card.text = text; }
-  get color(): string { return this.card.color; }
-  set color(color: string) { this.card.color = color; }
+  get fontSize(): number { return this.card?.fontsize ?? 14; }
+  set fontSize(fontSize: number) { if (this.card) this.card.fontsize = fontSize; }
+  get text(): string { return this.card?.text ?? ''; }
+  set text(text: string) { if (this.card) this.card.text = text; }
+  get color(): string { return this.card?.color ?? '#000000'; }
+  set color(color: string) { if (this.card) this.card.color = color; }
 
   get textShadowCss(): string {
     const shadow = StringUtil.textShadowColor(this.color);
@@ -113,11 +113,11 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
     ${shadow} 0px 0px 2px`;
   }
 
-  get isHand(): boolean { return this.card.isHand; }
-  get isFront(): boolean { return this.card.isFront; }
-  get isVisible(): boolean { return this.card.isVisible; }
-  get hasOwner(): boolean { return this.card.hasOwner; }
-  get ownerIsOnline(): boolean { return this.card.ownerIsOnline; }
+  get isHand(): boolean { return this.card?.isHand ?? false; }
+  get isFront(): boolean { return this.card?.isFront ?? false; }
+  get isVisible(): boolean { return this.card?.isVisible ?? true; }
+  get hasOwner(): boolean { return this.card?.hasOwner ?? false; }
+  get ownerIsOnline(): boolean { return this.card?.ownerIsOnline ?? false; }
   get ownerName(): string { return this.card.ownerName; }
   get ownerColor(): string { return this.card.ownerColor; }
 
@@ -131,7 +131,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
   get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
 
-  private iconHiddenTimer: NodeJS.Timeout = null;
+  private iconHiddenTimer: NodeJS.Timeout | null = null;
   get isIconHidden(): boolean { return this.iconHiddenTimer != null };
 
   get rubiedText(): string { return StringUtil.rubyToHtml(StringUtil.escapeHtml(this.text)) }
@@ -160,7 +160,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
     return (this.isFront || !this.frontImageClientHeight) ? '100%' : this.frontImageClientHeight + 'px';
   }
 
-  private interactGesture: ObjectInteractGesture = null;
+  private interactGesture: ObjectInteractGesture | null = null;
 
   constructor(
     private ngZone: NgZone,
@@ -350,7 +350,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
   private dispatchCardDropEvent() {
     const element: HTMLElement = this.elementRef.nativeElement;
     const parent = element.parentElement;
-    const children = parent.children;
+    const children = parent!.children;
     const event = new CustomEvent('carddrop', { detail: this.card, bubbles: true });
     for (let i = 0; i < children.length; i++) {
       children[i].dispatchEvent(event);
@@ -373,7 +373,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
       const selectedCards = () => this.selectionService.objects.filter(object => object.aliasName === this.card.aliasName) as Card[];
       actions.push(
         {
-          name: '選取的牌', action: null, subActions: [
+          name: '選取的牌', action: undefined, subActions: [
             {
               name: '全部翻面（公開）', action: () => {
                 const counter: Map<string, number> = new Map<string, number>();
@@ -386,7 +386,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
                   }
                   card.faceUp();
                 });
-                this.chatMessageService.sendOperationLog([...counter.keys()].map(key => key + (counter.get(key) <= 1 ? '' : ` ×${counter.get(key)}張`)).join('、') + ' 公開')
+                this.chatMessageService.sendOperationLog([...counter.keys()].map(key => key + ((counter.get(key) ?? 0) <= 1 ? '' : ` ×${counter.get(key)}張`)).join('、') + ' 公開')
                 SoundEffect.play(PresetSound.cardDraw);
               }
             },
@@ -414,7 +414,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
                   card.faceDown();
                   card.owner = Network.peer.userId;
                 });
-                const messages = [...counter.keys()].map(key => key + (counter.get(key) <= 1 ? '' : ` ×${counter.get(key)}張`));
+                const messages = [...counter.keys()].map(key => key + ((counter.get(key) ?? 0) <= 1 ? '' : ` ×${counter.get(key)}張`));
                 if (faceDownCount) messages.push(`(面朝下的牌)×${faceDownCount}張`);
                 this.chatMessageService.sendOperationLog(messages.join('、') + ' 只有自己查看');
                 SoundEffect.play(PresetSound.cardDraw);
@@ -521,7 +521,7 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
 
     if (this.isVisible && this.card.getUrls().length > 0) {
       actions.push({
-        name: '開啟參考URL', action: null,
+        name: '開啟參考URL', action: undefined,
         subActions: this.card.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
@@ -531,10 +531,10 @@ export class CardComponent implements OnDestroy, OnChanges, AfterViewInit {
                 window.open(url.trim(), '_blank', 'noopener');
               } else {
                 this.modalService.open(OpenUrlComponent, { url: url, title: this.card.name, subTitle: urlElement.name });
-              } 
+              }
             },
             disabled: !StringUtil.validUrl(url),
-            error: !StringUtil.validUrl(url) ? 'URL無效' : null,
+            error: !StringUtil.validUrl(url) ? 'URL無效' : undefined,
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         })

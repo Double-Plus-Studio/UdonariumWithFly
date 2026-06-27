@@ -18,7 +18,7 @@ import { PanelOption, PanelService } from 'service/panel.service';
     standalone: false
 })
 export class CardStackListComponent implements OnChanges, OnDestroy {
-  @Input() cardStack: CardStack = null;
+  @Input() cardStack: CardStack | null = null;
 
   owner: string = Network.peer.userId;
   

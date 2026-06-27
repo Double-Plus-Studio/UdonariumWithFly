@@ -58,7 +58,7 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedImageFiles: ImageFile[] = [];
 
   isSort = true;
-  static sortOrder: string[] = [];
+  static sortOrder: (string | null)[] = [];
 
   isShowHideImages = false;
 
@@ -197,7 +197,7 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
   handleFileSelect(event: Event) {
     const input = <HTMLInputElement>event.target;
     const files = input.files;
-    if (files.length) FileArchiver.instance.load(files);
+    if (files && files.length) FileArchiver.instance.load(files);
     input.value = '';
   }
 
@@ -304,7 +304,7 @@ export class FileStorageComponent implements OnInit, OnDestroy, AfterViewInit {
       type: ConfirmationType.OK_CANCEL,
       materialIcon: 'sell',
       action: () => {
-        let addedWords = null;
+        let addedWords: string[] | null = null;
         for (const image of this.selectedImageFiles) {
           const imageTag = ImageTag.get(image.identifier) || ImageTag.create(image.identifier);
           //imageTag.addWords(words);

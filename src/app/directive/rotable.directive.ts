@@ -14,7 +14,7 @@ import { RotableSelectionSynchronizer } from './rotable-selection-synchronizer';
 export interface RotableOption {
   readonly tabletopObject?: TabletopObject;
   readonly targetPropertyName?: string
-  readonly grabbingSelecter?: string;
+  readonly grabbingSelector?: string;
   readonly transformCssOffset?: string;
 }
 
@@ -26,22 +26,22 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
   private _tabletopObject: TabletopObject;
   private _targetPropertyName: string = '';
   private _transformCssOffset: string = '';
-  private _grabbingSelecter: string = '.rotate-grab';
+  private _grabbingSelector: string = '.rotate-grab';
 
   get tabletopObject(): TabletopObject { return this._tabletopObject; }
   get targetPropertyName(): string { return this._targetPropertyName; }
   get targetProperty(): number { return this.tabletopObject[this.targetPropertyName]; }
   set targetProperty(value: number) { if (this.targetPropertyName in this.tabletopObject) this.tabletopObject[this.targetPropertyName] = value; }
   get transformCssOffset(): string { return this._transformCssOffset; }
-  get grabbingSelecter(): string { return this._grabbingSelecter; }
+  get grabbingSelector(): string { return this._grabbingSelector; }
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   @Input('rotable.option') set option(option: RotableOption) {
     this.synchronizer.unregister();
 
-    this._tabletopObject = option.tabletopObject;
+    this._tabletopObject = option.tabletopObject!;
     this._targetPropertyName = option.targetPropertyName ?? '';
-    this._grabbingSelecter = option.grabbingSelecter ?? '.rotate-grab';
+    this._grabbingSelector = option.grabbingSelector ?? '.rotate-grab';
     this._transformCssOffset = option.transformCssOffset ?? '';
 
     if (this._targetPropertyName.length < 1 && this._tabletopObject) this._targetPropertyName = 'rotate';
@@ -72,8 +72,8 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
 
   private get isAllowedToRotate(): boolean {
     if (!this.grabbingElement || !this.nativeElement) return false;
-    if (this.grabbingSelecter.length < 1) return true;
-    const elements = this.nativeElement.querySelectorAll(this.grabbingSelecter);
+    if (this.grabbingSelector.length < 1) return true;
+    const elements = this.nativeElement.querySelectorAll(this.grabbingSelector);
     let macth = false;
     for (let i = 0; i < elements.length; i++) {
       macth = elements[i].contains(this.grabbingElement);
@@ -84,7 +84,7 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
 
   private rotateOffset: number = 0;
   private isUpdateBatching: boolean = false;
-  private grabbingElement: HTMLElement = null;
+  private grabbingElement: HTMLElement | null = null;
   private input: InputHandler = new InputHandler(this.nativeElement, false);
 
   private synchronizer: RotableSelectionSynchronizer = new RotableSelectionSynchronizer(this, this.selectionService);
@@ -146,7 +146,7 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
     this.input.cancel();
     this.grabbingElement = null;
     this.setAnimatedTransition(true);
-    if (this.tabletopService.tableSelecter.viewTable) this.tabletopService.tableSelecter.viewTable.gridHeight = 0;
+    if (this.tabletopService.tableSelector.viewTable) this.tabletopService.tableSelector.viewTable.gridHeight = 0;
   }
 
   dispose() {
@@ -163,12 +163,12 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
     e.stopPropagation();
     this.onstart.emit(e as PointerEvent);
 
-    const pointer = this.coordinateService.convertLocalToLocal(this.input.pointer, this.grabbingElement, this.nativeElement.parentElement);
+    const pointer = this.coordinateService.convertLocalToLocal(this.input.pointer, this.grabbingElement!, this.nativeElement.parentElement!);
     this.rotateOffset = this.calcRotate(pointer, this.rotate);
     this.setAnimatedTransition(false);
 
     if (this.tabletopObject) {
-      this.tabletopService.tableSelecter.viewTable.gridHeight = this.tabletopObject.posZ + 0.5;
+      this.tabletopService.tableSelector.viewTable.gridHeight = this.tabletopObject.posZ + 0.5;
       //this.setUpdateTimer();
     }
     this.synchronizer.prepareRotate();
@@ -182,7 +182,7 @@ export class RotableDirective implements AfterViewInit, OnChanges, OnDestroy {
 
     if (e.cancelable) e.preventDefault();
     e.stopPropagation();
-    const pointer3d = this.coordinateService.convertLocalToLocal(this.input.pointer, this.grabbingElement, this.nativeElement.parentElement);
+    const pointer3d = this.coordinateService.convertLocalToLocal(this.input.pointer, this.grabbingElement!, this.nativeElement.parentElement!);
     const angle = this.calcRotate(pointer3d, this.rotateOffset);
 
     if (!this.input.isDragging) this.ondragstart.emit(e as PointerEvent);

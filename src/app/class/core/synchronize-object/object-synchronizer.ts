@@ -51,13 +51,13 @@ export class ObjectSynchronizer {
         if (ObjectStore.instance.isDeleted(event.data)) {
           EventSystem.call('DELETE_GAME_OBJECT', { aliasName: '', identifier: event.data }, event.sendFrom);
         } else {
-          const object: GameObject = ObjectStore.instance.get(event.data);
+          const object: GameObject | null = ObjectStore.instance.get(event.data);
           if (object) EventSystem.call('UPDATE_GAME_OBJECT', object.toContext(), event.sendFrom);
         }
       })
       .on('UPDATE_GAME_OBJECT', 1000, event => {
         const context: ObjectContext = event.data;
-        const object: GameObject = ObjectStore.instance.get(context.identifier);
+        const object: GameObject | null = ObjectStore.instance.get(context.identifier);
         if (object) {
           const updateObject = event.isSendFromSelf ? object : this.updateObject(object, context);
           if (updateObject) {
@@ -82,7 +82,7 @@ export class ObjectSynchronizer {
     EventSystem.unregister(this);
   }
 
-  private updateObject(object: GameObject, context: ObjectContext): GameObject {
+  private updateObject(object: GameObject, context: ObjectContext): GameObject | null {
     const version = context.majorVersion + context.minorVersion;
     if (object.version < version) {
       object.apply(context);
@@ -92,8 +92,8 @@ export class ObjectSynchronizer {
     return object;
   }
 
-  private createObject(context: ObjectContext): GameObject {
-    const newObject: GameObject = ObjectFactory.instance.create(context.aliasName, context.identifier);
+  private createObject(context: ObjectContext): GameObject | null {
+    const newObject: GameObject | null = ObjectFactory.instance.create(context.aliasName, context.identifier);
     if (!newObject) {
       console.warn(context.aliasName + ' is Unknown...?', context);
       return null;

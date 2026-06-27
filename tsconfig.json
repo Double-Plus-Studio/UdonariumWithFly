@@ -17,6 +17,7 @@
     "useDefineForClassFields": false,
     "strictPropertyInitialization": false,
     "noImplicitAny": false,
+    "strictNullChecks": true,
     "paths": {
       "@udonarium/*": [
         "src/app/class/*"

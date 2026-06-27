@@ -17,14 +17,14 @@
         <i class="material-icons" style="font-size: smaller" [ngClass]="{'red-eye': isShowHideImages}">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
       </label>
     </div>
-    <span class="word-selecter">
+    <span class="word-selector">
       <label>
-        <input name="word-selecter" type="checkbox" value="ALL" checked="{{searchAllImage ? 'checked' : ''}}" (click)="onSearchAllImage()">
+        <input name="word-selector" type="checkbox" value="ALL" checked="{{searchAllImage ? 'checked' : ''}}" (click)="onSearchAllImage()">
         <div class="all-tags"><b>ALL</b><badge class="badge" [count]="images.length" [@.disabled]="true"></badge></div>
       </label>
       @if (countAllImagesHasWord(null) > 0) {
         <label>
-          <input name="word-selecter" type="checkbox" value="No Tag" [(ngModel)]="searchNoTagImage" checked="{{searchNoTagImage ? 'checked' : ''}}" (change)="searchNoTagImage = (searchNoTagImage ? true : false)">
+          <input name="word-selector" type="checkbox" value="No Tag" [(ngModel)]="searchNoTagImage" checked="{{searchNoTagImage ? 'checked' : ''}}" (change)="searchNoTagImage = (searchNoTagImage ? true : false)">
           <div class="no-tag"><s>No Tag</s>@if (countImagesHasWord(null) > 0) {
           <badge class="badge" [count]="countImagesHasWord(null)" [@.disabled]="true"></badge>
         }</div>
@@ -32,7 +32,7 @@
     }
     @for (word of allImagesOwnWords; track word) {
       <label>
-        <input name="word-selecter" type="checkbox" value="{{word}}" [checked]="searchWords.includes(word)" (change)="onSelectedWord(word)">
+        <input name="word-selector" type="checkbox" value="{{word}}" [checked]="searchWords.includes(word)" (change)="onSelectedWord(word)">
         <div>{{word}}@if (countImagesHasWord(word) > 0) {
           <badge class="badge" [count]="countImagesHasWord(word)" [@.disabled]="true"></badge>
         }</div>
@@ -50,7 +50,7 @@
     </label>
   </span>
 </div>
-<div id="file-list" [ngClass]="{ selecter: isSelected }" style="padding-top: 3px">
+<div id="file-list" [ngClass]="{ selector: isSelected }" style="padding-top: 3px">
   @for (file of images; track identify($index, file)) {
     <div class="image" @scaleInOut [ngClass]="{ selected: selected(file) }" style="text-align: center; min-width: 100px; height: 120px; position: relative;">
       <div style="position: absolute; font-size: xx-small; text-align: left; bottom: 0px; width: 100%; height: 100%; overflow: hidden; pointer-events: none">

@@ -22,8 +22,8 @@ import { ChatMessageService } from 'service/chat-message.service';
 
 @Component({
     selector: 'file-selector',
-    templateUrl: './file-selecter.component.html',
-    styleUrls: ['./file-selecter.component.css'],
+    templateUrl: './file-selector.component.html',
+    styleUrls: ['./file-selector.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [
         trigger('scaleInOut', [
@@ -40,7 +40,7 @@ import { ChatMessageService } from 'service/chat-message.service';
     ],
     standalone: false
 })
-export class FileSelecterComponent implements OnInit, OnDestroy, AfterViewInit {
+export class FileSelectorComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() isAllowedEmpty: boolean = false;
   @Input() currentImageIdentifires: string[] = [] 
   _searchNoTagImage = true;

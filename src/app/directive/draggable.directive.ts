@@ -34,7 +34,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
 
   private callbackOnResize = this.adjustPosition.bind(this);
 
-  private input: InputHandler = null;
+  private input: InputHandler | null = null;
   private startPosition: PointerCoordinate = { x: 0, y: 0, z: 0 };
   private startPointer: PointerCoordinate = { x: 0, y: 0, z: 0 };
   private prevTrans: PointerCoordinate = { x: 0, y: 0, z: 0 };
@@ -135,9 +135,9 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   }
 
   private onInputEnd(e: MouseEvent | TouchEvent) {
-    this.elementRef.nativeElement.style.opacity = null;
-    this.elementRef.nativeElement.style.cursor = null;
-    this.elementRef.nativeElement.style.willChange = null;
+    this.elementRef.nativeElement.style.opacity = '';
+    this.elementRef.nativeElement.style.cursor = '';
+    this.elementRef.nativeElement.style.willChange = '';
     if (this.input.isDragging && e.cancelable) {
       this.preventClickIfNeeded(e);
       e.preventDefault();
@@ -192,7 +192,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
 
   private isScrollableElement(target: HTMLElement) {
     const boundsElm = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector);
-    let node = target;
+    let node: HTMLElement | null = target;
     const overflowType = ['scroll', 'auto'];
     const positionType = ['fixed', 'sticky', '-webkit-sticky'];
     while (node && boundsElm !== node && this.elementRef.nativeElement !== node) {
@@ -207,7 +207,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   private calcCorrectionPosition(diff: PointerCoordinate = { x: 0, y: 0, z: 0 }): PointerCoordinate {
     const correction: PointerCoordinate = { x: 0, y: 0, z: 0 };
     const box = this.elementRef.nativeElement.getBoundingClientRect();
-    const bounds = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector).getBoundingClientRect();
+    const bounds = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector)!.getBoundingClientRect();
 
     if (this.allowOverHalf) {
       const boxWidth = box.right - box.left;
@@ -244,8 +244,8 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
   private calcElementPosition(target: HTMLElement): PointerCoordinate {
     const css: CSSStyleDeclaration = window.getComputedStyle(target);
     return {
-      x: CSSNumber.relation(css.left, target.parentElement.offsetWidth, target.parentElement.offsetWidth * 0.5),
-      y: CSSNumber.relation(css.top, target.parentElement.offsetHeight, target.parentElement.offsetHeight * 0.5),
+      x: CSSNumber.relation(css.left, target.parentElement!.offsetWidth, target.parentElement!.offsetWidth * 0.5),
+      y: CSSNumber.relation(css.top, target.parentElement!.offsetHeight, target.parentElement!.offsetHeight * 0.5),
       z: 0
     };
   }
@@ -271,7 +271,7 @@ export class DraggableDirective implements AfterViewInit, OnDestroy {
 
   private removeSelectionRanges() {
     const selection = window.getSelection();
-    if (!selection.isCollapsed) {
+    if (selection && !selection.isCollapsed) {
       selection.removeAllRanges();
     }
   }

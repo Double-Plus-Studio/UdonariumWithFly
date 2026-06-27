@@ -21,7 +21,7 @@ export class ChatTabList extends ObjectNode implements InnerXml {
   addChatTab(chatTab: ChatTab): ChatTab
   addChatTab(tabName: string, identifier?: string): ChatTab
   addChatTab(...args: any[]): ChatTab {
-    let chatTab: ChatTab = null;
+    let chatTab: ChatTab | null = null;
     if (args[0] instanceof ChatTab) {
       chatTab = args[0];
     } else {
@@ -31,7 +31,7 @@ export class ChatTabList extends ObjectNode implements InnerXml {
       chatTab.name = tabName;
       chatTab.initialize();
     }
-    return this.appendChild(chatTab);
+    return this.appendChild(chatTab) as ChatTab;
   }
 
   parseInnerXml(element: Element) {
@@ -51,13 +51,13 @@ export class ChatTabList extends ObjectNode implements InnerXml {
 
   log(logFormat, dateFormat, isWriteOerationLog=true, imageDict?: Record<string, unknown>, target?: ChatTab[]): string {
     if (!this.chatTabs || (target && target.length == 0)) return '';
-    if (target && target.length > 1 && target.map(tab => tab.identifier).sort().join() == this.chatTabs.map(tab => tab.identifier).sort().join()) target = null;
-    const messages = (target ? target : this.chatTabs).reduce((ac, chatTab) => {
+    if (target && target.length > 1 && target.map(tab => tab.identifier).sort().join() == this.chatTabs.map(tab => tab.identifier).sort().join()) target = undefined;
+    const messages = (target ? target : this.chatTabs).reduce((ac: { index: number; tabName: string; chatMessage: ChatMessage; }[], chatTab) => {
         if (chatTab) ac.push(...chatTab.chatMessages.filter(chatMessage => chatMessage.isDisplayable && (isWriteOerationLog || !chatMessage.isOperationLog))
-          .map(chatMessage => ({ index: chatMessage.index, tabName: chatTab.name, chatMessage: chatMessage }))); 
+          .map(chatMessage => ({ index: chatMessage.index, tabName: chatTab.name, chatMessage: chatMessage })));
         return ac;
       }, []).sort((a, b) => a.index - b.index);
-    const logBodyAry = [];
+    const logBodyAry: string[] = [];
     let currentTabIdentifier = (messages.length > 0 ? messages[0].chatMessage.tabIdentifier : null);
     for (const message of messages) {
       if (currentTabIdentifier && currentTabIdentifier !== message.chatMessage.tabIdentifier) {

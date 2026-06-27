@@ -152,7 +152,7 @@ export class RangeRender {
 
     this.canvasElement.width = setting.areaWidth * gridSize;
     this.canvasElement.height = setting.areaHeight * gridSize;
-    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
+    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d')!;
 
     let gcx = 0.0;
     let gcy = 0.0;
@@ -199,7 +199,7 @@ export class RangeRender {
 
     this.canvasElementRange.width = setting.areaWidth * gridSize;
     this.canvasElementRange.height = setting.areaHeight * gridSize;
-    context = this.canvasElementRange.getContext('2d');
+    context = this.canvasElementRange.getContext('2d')!;
 
     this.makeBrush(context, gridSize, setting.rangeColor);
     context.beginPath();
@@ -218,7 +218,7 @@ export class RangeRender {
 
     this.canvasElementCenter.width = setting.areaWidth * gridSize;
     this.canvasElementCenter.height = setting.areaHeight * gridSize;
-    context = this.canvasElementCenter.getContext('2d');
+    context = this.canvasElementCenter.getContext('2d')!;
 
     this.makeBrush(context, gridSize, setting.rangeColor);
     
@@ -261,7 +261,7 @@ export class RangeRender {
 
     this.canvasElement.width = setting.areaWidth * gridSize;
     this.canvasElement.height = setting.areaHeight * gridSize;
-    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
+    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d')!;
 
     // 範圍座標
     const p1x_ = 0;
@@ -365,7 +365,7 @@ export class RangeRender {
     }
     this.canvasElementRange.width = setting.areaWidth * gridSize;
     this.canvasElementRange.height = setting.areaHeight * gridSize;
-    context = this.canvasElementRange.getContext('2d');
+    context = this.canvasElementRange.getContext('2d')!;
 
     this.makeBrush(context, gridSize, setting.rangeColor);
     context.beginPath();
@@ -385,7 +385,7 @@ export class RangeRender {
 
     this.canvasElementCenter.width = setting.areaWidth * gridSize;
     this.canvasElementCenter.height = setting.areaHeight * gridSize;
-    context = this.canvasElementCenter.getContext('2d');
+    context = this.canvasElementCenter.getContext('2d')!;
     this.makeBrush(context, gridSize, setting.rangeColor);
     context.beginPath();
     context.arc(offSetX_px, offSetX_px, 5, 0, 2 * Math.PI, true);
@@ -462,7 +462,7 @@ export class RangeRender {
 
     this.canvasElement.width = setting.areaWidth * gridSize;
     this.canvasElement.height = setting.areaHeight * gridSize;
-    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
+    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d')!;
 
     // 範圍座標
     const p1x = -setting.range * gridSize; // 左下
@@ -555,7 +555,7 @@ export class RangeRender {
     }
     this.canvasElementRange.width = setting.areaWidth * gridSize;
     this.canvasElementRange.height = setting.areaHeight * gridSize;
-    context = this.canvasElementRange.getContext('2d');
+    context = this.canvasElementRange.getContext('2d')!;
 
     this.makeBrush(context, gridSize, setting.rangeColor);
     context.beginPath();
@@ -580,7 +580,7 @@ export class RangeRender {
 
     this.canvasElementCenter.width = setting.areaWidth * gridSize;
     this.canvasElementCenter.height = setting.areaHeight * gridSize;
-    context = this.canvasElementCenter.getContext('2d');
+    context = this.canvasElementCenter.getContext('2d')!;
 
     this.makeBrush(context, gridSize, setting.rangeColor);
     
@@ -665,7 +665,7 @@ export class RangeRender {
 
     this.canvasElement.width = setting.areaWidth * gridSize;
     this.canvasElement.height = setting.areaHeight * gridSize;
-    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
+    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d')!;
 
     // 範圍座標
     const p1x = -setting.range * gridSize; // 左
@@ -760,7 +760,7 @@ export class RangeRender {
     }
     this.canvasElementRange.width = setting.areaWidth * gridSize;
     this.canvasElementRange.height = setting.areaHeight * gridSize;
-    context = this.canvasElementRange.getContext('2d');
+    context = this.canvasElementRange.getContext('2d')!;
 
     this.makeBrush(context, gridSize, setting.rangeColor);
     context.beginPath();
@@ -785,7 +785,7 @@ export class RangeRender {
 
     this.canvasElementCenter.width = setting.areaWidth * gridSize;
     this.canvasElementCenter.height = setting.areaHeight * gridSize;
-    context = this.canvasElementCenter.getContext('2d');
+    context = this.canvasElementCenter.getContext('2d')!;
 
     this.makeBrush(context, gridSize, setting.rangeColor);
     
@@ -864,7 +864,7 @@ export class RangeRender {
 
     this.canvasElement.width = setting.areaWidth * gridSize;
     this.canvasElement.height = setting.areaHeight * gridSize;
-    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
+    let context: CanvasRenderingContext2D = this.canvasElement.getContext('2d')!;
 
     // 範圍座標
     const cx_ = 0.0;
@@ -981,7 +981,7 @@ export class RangeRender {
 
     this.canvasElementRange.width = setting.areaWidth * gridSize;
     this.canvasElementRange.height = setting.areaHeight * gridSize;
-    context = this.canvasElementRange.getContext('2d');
+    context = this.canvasElementRange.getContext('2d')!;
 
     this.makeBrush(context, gridSize, setting.rangeColor);
     context.beginPath();
@@ -1000,7 +1000,7 @@ export class RangeRender {
 
     this.canvasElementCenter.width = setting.areaWidth * gridSize;
     this.canvasElementCenter.height = setting.areaHeight * gridSize;
-    context = this.canvasElementCenter.getContext('2d');
+    context = this.canvasElementCenter.getContext('2d')!;
     this.makeBrush(context, gridSize, setting.rangeColor);
     context.beginPath();
     context.arc(offSetX_px, offSetX_px, 5, 0, 2 * Math.PI, true);

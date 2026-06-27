@@ -36,7 +36,7 @@ export class AudioSharingSystem {
 
         console.log('SYNCHRONIZE_AUDIO_LIST active tasks ', this.sendTaskMap.size + this.receiveTaskMap.size);
         for (const item of otherCatalog) {
-          let audio: AudioFile = AudioStorage.instance.get(item.identifier);
+          let audio: AudioFile | null = AudioStorage.instance.get(item.identifier);
           if (audio === null) {
             audio = AudioFile.createEmpty(item.identifier);
             AudioStorage.instance.add(audio);
@@ -64,7 +64,7 @@ export class AudioSharingSystem {
         const randomRequest: CatalogItem[] = [];
 
         for (const item of request) {
-          const audio: AudioFile = AudioStorage.instance.get(item.identifier);
+          const audio: AudioFile | null = AudioStorage.instance.get(item.identifier);
           if (audio && item.state < audio.state) randomRequest.push({ identifier: item.identifier, state: item.state });
         }
 
@@ -73,8 +73,8 @@ export class AudioSharingSystem {
           console.log('REQUEST_AUDIO_RESOURE Send!!! ' + event.data.receiver + ' -> ' + randomRequest);
           const index = Math.floor(Math.random() * randomRequest.length);
           const item: { identifier: string, state: number } = randomRequest[index];
-          const audio: AudioFile = AudioStorage.instance.get(item.identifier);
-          this.startSendTask(audio, event.data.receiver);
+          const audio: AudioFile | null = AudioStorage.instance.get(item.identifier);
+          this.startSendTask(audio!, event.data.receiver);
         } else {
           // 中継
           const candidatePeers: string[] = event.data.candidatePeers;
@@ -100,7 +100,7 @@ export class AudioSharingSystem {
       .on('START_AUDIO_TRANSMISSION', event => {
         console.log('START_AUDIO_TRANSMISSION ' + event.data.fileIdentifier);
         const identifier: string = event.data.fileIdentifier;
-        const audio: AudioFile = AudioStorage.instance.get(identifier);
+        const audio: AudioFile | null = AudioStorage.instance.get(identifier);
         if (this.receiveTaskMap.has(identifier) || (audio && AudioState.COMPLETE <= audio.state)) {
           console.warn('CANCEL_TASK_ ' + identifier);
           EventSystem.call('CANCEL_TASK_' + identifier, null, event.sendFrom);
@@ -131,8 +131,8 @@ export class AudioSharingSystem {
     if (audio.state === AudioState.URL) {
       context.url = audio.url;
     } else {
-      context.blob = <any>await FileReaderUtil.readAsArrayBufferAsync(audio.blob);
-      context.type = audio.blob.type;
+      context.blob = <any>await FileReaderUtil.readAsArrayBufferAsync(audio.blob!);
+      context.type = audio.blob!.type;
     }
 
     task.onfinish = () => {
@@ -144,7 +144,7 @@ export class AudioSharingSystem {
   }
 
   private startReceiveTask(identifier: string) {
-    const audio: AudioFile = AudioStorage.instance.get(identifier);
+    const audio: AudioFile = AudioStorage.instance.get(identifier)!;
     const task = BufferSharingTask.createReceiveTask<AudioFileContext>(identifier);
     this.receiveTaskMap.set(identifier, task);
 

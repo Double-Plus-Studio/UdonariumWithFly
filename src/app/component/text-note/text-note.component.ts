@@ -37,7 +37,7 @@ import { SelectionState, TabletopSelectionService } from 'service/tabletop-selec
 export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   @ViewChild('textArea', { static: true }) textAreaElementRef: ElementRef;
 
-  @Input() textNote: TextNote = null;
+  @Input() textNote: TextNote | null = null;
   @Input() is3D: boolean = false;
 
   get title(): string { return this.textNote.title; }
@@ -109,7 +109,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   gridSize: number = 50;
   math = Math;
 
-  private calcFitHeightTimer: NodeJS.Timeout = null;
+  private calcFitHeightTimer: NodeJS.Timeout | null = null;
 
   movableOption: MovableOption = {};
   rotableOption: RotableOption = {};
@@ -126,7 +126,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   ) { }
 
   viewRotateZ = 10;
-  private input: InputHandler = null;
+  private input: InputHandler | null = null;
   
   get isInverse(): boolean {
     const rotate = Math.abs(this.viewRotateZ + this.rotate) % 360;
@@ -212,7 +212,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   onMouseUp(e: any) {
     if (this.pointerDeviceService.isAllowedToOpenContextMenu) {
       const selection = window.getSelection();
-      if (!selection.isCollapsed) selection.removeAllRanges();
+      if (selection && !selection.isCollapsed) selection.removeAllRanges();
       this.textAreaElementRef.nativeElement.focus();
     }
     this.removeMouseEventListeners();
@@ -263,7 +263,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
   }
 
   private makeContextMenu(): ContextMenuAction[] {
-    const actions: ContextMenuAction[] = [
+    const actions: (ContextMenuAction | null)[] = [
       (this.isLocked
         ? {
           name: '☑ 固定', action: () => {
@@ -342,7 +342,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
       ContextMenuSeparator,
       { name: '編輯備注...', action: () => { this.showDetail(this.textNote); } },
       (this.textNote.getUrls().length <= 0 ? null : {
-        name: '開啟參考URL', action: null,
+        name: '開啟參考URL', action: undefined,
         subActions: this.textNote.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
@@ -352,10 +352,10 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
                 window.open(url.trim(), '_blank', 'noopener');
               } else {
                 this.modalService.open(OpenUrlComponent, { url: url, title: this.textNote.title, subTitle: urlElement.name });
-              } 
+              }
             },
             disabled: !StringUtil.validUrl(url),
-            error: !StringUtil.validUrl(url) ? 'URL無效' : null,
+            error: !StringUtil.validUrl(url) ? 'URL無效' : undefined,
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         })
@@ -379,7 +379,7 @@ export class TextNoteComponent implements OnChanges, OnDestroy, AfterViewInit {
       },
     ];
 
-    return actions;
+    return actions.filter((a): a is ContextMenuAction => a !== null);
   }
 
   calcFitHeightIfNeeded() {

@@ -79,39 +79,39 @@ import { ObjectNode } from '@udonarium/core/synchronize-object/object-node';
     standalone: false
 })
 export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
-  @Input() cardStack: CardStack = null;
+  @Input() cardStack: CardStack | null = null;
   @Input() is3D: boolean = false;
 
-  get name(): string { return this.cardStack.name; }
-  get rotate(): number { return this.cardStack.rotate; }
-  set rotate(rotate: number) { this.cardStack.rotate = rotate; }
-  get zindex(): number { return this.cardStack.zindex; }
-  get isShowTotal(): boolean { return this.cardStack.isShowTotal; }
-  get cards(): Card[] { return this.cardStack.cards; }
-  get isEmpty(): boolean { return this.cardStack.isEmpty; }
+  get name(): string { return this.cardStack?.name ?? ''; }
+  get rotate(): number { return this.cardStack?.rotate ?? 0; }
+  set rotate(rotate: number) { if (this.cardStack) this.cardStack.rotate = rotate; }
+  get zindex(): number { return this.cardStack?.zindex ?? 0; }
+  get isShowTotal(): boolean { return this.cardStack?.isShowTotal ?? false; }
+  get cards(): Card[] { return this.cardStack?.cards ?? []; }
+  get isEmpty(): boolean { return this.cardStack?.isEmpty ?? true; }
   get size(): number {
-    const card = this.cardStack.topCard;
+    const card = this.cardStack?.topCard;
     return card ? MathUtil.clampMin(card.size) : 2;
   }
 
-  get hasOwner(): boolean { return this.cardStack.hasOwner; }
-  get ownerIsOnline(): boolean { return this.cardStack.ownerIsOnline; }
-  get ownerName(): string { return this.cardStack.ownerName; }
-  get ownerColor(): string { return this.cardStack.ownerColor; }
+  get hasOwner(): boolean { return this.cardStack?.hasOwner ?? false; }
+  get ownerIsOnline(): boolean { return this.cardStack?.ownerIsOnline ?? false; }
+  get ownerName(): string { return this.cardStack?.ownerName ?? ''; }
+  get ownerColor(): string { return this.cardStack?.ownerColor ?? '#000000'; }
 
-  get topCard(): Card { return this.cardStack.topCard; }
-  get imageFile(): ImageFile { return this.imageService.getSkeletonOr(this.cardStack.imageFile); }
+  get topCard(): Card { return this.cardStack ? this.cardStack.topCard : null as any; }
+  get imageFile(): ImageFile { return this.imageService.getSkeletonOr(this.cardStack?.imageFile); }
 
-  get selectionState(): SelectionState { return this.selectionService.state(this.cardStack); }
+  get selectionState(): SelectionState { return this.selectionService.state(this.cardStack!); }
   get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
   get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
 
   animeState: string = 'inactive';
 
-  private iconHiddenTimer: NodeJS.Timeout = null;
+  private iconHiddenTimer: NodeJS.Timeout | null = null;
   get isIconHidden(): boolean { return this.iconHiddenTimer != null };
 
-  get rubiedText(): string { return StringUtil.rubyToHtml(StringUtil.escapeHtml(this.topCard.text)) }
+  get rubiedText(): string { return StringUtil.rubyToHtml(StringUtil.escapeHtml(this.topCard?.text ?? '')) }
 
   get isLocked(): boolean { return this.cardStack ? this.cardStack.isLocked : false; }
   set isLocked(isLocked: boolean) { if (this.cardStack) this.cardStack.isLocked = isLocked; }
@@ -128,7 +128,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
     return 90 < rotate && rotate < 270
   }
 
-  private interactGesture: ObjectInteractGesture = null;
+  private interactGesture: ObjectInteractGesture | null = null;
 
   constructor(
     private ngZone: NgZone,
@@ -408,7 +408,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   private dispatchCardDropEvent() {
     const element: HTMLElement = this.elementRef.nativeElement;
     const parent = element.parentElement;
-    const children = parent.children;
+    const children = parent!.children;
     const event = new CustomEvent('carddrop', { detail: this.cardStack, bubbles: true });
     for (let i = 0; i < children.length; i++) {
       children[i].dispatchEvent(event);
@@ -432,7 +432,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       const selectedCardStacks = () => this.selectionService.objects.filter(object => object.aliasName === this.cardStack.aliasName) as CardStack[];
       actions.push(
         {
-          name: '選取的牌堆', action: null, subActions: [
+          name: '選取的牌堆', action: undefined, subActions: [
             {
               name: '全部翻面', action: () => {
                 selectedCardStacks().forEach(cardStack => cardStack.faceUpAll());
@@ -470,7 +470,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   private makeContextMenu(): ContextMenuAction[] {
-    const actions: ContextMenuAction[] = [
+    const actions: (ContextMenuAction | null)[] = [
       (this.isLocked
         ? {
           name: '☑ 固定', action: () => {
@@ -504,7 +504,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
         disabled: this.cards.length == 0
       },
       {
-        name: '抽牌', action: null,
+        name: '抽牌', action: undefined,
         subActions: [2, 3, 4, 5, 10].map(n => {
           return {
             name: `${n}枚`,
@@ -645,7 +645,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       ContextMenuSeparator,
       { name: '顯示詳細...', action: () => { this.showDetail(this.cardStack); } },
       (this.cardStack.getUrls().length <= 0 ? null : {
-        name: '開啟參考URL', action: null,
+        name: '開啟參考URL', action: undefined,
         subActions: this.cardStack.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
@@ -684,7 +684,7 @@ export class CardStackComponent implements OnChanges, AfterViewInit, OnDestroy {
       },
     ];
 
-    return actions;
+    return actions.filter((a): a is ContextMenuAction => a !== null);
   }
 
   private showDetail(gameObject: CardStack) {

@@ -149,9 +149,13 @@ export class CutInComponent implements OnInit, OnDestroy {
         }
       });
     if (this.cutInImage.state === ImageState.COMPLETE && !this._cutInImgageUrl) {
-      this._cutInImgageUrl = URL.createObjectURL(this.cutInImage.blob);
+      if (this.cutInImage.blob) {
+        this._cutInImgageUrl = URL.createObjectURL(this.cutInImage.blob);
+      }
     } else {
-      this._cutInImgageUrl = this.cutInImage.url;
+      if (this.cutInImage.url) {
+        this._cutInImgageUrl = this.cutInImage.url;
+      }
     }
   }
 
@@ -183,9 +187,9 @@ export class CutInComponent implements OnInit, OnDestroy {
 
   get cutInImage(): ImageFile {
     if (!this.cutIn) return this._imageFile;
-    if (this._imageFile.identifier !== this.cutIn.imageIdentifier) { 
-      const file: ImageFile = ImageStorage.instance.get(this.cutIn.imageIdentifier);
-      this._imageFile = file ? file : ImageFile.Empty;
+    if (this._imageFile.identifier !== this.cutIn.imageIdentifier) {
+      const file: ImageFile | null = ImageStorage.instance.get(this.cutIn.imageIdentifier);
+      this._imageFile = file ?? ImageFile.Empty;
     }
     return this._imageFile;
   }
@@ -375,7 +379,7 @@ export class CutInComponent implements OnInit, OnDestroy {
   }
 
   get isMine() {
-    return this.sender === PeerCursor.myCursor.peerId;
+    return this.sender === PeerCursor.myCursor?.peerId;
   }
 
   get senderColor() {
@@ -394,7 +398,7 @@ export class CutInComponent implements OnInit, OnDestroy {
   }
 
   get videoStart(): number {
-    return parseInt(this.cutIn.videoStart);
+    return this.cutIn.videoStart ? parseInt(this.cutIn.videoStart) : 0;
   }
 
   play() {

@@ -121,8 +121,11 @@ export class TrysteroConnection implements Connection {
   send(data: any, sendTo?: string): void {
     if (this.trysteroToContext.size < 1) return;
 
+    const encoded = MessagePack.encode(data);
+    if (!encoded) return;
+
     const container: DataContainer = {
-      data: MessagePack.encode(data),
+      data: encoded,
       ttl: 0,
     };
 
@@ -133,13 +136,15 @@ export class TrysteroConnection implements Connection {
       setZeroTimeout(async () => {
         if (1024 < container.data.byteLength && Array.isArray(data) && 1 < data.length) {
           const compressed = await compressAsync(container.data);
-          if (compressed.byteLength < container.data.byteLength) {
+          if (compressed && compressed.byteLength < container.data.byteLength) {
             container.data = compressed;
             container.isCompressed = true;
           }
         }
 
-        const encoded = MessagePack.encode(container).buffer as ArrayBuffer;
+        const encodedContainer = MessagePack.encode(container);
+        if (!encodedContainer) { resolve(); return; }
+        const encoded = encodedContainer.buffer as ArrayBuffer;
 
         if (sendTo) {
           const trysteroId = this.udonariumToTrystero.get(sendTo);

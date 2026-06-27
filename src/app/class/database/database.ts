@@ -4,7 +4,7 @@ export class Database<T> {
   readonly databaseName: string;
   readonly storeName: string;
 
-  private openDBPromise: Promise<IDBDatabase>;
+  private openDBPromise: Promise<IDBDatabase> | null = null;
 
   constructor(name: string) {
     this.databaseName = `Udonarium-IDB-${name}`;
@@ -33,7 +33,7 @@ export class Database<T> {
         return this.initializeDB(database);
       } catch (e) {
         console.error(e);
-        if (request.error.name === 'VersionError') {
+        if (request.error?.name === 'VersionError') {
           console.log(`recreate <${this.databaseName}>`);
           try {
             await this.waitFor(indexedDB.deleteDatabase(this.databaseName));
@@ -87,7 +87,7 @@ export class Database<T> {
     return transaction.objectStore(this.storeName);
   }
 
-  async get(key: IDBValidKey): Promise<T> {
+  async get(key: IDBValidKey): Promise<T | null> {
     try {
       const store = await this.getObjectStore('readonly');
       const request = store.get(key);
@@ -98,7 +98,7 @@ export class Database<T> {
     }
   }
 
-  async put(key: IDBValidKey, value: T): Promise<IDBValidKey> {
+  async put(key: IDBValidKey, value: T): Promise<IDBValidKey | null> {
     try {
       const store = await this.getObjectStore('readwrite');
       const request = store.put(value, key);
@@ -109,7 +109,7 @@ export class Database<T> {
     }
   }
 
-  async delete(key: IDBValidKey): Promise<void> {
+  async delete(key: IDBValidKey): Promise<void | null> {
     try {
       const store = await this.getObjectStore('readwrite');
       const request = store.delete(key);
@@ -120,7 +120,7 @@ export class Database<T> {
     }
   }
 
-  async getAll(): Promise<T[]> {
+  async getAll(): Promise<T[] | null> {
     try {
       const store = await this.getObjectStore('readonly');
       const request = store.getAll();
@@ -131,7 +131,7 @@ export class Database<T> {
     }
   }
 
-  async getAllKeys(): Promise<IDBValidKey[]> {
+  async getAllKeys(): Promise<IDBValidKey[] | null> {
     try {
       const store = await this.getObjectStore('readonly');
       const request = store.getAllKeys();

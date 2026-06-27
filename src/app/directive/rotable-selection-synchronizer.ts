@@ -29,7 +29,7 @@ export class RotableSelectionSynchronizer {
   destroy() {
     this.unregister();
     this._isDestroyed = true;
-    this.rotable = null;
+    this.rotable = null as any;
   }
 
   prepareRotate() {

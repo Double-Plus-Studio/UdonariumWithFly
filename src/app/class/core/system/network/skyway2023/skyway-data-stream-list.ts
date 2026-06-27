@@ -49,7 +49,7 @@ export class SkyWayDataStreamList implements Iterable<SkyWayDataStream> {
     return this._peerIds
   }
 
-  add(stream: SkyWayDataStream): SkyWayDataStream {
+  add(stream: SkyWayDataStream): SkyWayDataStream | null {
     const existStream = this.find(stream.peer.peerId);
     if (existStream) {
       if (existStream !== stream) {
@@ -74,7 +74,7 @@ export class SkyWayDataStreamList implements Iterable<SkyWayDataStream> {
     return stream;
   }
 
-  remove(stream: SkyWayDataStream): SkyWayDataStream {
+  remove(stream: SkyWayDataStream): SkyWayDataStream | null {
     const index = this.streams.indexOf(stream);
     if (0 <= index) {
       console.log(stream.peer.peerId + ' is えんいー' + 'index:' + index + ' length:' + this.streams.length);
@@ -85,7 +85,7 @@ export class SkyWayDataStreamList implements Iterable<SkyWayDataStream> {
     return 0 <= index ? stream : null;
   }
 
-  find(peerId: string): SkyWayDataStream {
+  find(peerId: string): SkyWayDataStream | undefined {
     return this.streams.find(stream => stream.peer.peerId === peerId);
   }
 

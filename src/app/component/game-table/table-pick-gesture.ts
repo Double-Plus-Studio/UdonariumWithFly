@@ -12,10 +12,10 @@ export class TablePickGesture {
 
   private pickCursorScale = 1.0;
 
-  private input: InputHandler = null;
-  private activateTimer: NodeJS.Timeout = null;
-  private keydownTimer: NodeJS.Timeout = null;
-  private tappedTimer: NodeJS.Timeout = null;
+  private input: InputHandler | null = null;
+  private activateTimer: NodeJS.Timeout | null = null;
+  private keydownTimer: NodeJS.Timeout | null = null;
+  private tappedTimer: NodeJS.Timeout | null = null;
   private tappedPointer: PointerCoordinate = { x: 0, y: 0, z: 0 };
 
   private get isActive(): boolean { return this.pointerDevice.isTablePickGesture; }
@@ -28,14 +28,14 @@ export class TablePickGesture {
   isKeepSelection = false;
   private isObjectDragging = false;
   private isPointerMoved = false;
-  private target: HTMLElement = null;
+  private target: HTMLElement | null = null;
 
   private callbackOnKeydown = (e) => this.onKeydown(e);
 
-  onstart: Callback = null;
-  onend: Callback = null;
-  oncancelifneeded: CancelCheckCallback = null;
-  onpick: Callback = null;
+  onstart: Callback | null = null;
+  onend: Callback | null = null;
+  oncancelifneeded: CancelCheckCallback | null = null;
+  onpick: Callback | null = null;
 
   constructor(
     readonly targetElement: HTMLElement,
@@ -59,7 +59,7 @@ export class TablePickGesture {
   }
 
   cancel() {
-    this.input.cancel();
+    this.input?.cancel();
     this.clearActivateTimer();
     this.pickCursor.deactive();
 
@@ -80,7 +80,7 @@ export class TablePickGesture {
 
   destroy() {
     this.cancel();
-    this.input.destroy();
+    this.input?.destroy();
     this.clearKeyDownTimer();
     this.clearTappedTimer();
   }
@@ -97,7 +97,7 @@ export class TablePickGesture {
     this.isKeepSelection = false;
 
     this.clearActivateTimer();
-    this.pickCursor.update(this.input.pointer);
+    this.pickCursor.update(this.input!.pointer);
 
     const isMainButton = (e instanceof MouseEvent && e.button === 0) || (e as TouchEvent).touches;
     if (!isMainButton) return this.cancel();
@@ -117,7 +117,7 @@ export class TablePickGesture {
     const threshold = (e instanceof MouseEvent ? 3 : 12) ** 2;
 
     this.isObjectDragging = this.pointerDevice.isDragging;
-    this.isPointerMoved = this.isPointerMoved || threshold < this.input.magnitude;
+    this.isPointerMoved = this.isPointerMoved || threshold < this.input!.magnitude;
     this.isKeepSelection = this.isKeepSelection || this.isPointerMoved || this.isObjectDragging;
 
     if (this.keydownTimer != null) return;
@@ -127,7 +127,7 @@ export class TablePickGesture {
     if (isMultiTouch || isObjectGesture || isTableGesture) this.cancel();
 
     if (!this.isActive || (this.oncancelifneeded != null && this.oncancelifneeded())) return;
-    this.pickCursor.update(this.input.pointer);
+    this.pickCursor.update(this.input!.pointer);
     this.pickCursor.scale(0);
 
     if (this.isPickObjectMode && e instanceof MouseEvent && e.ctrlKey) {
@@ -143,7 +143,7 @@ export class TablePickGesture {
     const threshold = (e instanceof MouseEvent ? 3 : 12) ** 2;
 
     this.isObjectDragging = this.pointerDevice.isDragging;
-    this.isPointerMoved = this.isPointerMoved || threshold < this.input.magnitude;
+    this.isPointerMoved = this.isPointerMoved || threshold < this.input!.magnitude;
     this.isKeepSelection = this.isKeepSelection || this.isPointerMoved || this.isObjectDragging;
 
     if (this.onend) this.onend();
@@ -152,11 +152,11 @@ export class TablePickGesture {
 
   private onInputTap(e: MouseEvent | TouchEvent) {
     this.setTappedTimer();
-    this.tappedPointer = this.input.pointer;
+    this.tappedPointer = this.input!.pointer;
   }
 
   private onKeydown(e: KeyboardEvent) {
-    if (this.isActive && (!this.input.isGrabbing)) return;
+    if (this.isActive && (!this.input!.isGrabbing)) return;
     switch (e.key) {
       case 'Control':
         this.isStrokeMode = true;
@@ -171,7 +171,7 @@ export class TablePickGesture {
         this.isKeepSelection = false;
 
         this.isActive = true;
-        this.pickCursor.update(this.input.pointer);
+        this.pickCursor.update(this.input!.pointer);
         this.pickCursor.active();
         this.pickCursor.disableAnimation();
         this.pickCursor.scale(0.6);
@@ -198,7 +198,7 @@ export class TablePickGesture {
     this.pickStart();
 
     if (this.isPickObjectMode) {
-      this.selection.excludeElement = null;
+      this.selection.excludeElement = null as unknown as Element;
       this.pickObject(e);
     }
   }
@@ -209,7 +209,7 @@ export class TablePickGesture {
       this.target = target;
     }
 
-    this.isMagneticMode = this.target != null && this.pointerDevice.isDragging && this.tappedTimer != null && MathUtil.sqrMagnitude(this.tappedPointer, this.input.pointer) < 25 ** 2;
+    this.isMagneticMode = this.target != null && this.pointerDevice.isDragging && this.tappedTimer != null && MathUtil.sqrMagnitude(this.tappedPointer, this.input!.pointer) < 25 ** 2;
     this.isPickObjectMode = this.target != null && this.pointerDevice.isDragging && !this.isMagneticMode;
     this.isPickRegionMode = this.target == null || (!this.isPickObjectMode && !this.isMagneticMode);
 
@@ -251,7 +251,7 @@ export class TablePickGesture {
       const event = new CustomEvent(
         'pickobject',
         {
-          detail: { srcEvent: srcEvent, first: this.input.startPointer, last: this.input.pointer },
+          detail: { srcEvent: srcEvent, first: this.input!.startPointer, last: this.input!.pointer },
           bubbles: true
         });
       target.dispatchEvent(event);
@@ -259,8 +259,8 @@ export class TablePickGesture {
   }
 
   private pickRegion(srcEvent: Event) {
-    const first = this.input.startPointer;
-    const last = this.input.pointer;
+    const first = this.input!.startPointer;
+    const last = this.input!.pointer;
     const x = Math.min(first.x, last.x);
     const y = Math.min(first.y, last.y);
     const width = Math.abs(first.x - last.x);
@@ -342,7 +342,7 @@ class PickCursor {
   private width: number = 0;
   private height: number = 0;
 
-  private readonly circleElement: SVGCircleElement;
+  private readonly circleElement: SVGCircleElement | null;
 
   constructor(readonly targetElement: HTMLElement) {
     this.circleElement = this.targetElement.querySelector('circle');
@@ -359,11 +359,11 @@ class PickCursor {
   }
 
   deactive() {
-    this.targetElement.style.display = null;
-    this.targetElement.style.stroke = null;
-    this.targetElement.style.scale = null;
-    this.circleElement.style.animation = null;
-    this.circleElement.style.fill = null;
+    this.targetElement.style.display = '';
+    this.targetElement.style.stroke = '';
+    this.targetElement.style.scale = '';
+    if (this.circleElement) this.circleElement.style.animation = '';
+    if (this.circleElement) this.circleElement.style.fill = '';
   }
 
   scale(scale: number) {
@@ -372,11 +372,11 @@ class PickCursor {
 
   color(stroke: string, fill: string) {
     this.targetElement.style.stroke = stroke;
-    this.circleElement.style.fill = fill;
+    if (this.circleElement) this.circleElement.style.fill = fill;
   }
 
   disableAnimation() {
-    this.circleElement.style.animation = 'none';
+    if (this.circleElement) this.circleElement.style.animation = 'none';
   }
 
   update(pointer: PointerCoordinate) {
@@ -399,6 +399,6 @@ class PickArea {
   deactive() {
     this.targetElement.style.width = 0 + 'px';
     this.targetElement.style.height = 0 + 'px';
-    this.targetElement.style.display = null;
+    this.targetElement.style.display = '';
   }
 }

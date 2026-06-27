@@ -21,23 +21,23 @@ export class ObjectStore {
   private garbageMap: Map<ObjectIdentifier, TimeStamp> = new Map();
 
   private queueMap: Map<ObjectIdentifier, ObjectContext> = new Map();
-  private updateInterval: number = null;
-  private garbageCollectionInterval: NodeJS.Timeout = null;
+  private updateInterval: number | null = null;
+  private garbageCollectionInterval: NodeJS.Timeout | null = null;
   private updateCallback = () => { this.updateQueue(); }
 
   private constructor() { console.log('ObjectStore ready...'); };
 
-  add(object: GameObject, shouldBroadcast: boolean = true): GameObject {
+  add(object: GameObject, shouldBroadcast: boolean = true): GameObject | null {
     if (this.get(object.identifier) != null || this.isDeleted(object.identifier)) return null;
     this.identifierMap.set(object.identifier, object);
     const objectsMap = this.aliasNameMap.has(object.aliasName) ? this.aliasNameMap.get(object.aliasName) : this.aliasNameMap.set(object.aliasName, new Map()).get(object.aliasName);
-    objectsMap.set(object.identifier, object);
+    objectsMap!.set(object.identifier, object);
     object.onStoreAdded();
     if (shouldBroadcast) this.update(object.toContext());
     return object;
   }
 
-  remove(object: GameObject): GameObject {
+  remove(object: GameObject): GameObject | null {
     if (!this.identifierMap.has(object.identifier)) return null;
 
     this.identifierMap.delete(object.identifier);
@@ -47,11 +47,11 @@ export class ObjectStore {
     return object;
   }
 
-  delete(object: GameObject, shouldBroadcast?: boolean): GameObject
-  delete(identifier: string, shouldBroadcast?: boolean): GameObject
+  delete(object: GameObject, shouldBroadcast?: boolean): GameObject | null
+  delete(identifier: string, shouldBroadcast?: boolean): GameObject | null
   delete(arg: any, shouldBroadcast: boolean = true) {
-    let object: GameObject = null;
-    let identifier: string = null;
+    let object: GameObject | null = null;
+    let identifier: string | null = null;
     if (typeof arg === 'string') {
       object = this.get(arg);
       identifier = arg;
@@ -59,11 +59,11 @@ export class ObjectStore {
       object = arg;
       identifier = arg.identifier;
     }
-    this.markForDelete(identifier);
+    this.markForDelete(identifier!);
     return object == null ? null : this._delete(object, shouldBroadcast);
   }
 
-  private _delete(object: GameObject, shouldBroadcast: boolean): GameObject {
+  private _delete(object: GameObject, shouldBroadcast: boolean): GameObject | null {
     if (this.remove(object) === null) return null;
     if (shouldBroadcast) EventSystem.call('DELETE_GAME_OBJECT', { aliasName: object.aliasName, identifier: object.identifier });
 
@@ -75,7 +75,7 @@ export class ObjectStore {
     this.garbageCollection(10 * 60 * 1000);
   }
 
-  get<T extends GameObject>(identifier: string): T {
+  get<T extends GameObject>(identifier: string): T | null {
     return this.identifierMap.has(identifier) ? <T>this.identifierMap.get(identifier) : null;
   }
 
@@ -93,15 +93,15 @@ export class ObjectStore {
       aliasName = arg.aliasName;
     }
 
-    return this.aliasNameMap.has(aliasName) ? <T[]>Array.from(this.aliasNameMap.get(aliasName).values()) : [];
+    return this.aliasNameMap.has(aliasName) ? <T[]>Array.from(this.aliasNameMap.get(aliasName)!.values()) : [];
   }
 
   update(identifier: string)
   update(context: ObjectContext)
   update(arg: any) {
-    let context: ObjectContext = null;
+    let context: ObjectContext | null = null;
     if (typeof arg === 'string') {
-      const object: GameObject = this.get(arg);
+      const object: GameObject | null = this.get(arg);
       if (object) context = object.toContext();
     } else {
       context = arg;
@@ -109,7 +109,7 @@ export class ObjectStore {
     if (!context) return;
 
     if (this.queueMap.has(context.identifier)) {
-      const queue = this.queueMap.get(context.identifier);
+      const queue = this.queueMap.get(context.identifier)!;
       for (const key in context) {
         queue[key] = context[key];
       }

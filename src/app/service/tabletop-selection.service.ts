@@ -20,7 +20,7 @@ export class TabletopSelectionService {
 
   get size(): number { return this.selectionMap.size; }
   get objects(): TabletopObject[] { return Array.from(this.selectionMap.keys()); }
-  excludeElement: Element = null;
+  excludeElement: Element | null = null;
 
   private isUdpateCssBatching = false;
 

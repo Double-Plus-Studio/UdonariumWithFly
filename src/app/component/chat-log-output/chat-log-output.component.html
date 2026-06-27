@@ -38,8 +38,8 @@
         <div style="flex-grow: 1; text-align: right">
           <button (click)="logFormat < 2 ? saveLog() : saveLogWithImages()" style="font-size: smaller" [disabled]="isDisable">
             <div style="position: relative;">
-              <div [ngClass]="{'is-hidden': isSaveing}">輸出日誌</div>
-              @if (isSaveing) {
+              <div [ngClass]="{'is-hidden': isSaving}">輸出日誌</div>
+              @if (isSaving) {
                 <div class="progress">{{progresPercent}}%</div>
               }
             </div>

@@ -12,15 +12,15 @@ export interface ImageContext {
   identifier: string;
   name: string;
   type: string;
-  blob: Blob;
-  url: string;
+  blob: Blob | null;
+  url: string | null;
   thumbnail: ThumbnailContext;
 }
 
 export interface ThumbnailContext {
   type: string;
-  blob: Blob;
-  url: string;
+  blob: Blob | null;
+  url: string | null;
 }
 
 export class ImageFile {
@@ -39,8 +39,8 @@ export class ImageFile {
 
   get identifier(): string { return this.context.identifier };
   get name(): string { return this.context.name };
-  get blob(): Blob { return this.context.blob ? this.context.blob : this.context.thumbnail.blob; };
-  get url(): string { return this.context.url ? this.context.url : this.context.thumbnail.url; };
+  get blob(): Blob | null { return this.context.blob ? this.context.blob : this.context.thumbnail.blob; };
+  get url(): string | null { return this.context.url ? this.context.url : this.context.thumbnail.url; };
   get thumbnail(): ThumbnailContext { return this.context.thumbnail };
 
   get state(): ImageState {
@@ -85,6 +85,7 @@ export class ImageFile {
     } else if (arg instanceof Blob) {
       return await ImageFile._createAsync(arg);
     }
+    return new ImageFile();
   }
 
   private static async _createAsync(blob: Blob, name?: string): Promise<ImageFile> {
@@ -92,7 +93,7 @@ export class ImageFile {
 
     const imageFile = new ImageFile();
     imageFile.context.identifier = await FileReaderUtil.calcSHA256Async(arrayBuffer);
-    imageFile.context.name = name;
+    imageFile.context.name = name ?? '';
     imageFile.context.blob = new Blob([arrayBuffer], { type: blob.type });
     imageFile.context.url = window.URL.createObjectURL(imageFile.context.blob);
 
@@ -143,8 +144,8 @@ export class ImageFile {
 
   private revokeURLs() {
     if (this.state === ImageState.URL) return;
-    window.URL.revokeObjectURL(this.context.url);
-    window.URL.revokeObjectURL(this.context.thumbnail.url);
+    if (this.context.url) window.URL.revokeObjectURL(this.context.url);
+    if (this.context.thumbnail.url) window.URL.revokeObjectURL(this.context.thumbnail.url);
   }
 
   private static createThumbnailAsync(context: ImageContext): Promise<ThumbnailContext> {
@@ -156,7 +157,7 @@ export class ImageFile {
         const dstHeight = image.height * scale;
 
         const canvas: HTMLCanvasElement = document.createElement('canvas');
-        const render: CanvasRenderingContext2D = canvas.getContext('2d');
+        const render: CanvasRenderingContext2D = canvas.getContext('2d')!;
         canvas.width = image.width;
         canvas.height = image.height;
 
@@ -164,18 +165,19 @@ export class ImageFile {
         CanvasUtil.resize(canvas, dstWidth, dstHeight, true);
 
         canvas.toBlob(blob => {
+          if (!blob) { reject(new Error('toBlob returned null')); return; }
           const thumbnail: ThumbnailContext = {
             type: blob.type,
             blob: blob,
             url: window.URL.createObjectURL(blob),
           };
           resolve(thumbnail);
-        }, context.blob.type);
+        }, context.blob?.type);
       };
       image.onabort = image.onerror = () => {
         reject();
       }
-      image.src = context.url;
+      image.src = context.url ?? '';
     });
   }
 

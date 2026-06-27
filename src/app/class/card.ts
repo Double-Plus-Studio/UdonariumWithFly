@@ -24,10 +24,10 @@ export class Card extends TabletopObject {
   get name(): string { return this.getCommonValue('name', ''); }
   get size(): number { return this.getCommonValue('size', 2); }
   set size(size: number) { this.setCommonValue('size', size); }
-  get frontImage(): ImageFile { return this.getImageFile('front'); }
-  get backImage(): ImageFile { return this.getImageFile('back'); }
+  get frontImage(): ImageFile | null { return this.getImageFile('front'); }
+  get backImage(): ImageFile | null { return this.getImageFile('back'); }
 
-  get imageFile(): ImageFile { return this.isVisible ? this.frontImage : this.backImage; }
+  get imageFile(): ImageFile | null { return this.isVisible ? this.frontImage : this.backImage; }
 
   get fontsize(): number { 
     const element = this.getElement('fontsize', this.commonDataElement);
@@ -102,7 +102,7 @@ export class Card extends TabletopObject {
   }
 
   static create(name: string, fornt: string, back: string, size: number = 2, identifier?: string): Card {
-    let object: Card = null;
+    let object: Card | null = null;
 
     if (identifier) {
       object = new Card(identifier);
@@ -111,13 +111,13 @@ export class Card extends TabletopObject {
     }
     object.createDataElements();
 
-    object.commonDataElement.appendChild(DataElement.create('name', name, {}, 'name_' + object.identifier));
-    object.commonDataElement.appendChild(DataElement.create('size', size, {}, 'size_' + object.identifier));
-    object.imageDataElement.appendChild(DataElement.create('front', fornt, { type: 'image' }, 'front_' + object.identifier));
-    object.imageDataElement.appendChild(DataElement.create('back', back, { type: 'image' }, 'back_' + object.identifier));
-    object.commonDataElement.appendChild(DataElement.create('fontsize', 18, { }, 'fontsize_' + object.identifier));
-    object.commonDataElement.appendChild(DataElement.create('text', '', { type: 'note', currentValue: '' }, 'text_' + object.identifier));
-    object.commonDataElement.appendChild(DataElement.create('color', "#555555", { type: 'color' }, 'ccolor_' + object.identifier));
+    object.commonDataElement!.appendChild(DataElement.create('name', name, {}, 'name_' + object.identifier));
+    object.commonDataElement!.appendChild(DataElement.create('size', size, {}, 'size_' + object.identifier));
+    object.imageDataElement!.appendChild(DataElement.create('front', fornt, { type: 'image' }, 'front_' + object.identifier));
+    object.imageDataElement!.appendChild(DataElement.create('back', back, { type: 'image' }, 'back_' + object.identifier));
+    object.commonDataElement!.appendChild(DataElement.create('fontsize', 18, { }, 'fontsize_' + object.identifier));
+    object.commonDataElement!.appendChild(DataElement.create('text', '', { type: 'note', currentValue: '' }, 'text_' + object.identifier));
+    object.commonDataElement!.appendChild(DataElement.create('color', "#555555", { type: 'color' }, 'ccolor_' + object.identifier));
     object.initialize();
 
     return object;

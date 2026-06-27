@@ -33,7 +33,7 @@ export class SkyWayDataConnection extends EventEmitter implements WebRTCConnecti
 
   private chunkSize = 15.5 * 1024;
   private receivedMap: Map<string, ReceivedChank> = new Map();
-  private timeoutTimer: NodeJS.Timeout = null;
+  private timeoutTimer: NodeJS.Timeout | null = null;
 
   get open(): boolean { return this.conn.open; }
   get remoteId(): string { return this.conn.remoteId; }
@@ -63,7 +63,7 @@ export class SkyWayDataConnection extends EventEmitter implements WebRTCConnecti
 
     conn.on('data', data => this.onData(data));
     conn.on('open', () => {
-      this.stats = new WebRTCStats(this.getPeerConnection());
+      this.stats = new WebRTCStats(this.getPeerConnection()!);
       this.peer.isOpen = true;
       this.clearTimeoutTimer();
       exchangeSkyWayImplementation(conn);
@@ -91,7 +91,7 @@ export class SkyWayDataConnection extends EventEmitter implements WebRTCConnecti
   }
 
   send(data: any) {
-    const encodedData: Uint8Array = MessagePack.encode(data);
+    const encodedData: Uint8Array = MessagePack.encode(data)!;
 
     const total = Math.ceil(encodedData.byteLength / this.chunkSize);
     if (total <= 1) {
@@ -101,8 +101,8 @@ export class SkyWayDataConnection extends EventEmitter implements WebRTCConnecti
 
     const id = UUID.generateUuid();
 
-    let sliceData: Uint8Array = null;
-    let chank: DataChank = null;
+    let sliceData: Uint8Array | null = null;
+    let chank: DataChank | null = null;
     for (let sliceIndex = 0; sliceIndex < total; sliceIndex++) {
       sliceData = encodedData.slice(sliceIndex * this.chunkSize, (sliceIndex + 1) * this.chunkSize);
       chank = { id: id, data: sliceData, index: sliceIndex, total: total };
@@ -110,7 +110,7 @@ export class SkyWayDataConnection extends EventEmitter implements WebRTCConnecti
     }
   }
 
-  getPeerConnection(): RTCPeerConnection {
+  getPeerConnection(): RTCPeerConnection | null {
     return this.conn.getPeerConnection();
   }
 
@@ -158,7 +158,7 @@ export class SkyWayDataConnection extends EventEmitter implements WebRTCConnecti
   }
 
   sendPing() {
-    const encodedData: Uint8Array = MessagePack.encode({ from: this.remoteId, ping: performance.now() });
+    const encodedData: Uint8Array = MessagePack.encode({ from: this.remoteId, ping: performance.now() })!;
     this.conn.send(encodedData);
   }
 

@@ -10,7 +10,7 @@ export interface IPoint3D extends IPoint2D {
   w: number;
 }
 export class Transform {
-  private element: HTMLElement;
+  private element: HTMLElement | null;
   private matrix: Matrix3D = new Matrix3D();
   private sceneTransform: Matrix3D = new Matrix3D();
   private inverseSceneTransform: Matrix3D = new Matrix3D();
@@ -108,7 +108,7 @@ export class Transform {
     }
   }
 
-  private extractMatrix(node: HTMLElement, matrix: Matrix3D = null): Matrix3D {
+  private extractMatrix(node: HTMLElement, matrix: Matrix3D | null = null): Matrix3D {
     if (!matrix)
       matrix = new Matrix3D();
     if (!node)
@@ -140,8 +140,8 @@ export class Transform {
     if (node.parentElement && perspective) {
       const parentStyle: CSSStyleDeclaration = window.getComputedStyle(node.parentElement);
       const perspectiveOrigin = parentStyle.perspectiveOrigin.split(' ');
-      const perspectiveOriginX = CSSNumber.relation(perspectiveOrigin[0], element.parentElement.offsetWidth);
-      const perspectiveOriginY = CSSNumber.relation(perspectiveOrigin[1], element.parentElement.offsetHeight);
+      const perspectiveOriginX = CSSNumber.relation(perspectiveOrigin[0], element.parentElement!.offsetWidth);
+      const perspectiveOriginY = CSSNumber.relation(perspectiveOrigin[1], element.parentElement!.offsetHeight);
 
       matrix.appendPosition(-perspectiveOriginX, -perspectiveOriginY, 0);
       matrix.appendPerspective(perspective);
@@ -153,8 +153,8 @@ export class Transform {
 
   private getPosition(node: HTMLElement): IPoint2D {
     const ret: IPoint2D = { x: 0, y: 0 };
-    ret.x = !node.offsetParent ? node.offsetLeft : node.parentElement === node.offsetParent ? node.offsetLeft : node.parentElement.offsetParent === node.offsetParent ? node.offsetLeft - node.parentElement.offsetLeft : 0;
-    ret.y = !node.offsetParent ? node.offsetTop : node.parentElement === node.offsetParent ? node.offsetTop : node.parentElement.offsetParent === node.offsetParent ? node.offsetTop - node.parentElement.offsetTop : 0;
+    ret.x = !node.offsetParent ? node.offsetLeft : node.parentElement === node.offsetParent ? node.offsetLeft : node.parentElement!.offsetParent === node.offsetParent ? node.offsetLeft - node.parentElement!.offsetLeft : 0;
+    ret.y = !node.offsetParent ? node.offsetTop : node.parentElement === node.offsetParent ? node.offsetTop : node.parentElement!.offsetParent === node.offsetParent ? node.offsetTop - node.parentElement!.offsetTop : 0;
 
     ret.x += node.offsetParent ? node.offsetParent.clientLeft : 0;
     ret.y += node.offsetParent ? node.offsetParent.clientTop : 0;

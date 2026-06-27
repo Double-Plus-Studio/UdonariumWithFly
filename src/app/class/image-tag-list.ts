@@ -82,7 +82,7 @@ export class ImageTagList extends ObjectNode implements InnerXml {
     return true;
   }
 
-  static sortImagesByWords(images: ImageFile[], keys: string[]): ImageFile[] {
+  static sortImagesByWords(images: ImageFile[], keys: (string | null)[]): ImageFile[] {
     const _data = images.map(image => {
       const imageTag = ImageTag.get(image.identifier);
       return { image: image, tag: (imageTag && imageTag.tag != null) ? imageTag.tag : '' };
@@ -98,7 +98,7 @@ export class ImageTagList extends ObjectNode implements InnerXml {
     return _data.map(obj => obj.image);
   }
 
-  private static _sortByWordCriteria(objA, objB, key: string) {
+  private static _sortByWordCriteria(objA, objB, key: string | null) {
     if (key == null) {
       if (objA.tag == '' && objB.tag == '') {
         return 0;

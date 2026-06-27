@@ -16,13 +16,13 @@ import { SkyWayBackend } from './skyway-backend';
 
 export class SkyWayFacade {
   url = '';
-  context: SkyWayContext;
-  private lobby: Channel;
-  private lobbyPerson: LocalPerson;
-  room: Channel;
-  roomPerson: LocalPerson;
+  context: SkyWayContext | null;
+  private lobby: Channel | null;
+  private lobbyPerson: LocalPerson | null;
+  room: Channel | null;
+  roomPerson: LocalPerson | null;
 
-  publication: Publication<LocalDataStream>;
+  publication: Publication<LocalDataStream> | null;
 
   peer: PeerContext = PeerContext.parse('???');
   get isOpen(): boolean { return this.peer.isOpen };
@@ -142,7 +142,7 @@ export class SkyWayFacade {
     }
 
     let min = 9999;
-    let joinLobby: Channel = null;
+    let joinLobby: Channel | null = null;
     lobbys.forEach(lobby => {
       if (min <= lobby.members.length) return;
       min = lobby.members.length;
@@ -153,8 +153,8 @@ export class SkyWayFacade {
       if (lobby !== joinLobby) lobby.dispose();
     });
 
-    joinLobby.onClosed.add(() => {
-      console.log(`lobby<${joinLobby.name}> onClosed`);
+    joinLobby!.onClosed.add(() => {
+      console.log(`lobby<${joinLobby!.name}> onClosed`);
       this.joinLobby();
     });
 
@@ -244,7 +244,7 @@ export class SkyWayFacade {
         return;
       }
 
-      const peer = PeerContext.parse(event.subscription.subscriber.name);
+      const peer = PeerContext.parse(event.subscription.subscriber.name!);
       if (this.onSubscribed) this.onSubscribed(peer, event.subscription);
     });
 
@@ -331,7 +331,7 @@ export class SkyWayFacade {
       const level = Logger.level;
       Logger.level = 'disable';
       try {
-        const lobby = this.lobby?.name === lobbyName ? this.lobby : await SkyWayChannel.Find(this.context, { name: lobbyName });
+        const lobby = this.lobby?.name === lobbyName ? this.lobby : await SkyWayChannel.Find(this.context!, { name: lobbyName });
         lobbys.push(lobby);
       } catch (error) {
         if (error instanceof SkyWayError) {

@@ -30,20 +30,20 @@ export class DiceSymbol extends TabletopObject {
   set size(size: number) { this.setCommonValue('size', size); }
 
   get faces(): string[] { return this.imageDataElement?.children.filter(element => (element as DataElement).currentValue != 'nothing').map(element => (element as DataElement).name) ?? []; }
-  get imageFile(): ImageFile {
+  get imageFile(): ImageFile | null {
     return this.isVisible ?
       this.getImageFile(this.face)
       : this.faces.length
         ? this.getImageFile(this.faces[0])
         : null;
   }
-  get backFaceImageFile(): ImageFile {
+  get backFaceImageFile(): ImageFile | null {
     if (!this.isCoin) return this.imageFile;
     return this.isVisible ?
     this.getImageFile(this.face == '表' ? '裏' : '表')
     : this.getImageFile(this.faces[1])
   }
-  get nothingFaces(): string[] { return this.imageDataElement.children.filter(element => (element as DataElement).currentValue == 'nothing').map(element => (element as DataElement).name); }
+  get nothingFaces(): string[] { return this.imageDataElement!.children.filter(element => (element as DataElement).currentValue == 'nothing').map(element => (element as DataElement).name); }
 
   get ownerName(): string {
     const object = PeerCursor.findByUserId(this.owner);
@@ -86,7 +86,7 @@ export class DiceSymbol extends TabletopObject {
         break;
       case DiceType.D6: {
         sided = 6;
-        const identifier = identifierSuffix != null ? 'nothing_' + identifierSuffix : null;
+        const identifier = identifierSuffix != null ? 'nothing_' + identifierSuffix : undefined;
         faces.push(DataElement.create('無', '', { type: 'image', currentValue: 'nothing' }, identifier));
         break;
       }
@@ -112,12 +112,12 @@ export class DiceSymbol extends TabletopObject {
 
     for (let i = 0; i < sided; i++) {
       const faceName = faceGeneratorFunc(i);
-      const identifier = identifierSuffix != null ? faceName + '_' + identifierSuffix : null;
+      const identifier = identifierSuffix != null ? faceName + '_' + identifierSuffix : undefined;
       faces.push(DataElement.create(faceName, '', { type: 'image' }, identifier));
     }
 
-    this.imageDataElement.children.forEach(element => element.destroy());
-    faces.forEach(element => this.imageDataElement.appendChild(element));
+    this.imageDataElement!.children.forEach(element => element.destroy());
+    faces.forEach(element => this.imageDataElement!.appendChild(element));
     this.face = this.faces[0];
 
     return faces;
@@ -127,8 +127,8 @@ export class DiceSymbol extends TabletopObject {
     const object: DiceSymbol = identifier ? new DiceSymbol(identifier) : new DiceSymbol();
 
     object.createDataElements();
-    object.commonDataElement.appendChild(DataElement.create('name', name, {}, 'name_' + object.identifier));
-    object.commonDataElement.appendChild(DataElement.create('size', size, {}, 'size_' + object.identifier));
+    object.commonDataElement!.appendChild(DataElement.create('name', name, {}, 'name_' + object.identifier));
+    object.commonDataElement!.appendChild(DataElement.create('size', size, {}, 'size_' + object.identifier));
 
     object.makeDiceFace(type, object.identifier);
     object.initialize();

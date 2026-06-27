@@ -52,14 +52,14 @@ export class GameCharacter extends TabletopObject {
     return Number.isNaN(num) ? 0 : num;
   }
 
-  get chatPalette(): ChatPalette {
+  get chatPalette(): ChatPalette | null {
     for (const child of this.children) {
       if (child instanceof ChatPalette) return child;
     }
     return null;
   }
 
-  get ownerName(): string {
+  get ownerName(): string | null {
     const object = PeerCursor.findByUserId(this.owner);
     return object ? object.name : null;
   }
@@ -105,19 +105,19 @@ export class GameCharacter extends TabletopObject {
     }
     element = this.getElement('height', this.commonDataElement);
     if (!element && this.commonDataElement) {
-      this.commonDataElement.insertBefore(DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier), this.getElement('altitude', this.commonDataElement));
+      this.commonDataElement.insertBefore(DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier), this.getElement('altitude', this.commonDataElement)!);
     }
     element = this.getElement('width', this.commonDataElement);
     if (!element && this.commonDataElement) {
       const ref = this.getElement('height', this.commonDataElement) || this.getElement('altitude', this.commonDataElement);
-      this.commonDataElement.insertBefore(DataElement.create('width', 0, {}, 'width_' + this.identifier), ref);
+      this.commonDataElement.insertBefore(DataElement.create('width', 0, {}, 'width_' + this.identifier), ref!);
     }
     element = this.getElement('depth', this.commonDataElement);
     if (!element && this.commonDataElement) {
       const widthEl = this.getElement('width', this.commonDataElement);
       const ref = this.getElement('height', this.commonDataElement) || this.getElement('altitude', this.commonDataElement);
       if (widthEl) {
-        this.commonDataElement.insertBefore(DataElement.create('depth', 0, {}, 'depth_' + this.identifier), ref);
+        this.commonDataElement.insertBefore(DataElement.create('depth', 0, {}, 'depth_' + this.identifier), ref!);
       }
     }
   }
@@ -132,35 +132,35 @@ export class GameCharacter extends TabletopObject {
     const heightElement: DataElement = DataElement.create('height', 0, { 'currentValue': '' }, 'height_' + this.identifier);
     const altitudeElement: DataElement = DataElement.create('altitude', 0, {}, 'altitude_' + this.identifier);
 
-    if (this.imageDataElement.getFirstElementByName('imageIdentifier')) {
-      this.imageDataElement.getFirstElementByName('imageIdentifier').value = imageIdentifier;
+    if (this.imageDataElement!.getFirstElementByName('imageIdentifier')) {
+      this.imageDataElement!.getFirstElementByName('imageIdentifier')!.value = imageIdentifier;
     }
 
     const resourceElement: DataElement = DataElement.create('資源', '', {}, '資源' + this.identifier);
     const hpElement: DataElement = DataElement.create('HP', 200, { 'type': 'numberResource', 'currentValue': '200' }, 'HP_' + this.identifier);
     const mpElement: DataElement = DataElement.create('MP', 100, { 'type': 'numberResource', 'currentValue': '100' }, 'MP_' + this.identifier);
 
-    this.commonDataElement.appendChild(nameElement);
-    this.commonDataElement.appendChild(sizeElement);
-    this.commonDataElement.appendChild(widthElement);
-    this.commonDataElement.appendChild(depthElement);
-    this.commonDataElement.appendChild(heightElement);
-    this.commonDataElement.appendChild(altitudeElement);
+    this.commonDataElement!.appendChild(nameElement);
+    this.commonDataElement!.appendChild(sizeElement);
+    this.commonDataElement!.appendChild(widthElement);
+    this.commonDataElement!.appendChild(depthElement);
+    this.commonDataElement!.appendChild(heightElement);
+    this.commonDataElement!.appendChild(altitudeElement);
 
-    this.detailDataElement.appendChild(resourceElement);
+    this.detailDataElement!.appendChild(resourceElement);
     resourceElement.appendChild(hpElement);
     resourceElement.appendChild(mpElement);
 
     //TEST
     let testElement: DataElement = DataElement.create('資訊', '', {}, '資訊' + this.identifier);
-    this.detailDataElement.appendChild(testElement);
+    this.detailDataElement!.appendChild(testElement);
     testElement.appendChild(DataElement.create('說明', '在此撰寫說明', { 'type': 'note' }, '說明' + this.identifier));
     testElement.appendChild(DataElement.create('備注', '任意文字', { 'type': 'note' }, '備注' + this.identifier));
     testElement.appendChild(DataElement.create('參考URL', 'https://www.example.com', { 'type': 'url' }, '參考URL' + this.identifier));
 
     //TEST
     testElement = DataElement.create('能力', '', {}, '能力' + this.identifier);
-    this.detailDataElement.appendChild(testElement);
+    this.detailDataElement!.appendChild(testElement);
     testElement.appendChild(DataElement.create('靈巧', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '靈巧' + this.identifier));
     testElement.appendChild(DataElement.create('敏捷', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '敏捷' + this.identifier));
     testElement.appendChild(DataElement.create('力量', 24, { 'type': 'abilityScore', 'currentValue': 'div6' }, '力量' + this.identifier));
@@ -170,7 +170,7 @@ export class GameCharacter extends TabletopObject {
 
     //TEST
     testElement = DataElement.create('戰鬥技能', '', {}, '戰鬥技能' + this.identifier);
-    this.detailDataElement.appendChild(testElement);
+    this.detailDataElement!.appendChild(testElement);
     testElement.appendChild(DataElement.create('Lv1', '全力攻擊', {}, 'Lv1' + this.identifier));
     testElement.appendChild(DataElement.create('Lv3', '武器熟練/劍', {}, 'Lv3' + this.identifier));
     testElement.appendChild(DataElement.create('Lv5', '武器熟練/劍Ⅱ', {}, 'Lv5' + this.identifier));
@@ -179,7 +179,7 @@ export class GameCharacter extends TabletopObject {
     testElement.appendChild(DataElement.create('自動', '治療適性', {}, '自動' + this.identifier));
 
     const domParser: DOMParser = new DOMParser();
-    const gameCharacterXMLDocument: Document = domParser.parseFromString(this.rootDataElement.toXml(), 'application/xml');
+    const gameCharacterXMLDocument: Document = domParser.parseFromString(this.rootDataElement!.toXml(), 'application/xml');
 
     const palette: ChatPalette = new ChatPalette('ChatPalette_' + this.identifier);
     palette.setPalette(`聊天面板輸入範例：

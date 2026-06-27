@@ -92,7 +92,7 @@ export class ImageStorage {
     return false;
   }
 
-  get(identifier: string): ImageFile {
+  get(identifier: string): ImageFile | null {
     const image: ImageFile = this.imageHash[identifier];
     if (image) return image;
     return null;

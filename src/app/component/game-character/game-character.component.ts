@@ -94,61 +94,61 @@ import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
     standalone: false
 })
 export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestroy {
-  @Input() gameCharacter: GameCharacter = null;
+  @Input() gameCharacter: GameCharacter | null = null;
   @Input() is3D: boolean = false;
 
-  get name(): string { return this.gameCharacter.name; }
-  get size(): number { return MathUtil.clampMin(this.gameCharacter.size); }
-  get width(): number { return MathUtil.clampMin(this.gameCharacter.width); }
-  get depth(): number { return MathUtil.clampMin(this.gameCharacter.depth); }
-  get altitude(): number { return this.gameCharacter.altitude; }
-  set altitude(altitude: number) { this.gameCharacter.altitude = altitude; }
-  get height(): number { return MathUtil.clampMin(this.gameCharacter.height); }
+  get name(): string { return this.gameCharacter?.name ?? ''; }
+  get size(): number { return MathUtil.clampMin(this.gameCharacter?.size ?? 0); }
+  get width(): number { return MathUtil.clampMin(this.gameCharacter?.width ?? 0); }
+  get depth(): number { return MathUtil.clampMin(this.gameCharacter?.depth ?? 0); }
+  get altitude(): number { return this.gameCharacter?.altitude ?? 0; }
+  set altitude(altitude: number) { if (this.gameCharacter) this.gameCharacter.altitude = altitude; }
+  get height(): number { return MathUtil.clampMin(this.gameCharacter?.height ?? 0); }
 
   
-  get imageFile(): ImageFile { return this.gameCharacter.imageFile; }
-  get rotate(): number { return this.gameCharacter.rotate; }
-  set rotate(rotate: number) { this.gameCharacter.rotate = rotate; }
-  get roll(): number { return this.gameCharacter.roll; }
-  set roll(roll: number) { this.gameCharacter.roll = roll; }
-  get isDropShadow(): boolean { return this.gameCharacter.isDropShadow; }
-  set isDropShadow(isDropShadow: boolean) { this.gameCharacter.isDropShadow = isDropShadow; }
-  get isAltitudeIndicate(): boolean { return this.gameCharacter.isAltitudeIndicate; }
-  set isAltitudeIndicate(isAltitudeIndicate: boolean) { this.gameCharacter.isAltitudeIndicate = isAltitudeIndicate; }
-  get isInverse(): boolean { return this.gameCharacter.isInverse; }
-  set isInverse(isInverse: boolean) { this.gameCharacter.isInverse = isInverse; }
-  get isHollow(): boolean { return this.gameCharacter.isHollow; }
-  set isHollow(isHollow: boolean) { this.gameCharacter.isHollow = isHollow; }
-  get isBlackPaint(): boolean { return this.gameCharacter.isBlackPaint; }
-  set isBlackPaint(isBlackPaint: boolean) { this.gameCharacter.isBlackPaint = isBlackPaint; }
-  get aura(): number { return this.gameCharacter.aura; }
-  set aura(aura: number) { this.gameCharacter.aura = aura; }
+  get imageFile(): ImageFile { return this.gameCharacter ? this.gameCharacter.imageFile : null as any; }
+  get rotate(): number { return this.gameCharacter?.rotate ?? 0; }
+  set rotate(rotate: number) { if (this.gameCharacter) this.gameCharacter.rotate = rotate; }
+  get roll(): number { return this.gameCharacter?.roll ?? 0; }
+  set roll(roll: number) { if (this.gameCharacter) this.gameCharacter.roll = roll; }
+  get isDropShadow(): boolean { return this.gameCharacter?.isDropShadow ?? false; }
+  set isDropShadow(isDropShadow: boolean) { if (this.gameCharacter) this.gameCharacter.isDropShadow = isDropShadow; }
+  get isAltitudeIndicate(): boolean { return this.gameCharacter?.isAltitudeIndicate ?? false; }
+  set isAltitudeIndicate(isAltitudeIndicate: boolean) { if (this.gameCharacter) this.gameCharacter.isAltitudeIndicate = isAltitudeIndicate; }
+  get isInverse(): boolean { return this.gameCharacter?.isInverse ?? false; }
+  set isInverse(isInverse: boolean) { if (this.gameCharacter) this.gameCharacter.isInverse = isInverse; }
+  get isHollow(): boolean { return this.gameCharacter?.isHollow ?? false; }
+  set isHollow(isHollow: boolean) { if (this.gameCharacter) this.gameCharacter.isHollow = isHollow; }
+  get isBlackPaint(): boolean { return this.gameCharacter?.isBlackPaint ?? false; }
+  set isBlackPaint(isBlackPaint: boolean) { if (this.gameCharacter) this.gameCharacter.isBlackPaint = isBlackPaint; }
+  get aura(): number { return this.gameCharacter?.aura ?? 0; }
+  set aura(aura: number) { if (this.gameCharacter) this.gameCharacter.aura = aura; }
 
-  get isNotRide(): boolean { return this.gameCharacter.isNotRide; }
-  set isNotRide(isNotRide: boolean) { this.gameCharacter.isNotRide = isNotRide; }
-  get isUseIconToOverviewImage(): boolean { return this.gameCharacter.isUseIconToOverviewImage; }
-  set isUseIconToOverviewImage(isUseIconToOverviewImage: boolean) { this.gameCharacter.isUseIconToOverviewImage = isUseIconToOverviewImage; }
+  get isNotRide(): boolean { return this.gameCharacter?.isNotRide ?? false; }
+  set isNotRide(isNotRide: boolean) { if (this.gameCharacter) this.gameCharacter.isNotRide = isNotRide; }
+  get isUseIconToOverviewImage(): boolean { return this.gameCharacter?.isUseIconToOverviewImage ?? false; }
+  set isUseIconToOverviewImage(isUseIconToOverviewImage: boolean) { if (this.gameCharacter) this.gameCharacter.isUseIconToOverviewImage = isUseIconToOverviewImage; }
 
-  get ownerName(): string { return this.gameCharacter.ownerName; }
-  get ownerColor(): string { return this.gameCharacter.ownerColor; }
-  get isHideIn(): boolean { return !!this.gameCharacter.owner; }
-  get isVisible(): boolean { return this.gameCharacter.isVisible; }
+  get ownerName(): string { return this.gameCharacter?.ownerName ?? ''; }
+  get ownerColor(): string { return this.gameCharacter?.ownerColor ?? '#000000'; }
+  get isHideIn(): boolean { return !!this.gameCharacter?.owner; }
+  get isVisible(): boolean { return this.gameCharacter?.isVisible ?? true; }
   get isGMMode(): boolean{ return PeerCursor.myCursor ? PeerCursor.myCursor.isGMMode : false; }
 
-  get faceIcon(): ImageFile { return this.gameCharacter.faceIcon; }
-  
-  get dialogFaceIcon(): ImageFile {
+  get faceIcon(): ImageFile { return this.gameCharacter ? this.gameCharacter.faceIcon : null as any; }
+
+  get dialogFaceIcon(): ImageFile | null {
     if (!this.dialog || !this.dialog.faceIconIdentifier) return null;
     return ImageStorage.instance.get(<string>this.dialog.faceIconIdentifier);
   }
 
-  get shadowImageFile(): ImageFile { return this.gameCharacter.shadowImageFile; }
+  get shadowImageFile(): ImageFile { return this.gameCharacter ? this.gameCharacter.shadowImageFile : null as any; }
 
   get elevation(): number {
-    return +((this.gameCharacter.posZ + (this.altitude * this.gridSize)) / this.gridSize).toFixed(1);
+    return +((this.gameCharacter!.posZ + (this.altitude * this.gridSize)) / this.gridSize).toFixed(1);
   }
 
-  get selectionState(): SelectionState { return this.selectionService.state(this.gameCharacter); }
+  get selectionState(): SelectionState { return this.selectionService.state(this.gameCharacter!); }
   get isSelected(): boolean { return this.selectionState !== SelectionState.NONE; }
   get isMagnetic(): boolean { return this.selectionState === SelectionState.MAGNETIC; }
 
@@ -159,13 +159,14 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   viewRotateZ = 10;
   heightWidthRatio = 1.5;
 
-  set dialog(dialog) {
-    if (!this.gameCharacter || this.gameCharacter.isHideIn) return;
-    clearTimeout(this.dialogTimeOutId);
-    clearInterval(this.chatIntervalId);
-    let text = StringUtil.cr(dialog.text);
+  set dialog(dialog: {text?: string, dialogTest?: boolean, secret?: boolean, faceIconIdentifier?: string, color?: string} | null) {
+    if (!this.gameCharacter || this.gameCharacter?.isHideIn) return;
+    clearTimeout(this.dialogTimeOutId ?? undefined);
+    clearInterval(this.chatIntervalId ?? undefined);
+    if (!dialog) return;
+    let text = StringUtil.cr(dialog.text ?? '');
     const isEmote = StringUtil.isEmote(text);
-    const rubys = [];
+    const rubys: {base: string, ruby: string, start: number, end: number}[] = [];
     const re = /[\|｜]([^\|｜\s]+?)《(.+?)》/g;
     let ary;
     let count = 0;
@@ -184,14 +185,14 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
     let speechDelay = 1000 / Array.from(text).length > 36 ? 1000 / Array.from(text).length : 36;
     if (speechDelay > 200) speechDelay = 200;
     this.dialogTimeOutId = setTimeout(() => {
-      this.gameCharacter.dialog = null;
-      this.gameCharacter.text = '';
-      this.gameCharacter.isEmote = false; 
+      this.gameCharacter!.dialog = null;
+      this.gameCharacter!.text = '';
+      this.gameCharacter!.isEmote = false;
       this.changeDetector.markForCheck();
     }, Array.from(text).length * speechDelay + 6000);
 
-    this.gameCharacter.dialog = dialog;
-    this.gameCharacter.isEmote = isEmote;
+    this.gameCharacter!.dialog = dialog;
+    this.gameCharacter!.isEmote = isEmote;
     count = 0;
     let countLength = 0;
     let rubyCount = 0;
@@ -200,7 +201,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
     let rubyText = '';
     let isOpenRuby = false;
     if (isEmote) {
-      this.gameCharacter.text = text;
+      this.gameCharacter!.text = text;
       this.changeDetector.markForCheck();
     }  else {
       const charAry = Array.from(text.replace(/[\|｜]([^\|｜\s]+?)《.+?》/g, '$1'));
@@ -216,34 +217,34 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
             tmpText += StringUtil.escapeHtml(c);
             if (isOpenRuby) {
                 rubyCount += 1;
-                const rt = carrentRuby.ruby;
-                rubyText = '<rt>' + StringUtil.escapeHtml(Array.from(rt).slice(0, Math.ceil(Array.from(rt).length * (rubyCount / Array.from(carrentRuby.base).length))).join('')) + '</rt>'
+                const rt = carrentRuby!.ruby;
+                rubyText = '<rt>' + StringUtil.escapeHtml(Array.from(rt).slice(0, Math.ceil(Array.from(rt).length * (rubyCount / Array.from(carrentRuby!.base).length))).join('')) + '</rt>'
             }
             if (isOpenRuby && carrentRuby && countLength >= carrentRuby.end - (isMulti ? 1 : 0)) {
                 tmpText += (rubyText + '</ruby>');
                 isOpenRuby = false;
-                carrentRuby = rubys.shift(); 
+                carrentRuby = rubys.shift();
             }
             countLength += c.length;
         }
         count += 1;
-        this.gameCharacter.text = tmpText + (isOpenRuby ? (rubyText + '</ruby>') : '');
+        this.gameCharacter!.text = tmpText + (isOpenRuby ? (rubyText + '</ruby>') : '');
         this.changeDetector.markForCheck();
         if (count >= charAry.length) {
-          clearInterval(this.chatIntervalId);
+          clearInterval(this.chatIntervalId ?? undefined);
         }
       }, speechDelay);
     }
   }
 
   get dialogText(): string {
-    if (!this.gameCharacter || !this.gameCharacter.text) return '';
-    const ary = this.gameCharacter.text.replace(/。/g, "。\n\n").split(/[\r\n]{2,}/g).filter(str => str.trim());
+    if (!this.gameCharacter || !this.gameCharacter?.text) return '';
+    const ary = this.gameCharacter!.text.replace(/。/g, "。\n\n").split(/[\r\n]{2,}/g).filter(str => str.trim());
     return ary.length > 0 ? ary.reverse()[0].trim() : '';
   }
-  
+
   get isRubied(): boolean {
-    if (!this.gameCharacter || !this.gameCharacter.text) return false;
+    if (!this.gameCharacter || !this.gameCharacter?.text) return false;
     return -1 < this.dialogText.indexOf('<ruby>');
   }
 
@@ -254,13 +255,13 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
     return max < dynamic ? max : dynamic; 
   }
 
-  get dialog() {
-    return this.gameCharacter.dialog;
+  get dialog(): {text?: string, dialogTest?: boolean, secret?: boolean, faceIconIdentifier?: string, color?: string} | null {
+    return this.gameCharacter?.dialog as any ?? null;
   }
 
   selected = false;
-  private dialogTimeOutId = null;
-  private chatIntervalId = null;
+  private dialogTimeOutId: NodeJS.Timeout | null = null;
+  private chatIntervalId: NodeJS.Timeout | null = null;
 
   get chatBubbleXDeg(): number {
     //console.log(this.viewRotateX)
@@ -342,7 +343,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
     const altitude1 = (this.characterImageHeight + (this.name != '' ? 24 : 0)) * cos + 4;
     const altitude2 = (this.characterImageWidth / 2) * sin + 4 + this.characterImageWidth / 2;
     const ret = altitude1 > altitude2 ? altitude1 : altitude2;
-    this.gameCharacter.chatBubbleAltitude = ret;
+    if (this.gameCharacter) this.gameCharacter.chatBubbleAltitude = ret;
     return ret;
   }
 
@@ -372,19 +373,19 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   get isListen(): boolean {
-    return (this.dialog && this.dialog.text && !this.dialog.dialogTest && this.dialog.text.trim().length > 0);
+    return !!(this.dialog && this.dialog.text && !this.dialog.dialogTest && this.dialog.text.trim().length > 0);
   }
 
   get isWhisper(): boolean {
-    return this.dialog && this.dialog.secret;
+    return !!(this.dialog && this.dialog.secret);
   }
 
   get isEmote(): boolean {
-    return this.gameCharacter.isEmote;
+    return this.gameCharacter?.isEmote ?? false;
     //return this.dialog && StringUtil.isEmote(this.dialog.text);
   }
 
-  get isUseFaceIcon(): ImageFile {
+  get isUseFaceIcon(): string | undefined | null {
     return this.dialog && this.dialog.faceIconIdentifier;
   }
 
@@ -427,16 +428,16 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   ngOnChanges(): void {
     EventSystem.unregister(this);
     EventSystem.register(this)
-      .on(`UPDATE_GAME_OBJECT/identifier/${this.gameCharacter?.identifier}`, event => {
-        if (this.gameCharacter.imageFiles.length <= 0) {
+      .on(`UPDATE_GAME_OBJECT/identifier/${this.gameCharacter?.identifier ?? ''}`, event => {
+        if ((this.gameCharacter?.imageFiles?.length ?? 0) <= 0) {
           this.naturalImageHeight = 0;
           this.naturalImageWidth = 0;
           this.naturaHeightWidthRatio = 1;
         }
         this.changeDetector.markForCheck();
       })
-      .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.gameCharacter?.identifier}`, event => {
-        if (this.gameCharacter.imageFiles.length <= 0) {
+      .on(`UPDATE_OBJECT_CHILDREN/identifier/${this.gameCharacter?.identifier ?? ''}`, event => {
+        if ((this.gameCharacter?.imageFiles?.length ?? 0) <= 0) {
           this.naturalImageHeight = 0;
           this.naturalImageWidth = 0;
           this.naturaHeightWidthRatio = 1;
@@ -459,7 +460,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
       .on<object>('SELECT_TABLETOP_OBJECT', -1000, event => {
         // とりあえず
         this.ngZone.run(() => {
-          if (event.data['highlighting'] && event.data['identifier'] === this.gameCharacter.identifier) {
+          if (event.data['highlighting'] && event.data['identifier'] === this.gameCharacter?.identifier) {
             this.selected = true;
           } else {
             this.selected = false;
@@ -471,7 +472,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
         this.changeDetector.markForCheck();
       })
       .on('POPUP_CHAT_BALLOON', -1000, event => {
-        if (this.gameCharacter && this.gameCharacter.identifier == event.data.characterIdentifier) {
+        if (this.gameCharacter && this.gameCharacter?.identifier == event.data.characterIdentifier) {
           this.ngZone.run(() => {
             this.dialog = event.data;
             this.changeDetector.markForCheck();
@@ -479,22 +480,22 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
         }
       })
       .on('FAREWELL_CHAT_BALLOON', -1000, event => {
-        if (this.gameCharacter && this.gameCharacter.identifier == event.data.characterIdentifier) {
+        if (this.gameCharacter && this.gameCharacter?.identifier == event.data.characterIdentifier) {
           this.ngZone.run(() => {
-            this.gameCharacter.dialog = null;
-            this.gameCharacter.text = '';
-            this.gameCharacter.isEmote = false;
+            this.gameCharacter!.dialog = null;
+            this.gameCharacter!.text = '';
+            this.gameCharacter!.isEmote = false;
             this.changeDetector.markForCheck();
           });
-          clearTimeout(this.dialogTimeOutId);
-          clearInterval(this.chatIntervalId);
+          clearTimeout(this.dialogTimeOutId ?? undefined);
+          clearInterval(this.chatIntervalId ?? undefined);
         }
       })
-      .on(`UPDATE_SELECTION/identifier/${this.gameCharacter?.identifier}`, event => {
+      .on(`UPDATE_SELECTION/identifier/${this.gameCharacter?.identifier ?? ''}`, event => {
         this.changeDetector.markForCheck();
       });
     this.movableOption = {
-      tabletopObject: this.gameCharacter,
+      tabletopObject: this.gameCharacter!,
       transformCssOffset: 'translateZ(1.0px)',
       colideLayers: ['terrain', 'text-note', 'character']
     };
@@ -514,8 +515,8 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   ngOnDestroy() {
-    clearTimeout(this.dialogTimeOutId);
-    clearInterval(this.chatIntervalId);
+    clearTimeout(this.dialogTimeOutId ?? undefined);
+    clearInterval(this.chatIntervalId ?? undefined);
     if (this.gameCharacter) {
       this.gameCharacter.text = '';
       this.gameCharacter.isEmote = false;
@@ -551,8 +552,8 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
 
   onMoved() {
     // とりあえず移動したら💭消す
-    if (this.gameCharacter && this.gameCharacter.text) {
-      EventSystem.call('FAREWELL_CHAT_BALLOON', { characterIdentifier: this.gameCharacter.identifier });
+    if (this.gameCharacter && this.gameCharacter?.text) {
+      EventSystem.call('FAREWELL_CHAT_BALLOON', { characterIdentifier: this.gameCharacter!.identifier });
     }
     if (!this.isHideIn) SoundEffect.play(PresetSound.piecePut);
     this.selected = false;
@@ -571,17 +572,17 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
     const actions: ContextMenuAction[] = [];
 
     const objectPosition = {
-      x: this.gameCharacter.location.x + (this.gameCharacter.width * this.gridSize) / 2,
-      y: this.gameCharacter.location.y + (this.gameCharacter.depth * this.gridSize) / 2,
-      z: this.gameCharacter.posZ
+      x: this.gameCharacter!.location.x + (this.gameCharacter!.width * this.gridSize) / 2,
+      y: this.gameCharacter!.location.y + (this.gameCharacter!.depth * this.gridSize) / 2,
+      z: this.gameCharacter!.posZ
     };
     actions.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
 
     if (this.isSelected) {
-      const selectedCharacter = () => this.selectionService.objects.filter(object => object.aliasName === this.gameCharacter.aliasName) as GameCharacter[];
+      const selectedCharacter = () => this.selectionService.objects.filter(object => object.aliasName === this.gameCharacter?.aliasName) as GameCharacter[];
       actions.push(
         {
-          name: '選取的角色', action: null, subActions: [
+          name: '選取的角色', action: undefined, subActions: [
             {
               name: '全部移動到共用物品欄', action: () => {
                 selectedCharacter().forEach(gameCharacter => {
@@ -618,45 +619,45 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   private makeContextMenu(): ContextMenuAction[] {
-    const actions: ContextMenuAction[] = [
+    const actions: (ContextMenuAction | null)[] = [
       { 
         name: this.isHideIn ? '公開位置' : '只有自己看見位置（隱身）',
         action: () => {
           if (this.isHideIn) {
-            this.gameCharacter.owner = '';
+            this.gameCharacter!.owner = '';
             SoundEffect.play(PresetSound.piecePut);
           } else {
-            if (!GameCharacter.isStealthMode && !PeerCursor.myCursor.isGMMode) {
+            if (!GameCharacter.isStealthMode && !PeerCursor.myCursor?.isGMMode) {
               this.modalService.open(ConfirmationComponent, {
-                title: '隱身模式', 
+                title: '隱身模式',
                 text: '將進入隱身模式。',
                 help: '當桌面上有一個以上只有自己看見位置的角色時，你的游標位置不會傳遞給其他參加者。',
                 type: ConfirmationType.OK,
                 materialIcon: 'disabled_visible'
               });
             }
-            this.gameCharacter.owner = Network.peer.userId;
+            this.gameCharacter!.owner = Network.peer.userId;
             SoundEffect.play(PresetSound.sweep);
-            EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
+            EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter!.identifier });
           }
           EventSystem.call('UPDATE_INVENTORY', true);
         },
       },
       ContextMenuSeparator,
-      (this.gameCharacter.imageFiles.length <= 1 ? null : {
+      ((this.gameCharacter?.imageFiles?.length ?? 0) <= 1 ? null : {
         name: '画像切換',
-        action: null,
-        subActions: this.gameCharacter.imageFiles.map((image, i) => {
-          return { 
-            name: `${this.gameCharacter.currntImageIndex == i ? '◉' : '○'}`, 
-            action: () => { this.changeImage(i); }, 
-            default: this.gameCharacter.currntImageIndex == i,
+        action: undefined,
+        subActions: (this.gameCharacter?.imageFiles ?? []).map((image, i) => {
+          return {
+            name: `${this.gameCharacter!.currntImageIndex == i ? '◉' : '○'}`,
+            action: () => { this.changeImage(i); },
+            default: this.gameCharacter!.currntImageIndex == i,
             icon: image,
             checkBox: 'radio'
           };
         })
       }),
-      (this.gameCharacter.imageFiles.length <= 1 ? null : ContextMenuSeparator),
+      (((this.gameCharacter?.imageFiles?.length ?? 0) <= 1) ? null : ContextMenuSeparator),
       (this.isUseIconToOverviewImage
         ? {
           name: '☑ 在概覽中使用大頭照 icon', action: () => {
@@ -671,10 +672,10 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           },
           checkBox: 'check'
         }),
-      (this.gameCharacter.isShowChatBubble
+      (this.gameCharacter?.isShowChatBubble
         ? {
           name: '☑ 顯示💭', action: () => {
-            this.gameCharacter.isShowChatBubble = false;
+            this.gameCharacter!.isShowChatBubble = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
           },
           checkBox: 'check'
@@ -699,7 +700,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
           },
           checkBox: 'check'
         }),
-      { name: '圖片效果', action: null, subActions: [
+      { name: '圖片效果', action: undefined, subActions:[
         (this.isInverse
           ? {
             name: '☑ 反転', action: () => {
@@ -742,7 +743,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
             },
             checkBox: 'check'
           }),
-          { name: '光環', action: null, subActions: [{ name: `${this.aura == -1 ? '◉' : '○'} 無`, action: () => { this.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['黑', '藍', '綠', '青', '紅', '紫', '黃', '白'].map((color, i) => {  
+          { name: '光環', action: undefined, subActions:[{ name: `${this.aura == -1 ? '◉' : '○'} 無`, action: () => { this.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['黑', '藍', '綠', '青', '紅', '紫', '黃', '白'].map((color, i) => {  
             return { name: `${this.aura == i ? '◉' : '○'} ${color}`, colorSample: true, action: () => { this.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' };
           })) },
           ContextMenuSeparator,
@@ -797,27 +798,27 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
         altitudeHande: this.gameCharacter
       },
       ContextMenuSeparator,
-      { name: '顯示詳細...', action: () => { this.showDetail(this.gameCharacter); } },
-      (this.gameCharacter.isAllowsChat
+      { name: '顯示詳細...', action: () => { this.showDetail(this.gameCharacter!); } },
+      (this.gameCharacter?.isAllowsChat
         ? {
           name: '☑ 允許聊天', action: () => {
-            this.gameCharacter.isAllowsChat = false;
+            this.gameCharacter!.isAllowsChat = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
           },
           checkBox: 'check'
         } : {
           name: '☐ 允許聊天', action: () => {
-            this.gameCharacter.isAllowsChat = true;
+            this.gameCharacter!.isAllowsChat = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
           },
           checkBox: 'check'
         }),
-      { name: '顯示聊天面板...', action: () => { this.showChatPalette(this.gameCharacter) }, disabled: !this.gameCharacter.isAllowsChat },
-      { name: '立繪設定...', action: () => { this.showStandSetting(this.gameCharacter) }, disabled: !this.gameCharacter.isAllowsChat },
+      { name: '顯示聊天面板...', action: () => { this.showChatPalette(this.gameCharacter!) }, disabled: !this.gameCharacter?.isAllowsChat },
+      { name: '立繪設定...', action: () => { this.showStandSetting(this.gameCharacter!) }, disabled: !this.gameCharacter?.isAllowsChat },
       ContextMenuSeparator,
       {
-        name: '開啟參考URL', action: null,
-        subActions: this.gameCharacter.getUrls().map((urlElement) => {
+        name: '開啟參考URL', action: undefined,
+        subActions: (this.gameCharacter?.getUrls() ?? []).map((urlElement) => {
           const url = urlElement.value.toString();
           return {
             name: urlElement.name ? urlElement.name : url,
@@ -825,53 +826,53 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
               if (StringUtil.sameOrigin(url)) {
                 window.open(url.trim(), '_blank', 'noopener');
               } else {
-                this.modalService.open(OpenUrlComponent, { url: url, title: this.gameCharacter.name, subTitle: urlElement.name });
-              } 
+                this.modalService.open(OpenUrlComponent, { url: url, title: this.gameCharacter!.name, subTitle: urlElement.name });
+              }
             },
             disabled: !StringUtil.validUrl(url),
-            error: !StringUtil.validUrl(url) ? 'URL無效' : null,
+            error: !StringUtil.validUrl(url) ? 'URL無效' : undefined,
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         }),
-        disabled: this.gameCharacter.getUrls().length <= 0
+        disabled: (this.gameCharacter?.getUrls()?.length ?? 0) <= 0
       },
       ContextMenuSeparator,
-      (this.gameCharacter.isInventoryIndicate
+      (this.gameCharacter?.isInventoryIndicate
         ? {
           name: '☑ 顯示在桌面物品欄', action: () => {
-            this.gameCharacter.isInventoryIndicate = false;
+            this.gameCharacter!.isInventoryIndicate = false;
             EventSystem.trigger('UPDATE_INVENTORY', null);
           },
           checkBox: 'check'
         } : {
           name: '☐ 顯示在桌面物品欄', action: () => {
-            this.gameCharacter.isInventoryIndicate = true;
+            this.gameCharacter!.isInventoryIndicate = true;
             EventSystem.trigger('UPDATE_INVENTORY', null);
           },
           checkBox: 'check'
         }),
-      { name: '從桌面移動', action: null, subActions: [
+      { name: '從桌面移動', action: undefined, subActions:[
         {
           name: '共有物品欄', action: () => {
-            EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
-            this.gameCharacter.setLocation('common');
-            this.selectionService.remove(this.gameCharacter);
+            EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter!.identifier });
+            this.gameCharacter!.setLocation('common');
+            this.selectionService.remove(this.gameCharacter!);
             SoundEffect.play(PresetSound.piecePut);
           }
         },
         {
           name: '個人物品欄', action: () => {
-            EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
-            this.gameCharacter.setLocation(Network.peerId);
-            this.selectionService.remove(this.gameCharacter);
+            EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter!.identifier });
+            this.gameCharacter!.setLocation(Network.peerId);
+            this.selectionService.remove(this.gameCharacter!);
             SoundEffect.play(PresetSound.piecePut);
           }
         },
         {
           name: '墓地', action: () => {
-            EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
-            this.gameCharacter.setLocation('graveyard');
-            this.selectionService.remove(this.gameCharacter);
+            EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter!.identifier });
+            this.gameCharacter!.setLocation('graveyard');
+            this.selectionService.remove(this.gameCharacter!);
             SoundEffect.play(PresetSound.sweep);
           }
         },
@@ -879,7 +880,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
       ContextMenuSeparator,
       {
         name: '建立副本', action: () => {
-          const cloneObject = this.gameCharacter.clone();
+          const cloneObject = this.gameCharacter!.clone();
           cloneObject.location.x += this.gridSize;
           cloneObject.location.y += this.gridSize;
           cloneObject.update();
@@ -888,7 +889,7 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
       },
       {
         name: '建立副本（自動採番）', action: () => {
-          const cloneObject = this.gameCharacter.clone();
+          const cloneObject = this.gameCharacter!.clone();
           const tmp = cloneObject.name.split('_');
           let baseName;
           if (tmp.length > 1 && /\d+/.test(tmp[tmp.length - 1])) {
@@ -912,28 +913,28 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
       ContextMenuSeparator,
       {
         name: '刪除（移至墓地）', action: () => {
-          EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
-          this.gameCharacter.setLocation('graveyard');
-          this.selectionService.remove(this.gameCharacter);
+          EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter!.identifier });
+          this.gameCharacter!.setLocation('graveyard');
+          this.selectionService.remove(this.gameCharacter!);
           SoundEffect.play(PresetSound.sweep);
         }
       }
     ];
 
-    return actions;
+    return actions.filter((a): a is ContextMenuAction => a !== null);
   }
 
   private showDetail(gameObject: GameCharacter) {
     const coordinate = this.pointerDeviceService.pointers[0];
     let title = '角色卡';
-    if (gameObject.name.length) title += ' - ' + gameObject.name;
+    if (gameObject?.name?.length) title += ' - ' + gameObject.name;
     const option: PanelOption = { title: title, left: coordinate.x - 400, top: coordinate.y - 300, width: 800, height: 600 };
     const component = this.panelService.open<GameCharacterSheetComponent>(GameCharacterSheetComponent, option);
     component.tabletopObject = gameObject;
   }
 
   private showChatPalette(gameObject: GameCharacter) {
-    if (!gameObject || !gameObject.isAllowsChat) return;
+    if (!gameObject || !gameObject?.isAllowsChat) return;
     const coordinate = this.pointerDeviceService.pointers[0];
     const option: PanelOption = { left: coordinate.x - 250, top: coordinate.y - 175, width: 620, height: 350 };
     const component = this.panelService.open<ChatPaletteComponent>(ChatPaletteComponent, option);
@@ -948,20 +949,20 @@ export class GameCharacterComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   changeImage(index: number) {
-    if (this.gameCharacter.currntImageIndex != index) {
-      this.gameCharacter.currntImageIndex = index;
-      if (!this.isHideIn && this.gameCharacter.location.name === 'table') SoundEffect.play(PresetSound.surprise);
-      EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter.identifier });
+    if (this.gameCharacter!.currntImageIndex != index) {
+      this.gameCharacter!.currntImageIndex = index;
+      if (!this.isHideIn && this.gameCharacter!.location.name === 'table') SoundEffect.play(PresetSound.surprise);
+      EventSystem.call('FAREWELL_STAND_IMAGE', { characterIdentifier: this.gameCharacter!.identifier });
       EventSystem.trigger('UPDATE_INVENTORY', null);
     }
   }
 
   nextImage() {
-    if (this.gameCharacter.imageFiles.length <= 1) return;
-    if (this.gameCharacter.currntImageIndex + 1 >= this.gameCharacter.imageFiles.length) {
+    if ((this.gameCharacter?.imageFiles?.length ?? 0) <= 1) return;
+    if (this.gameCharacter!.currntImageIndex + 1 >= this.gameCharacter!.imageFiles.length) {
       this.changeImage(0);
     } else {
-      this.changeImage(this.gameCharacter.currntImageIndex + 1);
+      this.changeImage(this.gameCharacter!.currntImageIndex + 1);
     }
   }
 }

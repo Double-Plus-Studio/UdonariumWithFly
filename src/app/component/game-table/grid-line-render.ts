@@ -24,9 +24,10 @@ export class GridLineRender {
   render(width: number, height: number, gridSize: number = 50, gridType: GridType = GridType.SQUARE, gridColor: string = '#000000e6', isShowNumber = true) {
     this.canvasElement.width = width * gridSize;
     this.canvasElement.height = height * gridSize;
-    const context: CanvasRenderingContext2D = this.canvasElement.getContext('2d');
+    const context = this.canvasElement.getContext('2d');
 
     if (gridType < 0) return;
+    if (!context) return;
 
     const calcGridPosition: StrokeGridFunc = this.generateCalcGridPositionFunc(gridType);
     this.makeBrush(context, gridSize, gridColor);

@@ -100,7 +100,7 @@ export class SaveDataService {
       const percent = meta.percent | 0;
       if (percent <= progresPercent) return;
       progresPercent = percent;
-      this.ngZone.run(() => updateCallback(progresPercent));
+      this.ngZone.run(() => updateCallback?.(progresPercent));
     });
   }
 
@@ -132,7 +132,7 @@ export class SaveDataService {
       if (identifier) images[identifier] = ImageStorage.instance.get(identifier);
 
       const toIdentifier = imageElements[i].getAttribute('toImageIdentifier');
-      if (toIdentifier) images[identifier] = ImageStorage.instance.get(toIdentifier);
+      if (toIdentifier) images[toIdentifier] = ImageStorage.instance.get(toIdentifier);
 
       const backgroundImageIdentifier = imageElements[i].getAttribute('backgroundImageIdentifier');
       if (backgroundImageIdentifier) images[backgroundImageIdentifier] = ImageStorage.instance.get(backgroundImageIdentifier);
@@ -163,7 +163,7 @@ export class SaveDataService {
     return fileName + `_${year}-${month}-${day}_${hours}${minutes}`;
   }
 
-  saveChatLog(logFormat: number, fileName: string, chatTabs: ChatTab[]=null, dateFormat='HH:mm', isWriteOerationLog=true) {
+  saveChatLog(logFormat: number, fileName: string, chatTabs: ChatTab[] | null = null, dateFormat='HH:mm', isWriteOerationLog=true) {
     const mimeType = (logFormat == 0 ? 'text/plain' : 'text/html');
     const ext = (logFormat == 0 ? '.txt' : '.html');
     const trueFileName = 'fly_' + this.appendTimestamp(fileName) + ext;
@@ -173,10 +173,10 @@ export class SaveDataService {
     //const files: File[] = [];
     //files.push(new File([xml], trueFileName, {type: `${mimeType};charset=utf-8`}));
 
-    saveAs(new Blob([ChatTabList.instance.log(logFormat, dateFormat, isWriteOerationLog, null, chatTabs)], {type: `${mimeType};charset=utf-8`}), trueFileName);
+    saveAs(new Blob([ChatTabList.instance.log(logFormat, dateFormat, isWriteOerationLog, undefined, chatTabs ?? undefined)], {type: `${mimeType};charset=utf-8`}), trueFileName);
   }
 
-  async saveChatLogAsync(logFormat: number, fileName: string, chatTabs: ChatTab[]=null, dateFormat='HH:mm', isWriteOerationLog=true, updateCallback?: UpdateCallback): Promise<void> {
+  async saveChatLogAsync(logFormat: number, fileName: string, chatTabs: ChatTab[] | null = null, dateFormat='HH:mm', isWriteOerationLog=true, updateCallback?: UpdateCallback): Promise<void> {
     const trueFileName = 'fly_' + this.appendTimestamp(fileName);
     this.chatMessageService.sendOperationLog(`聊天記錄 ${trueFileName}.zip 已儲存`);
     const files: File[] = [];

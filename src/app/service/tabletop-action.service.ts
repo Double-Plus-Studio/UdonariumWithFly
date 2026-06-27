@@ -9,7 +9,7 @@ import { GameCharacter } from '@udonarium/game-character';
 import { GameTable } from '@udonarium/game-table';
 import { GameTableMask } from '@udonarium/game-table-mask';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
-import { TableSelecter } from '@udonarium/table-selecter';
+import { TableSelector } from '@udonarium/table-selector';
 import { Terrain } from '@udonarium/terrain';
 import { TextNote } from '@udonarium/text-note';
 
@@ -34,7 +34,7 @@ export class TabletopActionService {
     return character;
   }
 
-  createGameTableMask(position: PointerCoordinate): GameTableMask {
+  createGameTableMask(position: PointerCoordinate): GameTableMask | undefined {
     const viewTable = this.getViewTable();
     if (!viewTable) return;
 
@@ -47,7 +47,7 @@ export class TabletopActionService {
     return tableMask;
   }
 
-  createTerrain(position: PointerCoordinate): Terrain {
+  createTerrain(position: PointerCoordinate): Terrain | undefined {
     const url: string = './assets/images/tex.jpg';
     let image: ImageFile = ImageStorage.instance.get(url);
     //if (!image) image = ImageStorage.instance.add(url);
@@ -78,7 +78,7 @@ export class TabletopActionService {
 
   createDiceSymbol(position: PointerCoordinate, name: string, diceType: DiceType, imagePathPrefix: string): DiceSymbol {
     const diceSymbol = DiceSymbol.create(name, diceType, 1);
-    let image: ImageFile = null;
+    let image: ImageFile | null = null;
 
     diceSymbol.nothingFaces.forEach(face => {
       const url: string = `./assets/images/dice/${imagePathPrefix}/${imagePathPrefix}[0].png`;
@@ -233,7 +233,7 @@ export class TabletopActionService {
 
   makeDefaultTable() {
     const gameTable = new GameTable('gameTable');
-    let testBgFile: ImageFile = null;
+    let testBgFile: ImageFile | null = null;
     const bgFileContext = ImageFile.createEmpty('testTableBackgroundImage_image').toContext();
     bgFileContext.url = './assets/images/BG10a_80.jpg';
     testBgFile = ImageStorage.instance.add(bgFileContext);
@@ -244,13 +244,13 @@ export class TabletopActionService {
     gameTable.height = 15;
     gameTable.initialize();
 
-    TableSelecter.instance.viewTableIdentifier = gameTable.identifier;
+    TableSelector.instance.viewTableIdentifier = gameTable.identifier;
   }
 
   makeDefaultTabletopObjects() {
-    let testCharacter: GameCharacter = null;
-    let testFile: ImageFile = null;
-    let fileContext: ImageContext = null;
+    let testCharacter: GameCharacter | null = null;
+    let testFile: ImageFile | null = null;
+    let fileContext: ImageContext | null = null;
 
     testCharacter = new GameCharacter('testCharacter_1');
     fileContext = ImageFile.createEmpty('testCharacter_1_image').toContext();
@@ -401,7 +401,7 @@ export class TabletopActionService {
         }
       });
     });
-    return { name: '建立硬幣/骰子', action: null, subActions: subMenus };
+    return { name: '建立硬幣/骰子', subActions: subMenus };
   }
 
   private getCreateRangeMenu(position: PointerCoordinate): ContextMenuAction {
@@ -422,10 +422,10 @@ export class TabletopActionService {
         }
       });
     });
-    return { name: '建立射程・範圍', action: null, subActions: subMenus };
+    return { name: '建立射程・範圍', subActions: subMenus };
   }
 
   private getViewTable(): GameTable {
-    return TableSelecter.instance.viewTable;
+    return TableSelector.instance.viewTable;
   }
 }

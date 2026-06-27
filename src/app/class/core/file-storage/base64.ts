@@ -1,7 +1,7 @@
 export namespace Base64 {
-  export function toBlob(base64: string): Blob {
+  export function toBlob(base64: string): Blob | null {
     const tmp = base64.split(',');
-    let data = null;
+    let data: string | null = null;
     try {
       data = atob(tmp[1]);
     } catch (error) {
@@ -10,8 +10,8 @@ export namespace Base64 {
     }
     const mime = tmp[0].split(':')[1].split(';')[0];
     if (mime.length < 1) return null;
-    const arr = new Uint8Array(data.length);
-    for (let i = 0; i < data.length; i++) { arr[i] = data.charCodeAt(i); }
+    const arr = new Uint8Array(data!.length);
+    for (let i = 0; i < data!.length; i++) { arr[i] = data!.charCodeAt(i); }
     const blob = new Blob([arr], { type: mime });
     return blob;
   }

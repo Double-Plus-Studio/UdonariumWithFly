@@ -68,7 +68,7 @@ export class GameObjectInventoryService {
         } else if (object instanceof DataElement) {
           if (!this.containsInGameCharacter(object)) return;
 
-          const prevName = this.tagNameMap.get(object.identifier);
+          const prevName = this.tagNameMap.get(object.identifier) ?? '';
           if ((this.dataTags.includes(prevName) || this.dataTags.includes(object.name)) && object.name !== prevName) {
             this.tagNameMap.set(object.identifier, object.name);
             this.refreshDataElements();
@@ -283,7 +283,7 @@ class ObjectInventory {
     return objects;
   }
 
-  private convertToSortableValue(dataElement: DataElement, tabletopObject: TabletopObject=null): number | string {
+  private convertToSortableValue(dataElement: DataElement, tabletopObject: TabletopObject | null = null): number | string {
     //let value = dataElement.isNumberResource ? dataElement.currentValue : dataElement.value;
     //let resultStr = StringUtil.toHalfWidth((value + '').trim());
     const value = this.evaluate(dataElement, tabletopObject);
@@ -292,7 +292,7 @@ class ObjectInventory {
     return Number.isNaN(resultNum) ? resultStr : resultNum;
   }
 
-  private evaluate(dataElement, tabletopObject: TabletopObject=null): string {
+  private evaluate(dataElement, tabletopObject: TabletopObject | null = null): string {
     let value;
     if (dataElement.isCheckProperty) {
       const ary = dataElement.currentValue.toString().split(/[|｜]/, 2);

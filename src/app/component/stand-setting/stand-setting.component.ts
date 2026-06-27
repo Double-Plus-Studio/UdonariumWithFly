@@ -20,7 +20,7 @@ import { ModalService } from 'service/modal.service';
     standalone: false
 })
 export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() character: GameCharacter = null;
+  @Input() character: GameCharacter | null = null;
   @ViewChildren(StandElementComponent) standElementComponents: QueryList<StandElementComponent>;
 
   panelId: string;
@@ -41,8 +41,8 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   get imageList(): ImageFile[] {
     if (!this.character) return [];
-    const ret = [];
-    const dupe = {};
+    const ret: ImageFile[] = [];
+    const dupe: {[key: string]: boolean} = {};
     const tmp = this.character.imageDataElement.getElementsByName('imageIdentifier');
     const elements = tmp.concat(this.character.imageDataElement.getElementsByName('faceIcon'));
     for (const elm of elements) {
@@ -221,7 +221,7 @@ export class StandSettingComponent implements OnInit, OnDestroy, AfterViewInit {
 　另外，以「@退去」、「@farewell」退場時，或設定了以「@」開頭條件（如「@笑い」）時，不論立繪是否有效或條件是否滿足，該角色送出時，符合條件的聊天文字末尾「@」之後的部分會被截斷。`;
   }
 
-  private imageElementToFile(dataElm: DataElement): ImageFile {
+  private imageElementToFile(dataElm: DataElement): ImageFile | null {
     if (!dataElm) return null;
     return ImageStorage.instance.get(<string>dataElm.value);
   }

@@ -58,18 +58,18 @@ export class CutIn extends ObjectNode {
     return ret.replace(/[\<\>\/\:\s\r\n]/g, '');
   }
 
-  get videoStart(): string {
+  get videoStart(): string | null {
     if (!this.isVideoCutIn || !this.videoUrl || !this.videoId) return null;
     const result = /[\&\?](?:start|t)\=([\dhms]+)/i.exec(this.videoUrl);
     if (result && result[1]) {
       return this._sec(result[1]);
     }
-    return null; 
+    return null;
   }
 
-  private _sec(str: string): string {
+  private _sec(str: string): string | null {
     if (!str) return null;
-    let tmp = null;
+    let tmp: RegExpExecArray | null = null;
     tmp = /^(\d+)$/.exec(str);
     if (tmp) {
       return tmp[1];

@@ -26,7 +26,7 @@ export class CutInList extends ObjectNode implements InnerXml {
   addCutIn(cutIn: CutIn)
   addCutIn(name: string, identifier?: string)
   addCutIn(...args: any[]) {
-    let cutIn: CutIn = null;
+    let cutIn: CutIn | null = null;
     if (args[0] instanceof CutIn) {
       cutIn = args[0];
     } else {

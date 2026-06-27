@@ -4,15 +4,15 @@ import { ObjectStore } from './core/synchronize-object/object-store';
 import { EventSystem } from './core/system';
 import { GameTable } from './game-table';
 
-@SyncObject('TableSelecter')
-export class TableSelecter extends GameObject {
-  private static _instance: TableSelecter;
-  static get instance(): TableSelecter {
-    if (!TableSelecter._instance) {
-      TableSelecter._instance = new TableSelecter('TableSelecter');
-      TableSelecter._instance.initialize();
+@SyncObject('TableSelector')
+export class TableSelector extends GameObject {
+  private static _instance: TableSelector;
+  static get instance(): TableSelector {
+    if (!TableSelector._instance) {
+      TableSelector._instance = new TableSelector('TableSelector');
+      TableSelector._instance.initialize();
     }
-    return TableSelecter._instance;
+    return TableSelector._instance;
   }
 
   @SyncVar() viewTableIdentifier: string = '';

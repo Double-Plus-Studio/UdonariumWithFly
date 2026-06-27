@@ -9,7 +9,7 @@ import { EventSystem, Network } from '@udonarium/core/system';
     standalone: false
 })
 export class NetworkIndicatorComponent implements AfterViewInit, OnDestroy {
-  private timer: NodeJS.Timeout = null;
+  private timer: NodeJS.Timeout | null = null;
   private needRepeat = false;
 
   constructor(private elementRef: ElementRef) { }

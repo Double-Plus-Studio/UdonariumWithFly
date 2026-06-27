@@ -30,7 +30,7 @@ export class PeerCursor extends GameObject {
   static readonly CHAT_DEFAULT_NAME = '玩家';
   static readonly CHAT_TRANSPARENT_COLOR = '#ffffff';
 
-  static myCursor: PeerCursor = null;
+  static myCursor: PeerCursor | null = null;
   private static userIdMap: Map<UserId, ObjectIdentifier> = new Map();
   private static peerIdMap: Map<PeerId, ObjectIdentifier> = new Map();
 
@@ -70,7 +70,7 @@ export class PeerCursor extends GameObject {
     return this.find(PeerCursor.peerIdMap, peerId, false);
   }
 
-  private static find(map: Map<string, string>, key: string, isUserId: boolean): PeerCursor {
+  private static find(map: Map<string, string>, key: string, isUserId: boolean): PeerCursor | null {
     const identifier = map.get(key);
     if (identifier != null && ObjectStore.instance.get(identifier)) return ObjectStore.instance.get<PeerCursor>(identifier);
     const cursors = ObjectStore.instance.getObjects<PeerCursor>(PeerCursor);
@@ -96,7 +96,7 @@ export class PeerCursor extends GameObject {
       // 互換のためしばらく残す ---
       try {
         if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY)) {
-          PeerCursor.myCursor.name = localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
+          PeerCursor.myCursor!.name = localStorage.getItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY)!;
           await localForage.setItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY, PeerCursor.myCursor.name, () => {
             localStorage.removeItem(PeerCursor.CHAT_MY_NAME_LOCAL_STORAGE_KEY);
           });
@@ -106,7 +106,7 @@ export class PeerCursor extends GameObject {
       }
       try {
         if (window.localStorage && localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY)) {
-          PeerCursor.myCursor.color = localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
+          PeerCursor.myCursor!.color = localStorage.getItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY)!;
           await localForage.setItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY, PeerCursor.myCursor.color, () => {
             localStorage.removeItem(PeerCursor.CHAT_MY_COLOR_LOCAL_STORAGE_KEY);
           });
@@ -132,7 +132,7 @@ export class PeerCursor extends GameObject {
       // アイコン
       try { 
         await localForage.getItem(PeerCursor.CHAT_MY_ICON_LOCAL_STORAGE_KEY).then(identifierOrImageData => {
-          let blob: Blob = null;
+          let blob: Blob | null = null;
           if (typeof identifierOrImageData === 'string') {
             if (identifierOrImageData.startsWith('data:image/')) {
               const type = identifierOrImageData.substring('data:'.length, identifierOrImageData.indexOf(';'));

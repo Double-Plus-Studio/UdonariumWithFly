@@ -13,7 +13,7 @@ export enum TableTouchGestureEvent {
 }
 
 export class TableTouchGesture {
-  private hammer: HammerManager = null;
+  private hammer: HammerManager | null = null;
   private deltaHammerDeltaX: number = 0;
   private deltaHammerDeltaY = 1.0;
   private deltaHammerScale = 1.0;
@@ -24,13 +24,13 @@ export class TableTouchGesture {
   private prevHammerScale: number = 0;
   private prevHammerRotation: number = 0;
 
-  private tappedPanTimer: NodeJS.Timeout = null;
+  private tappedPanTimer: NodeJS.Timeout | null = null;
   private tappedPanCenter: HammerPoint = { x: 0, y: 0 };
 
-  onstart: Callback = null;
-  onend: Callback = null;
-  ongesture: OnGestureCallback = null;
-  ontransform: OnTransformCallback = null;
+  onstart: Callback | null = null;
+  onend: Callback | null = null;
+  ongesture: OnGestureCallback | null = null;
+  ontransform: OnTransformCallback | null = null;
 
   constructor(readonly targetElement: Element, private readonly ngZone: NgZone) {
     this.initializeHammer();
@@ -38,7 +38,7 @@ export class TableTouchGesture {
 
   destroy() {
     this.clearTappedPanTimer();
-    this.hammer.destroy();
+    this.hammer?.destroy();
   }
 
   private initializeHammer() {
@@ -82,7 +82,7 @@ export class TableTouchGesture {
         clientX: ev.center.x,
         clientY: ev.center.y,
       });
-      this.ngZone.run(() => ev.srcEvent.target.dispatchEvent(event));
+      this.ngZone.run(() => (ev.srcEvent.target as HTMLElement)?.dispatchEvent(event));
     });
   }
 
@@ -166,7 +166,7 @@ export class TableTouchGesture {
   }
 
   private clearTappedPanTimer(needsSetNull: boolean = true) {
-    clearTimeout(this.tappedPanTimer);
+    if (this.tappedPanTimer != null) clearTimeout(this.tappedPanTimer);
     if (needsSetNull) this.tappedPanTimer = null;
   }
 }

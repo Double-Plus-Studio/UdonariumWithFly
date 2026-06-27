@@ -23,14 +23,14 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() isSubmenu: boolean = false;
 
   parentMenu: ContextMenuAction;
-  subMenu: ContextMenuAction[];
+  subMenu: ContextMenuAction[] | undefined | null;
 
   showSubMenuTimer: NodeJS.Timeout;
   hideSubMenuTimer: NodeJS.Timeout;
 
   private callbackOnOutsideClick = (e) => this.onOutsideClick(e);
 
-  get altitudeHande(): TabletopObject { 
+  get altitudeHande(): TabletopObject | null {
     for (const action of this.actions) {
       if (action && action.altitudeHande) return action.altitudeHande;
     }
@@ -125,7 +125,7 @@ export class ContextMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private adjustPositionSub() {
-    const parent: HTMLElement = this.elementRef.nativeElement.parentElement;
+    const parent: HTMLElement = this.elementRef.nativeElement.parentElement!;
     const submenu: HTMLElement = this.rootElementRef.nativeElement;
 
     const parentBox = parent.getBoundingClientRect();

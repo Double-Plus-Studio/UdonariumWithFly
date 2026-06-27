@@ -24,7 +24,7 @@ export class ObjectNode extends GameObject implements XmlAttributes, InnerXml {
     if (this.parent) this.parent.needsSort = true;
   }
 
-  get parent(): ObjectNode { return ObjectStore.instance.get<ObjectNode>(this.parentIdentifier); }
+  get parent(): ObjectNode | null { return ObjectStore.instance.get<ObjectNode>(this.parentIdentifier); }
   get parentId(): string { return this.parentIdentifier; }
   get parentIsAssigned(): boolean { return 0 < this.parentIdentifier.length; }
   get parentIsUnknown(): boolean { return this.parentIsAssigned && ObjectStore.instance.get(this.parentIdentifier) == null; }
@@ -137,7 +137,7 @@ export class ObjectNode extends GameObject implements XmlAttributes, InnerXml {
     }
   }
 
-  appendChild<T extends ObjectNode>(child: T): T {
+  appendChild<T extends ObjectNode>(child: T): T | null {
     if (child.contains(this)) return null;
     const isAdded = child.parentIdentifier !== this.identifier;
     if (child.parent && isAdded) child.parent.removeChild(child);
@@ -157,11 +157,11 @@ export class ObjectNode extends GameObject implements XmlAttributes, InnerXml {
     return child;
   }
 
-  prependChild<T extends ObjectNode>(child: T): T {
+  prependChild<T extends ObjectNode>(child: T): T | null {
     return this._children.length < 1 ? this.appendChild(child) : this.insertBefore(child, this.sortChildren()[0]);
   }
 
-  insertBefore<T extends ObjectNode>(child: T, reference: ObjectNode): T {
+  insertBefore<T extends ObjectNode>(child: T, reference: ObjectNode): T | null {
     if (child.contains(this)) return null;
     const isAdded = child.parentIdentifier !== this.identifier;
     if (child === reference && !isAdded) return child;
@@ -193,7 +193,7 @@ export class ObjectNode extends GameObject implements XmlAttributes, InnerXml {
     return child;
   }
 
-  removeChild<T extends ObjectNode>(child: T): T {
+  removeChild<T extends ObjectNode>(child: T): T | null {
     const index: number = this._children.indexOf(child);
     if (index < 0) return null;
 

@@ -1,7 +1,7 @@
 import msgpacklite from 'msgpack-lite';
 
 export namespace MessagePack {
-  export function encode(object: unknown): Uint8Array {
+  export function encode(object: unknown): Uint8Array | null {
     try {
       return msgpacklite.encode(object);
     } catch (error) {

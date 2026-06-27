@@ -6,7 +6,7 @@ import { DataElement } from '@udonarium/data-element';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
 import { TabletopObject } from '@udonarium/tabletop-object';
 
-import { FileSelecterComponent } from 'component/file-selecter/file-selecter.component';
+import { FileSelectorComponent } from 'component/file-selector/file-selector.component';
 import { ModalService } from 'service/modal.service';
 import { PanelOption, PanelService } from 'service/panel.service';
 import { SaveDataService } from 'service/save-data.service';
@@ -81,13 +81,13 @@ import { ChatMessageService } from 'service/chat-message.service';
 export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('mainImage', { static: false }) mainImageElement: ElementRef;
 
-  @Input() tabletopObject: TabletopObject = null;
+  @Input() tabletopObject: TabletopObject | null = null;
   isEdit: boolean = false;
 
   networkService = Network;
   MAX_IMAGE_ICON_COUNT = 8;
 
-  isSaveing: boolean = false;
+  isSaving: boolean = false;
   progresPercent: number = 0;
 
   gridSize = 50;
@@ -262,8 +262,8 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   async saveToXML() {
-    if (!this.tabletopObject || this.isSaveing) return;
-    this.isSaveing = true;
+    if (!this.tabletopObject || this.isSaving) return;
+    this.isSaving = true;
     this.progresPercent = 0;
 
     //let element = this.tabletopObject.commonDataElement.getFirstElementByName('name') || this.tabletopObject.commonDataElement.getFirstElementByName('title');
@@ -275,7 +275,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
     });
 
     setTimeout(() => {
-      this.isSaveing = false;
+      this.isSaving = false;
       this.progresPercent = 0;
     }, 500);
   }
@@ -299,7 +299,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
       const elements = this.tabletopObject.imageDataElement.getElementsByName(name);
       if (elements && elements.length > 0) currentImageIdentifires = elements.map(element => element.value + '');
     }
-    this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: isAllowedEmpty, currentImageIdentifires: currentImageIdentifires }).then(value => {
+    this.modalService.open<string>(FileSelectorComponent, { isAllowedEmpty: isAllowedEmpty, currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.tabletopObject || !this.tabletopObject.imageDataElement || !value) return;
       if (name == 'shadowImageIdentifier') {
         // 影はメイン画像のcurrentValueとする
@@ -342,7 +342,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
     if (elements.length > 0) {
       currentImageIdentifires = elements.map(element => element.value + '');
     }
-    this.modalService.open<string>(FileSelecterComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
+    this.modalService.open<string>(FileSelectorComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.tabletopObject || !this.tabletopObject.imageDataElement || !value) return;
       const elements = this.tabletopObject.imageDataElement.getElementsByName('imageIdentifier');
       if (elements.length >= this.MAX_IMAGE_ICON_COUNT) {
@@ -363,7 +363,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
     if (elements.length > 0) {
       currentImageIdentifires = elements.map(element => element.value + '');
     }
-    this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: isAllowedEmpty, currentImageIdentifires: currentImageIdentifires }).then(value => {
+    this.modalService.open<string>(FileSelectorComponent, { isAllowedEmpty: isAllowedEmpty, currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.tabletopObject || !this.tabletopObject.imageDataElement || !value) return;
       if (value == 'null') {
         //削除
@@ -381,7 +381,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   openModalChangeAllCardImages() {
-    this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: false }).then(value => {
+    this.modalService.open<string>(FileSelectorComponent, { isAllowedEmpty: false }).then(value => {
       if (!this.tabletopObject || !this.tabletopObject || !(this.tabletopObject instanceof CardStack) || !value) return;
       this.tabletopObject.cards.forEach(card => {
         const element = card.imageDataElement.getFirstElementByName('back');
@@ -496,7 +496,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
       rect.top = offset + (viewHeight - rect.height) / 2;
     } 
 
-    let card = null;
+    let card: Card | null = null;
     if (this.tabletopObject instanceof CardStack) {
       card = this.tabletopObject.topCard;
     } else if (this.tabletopObject instanceof Card) {
@@ -511,7 +511,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   get cardColor(): string {
-    let card = null;
+    let card: Card | null = null;
     if (this.tabletopObject instanceof CardStack) {
       card = this.tabletopObject.topCard;
     } else if (this.tabletopObject instanceof Card) {
@@ -521,7 +521,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   get cardFontSize(): number {
-    let card = null;
+    let card: Card | null = null;
     if (this.tabletopObject instanceof CardStack) {
       card = this.tabletopObject.topCard;
     } else if (this.tabletopObject instanceof Card) {
@@ -531,7 +531,7 @@ export class GameCharacterSheetComponent implements OnInit, OnDestroy, AfterView
   }
 
   get cardText(): string {
-    let card = null;
+    let card: Card | null = null;
     if (this.tabletopObject instanceof CardStack) {
       card = this.tabletopObject.topCard;
     } else if (this.tabletopObject instanceof Card) {

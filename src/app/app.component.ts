@@ -18,7 +18,7 @@ import { DiceBot } from '@udonarium/dice-bot';
 import { Jukebox } from '@udonarium/Jukebox';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
-import { TableSelecter } from '@udonarium/table-selecter';
+import { TableSelector } from '@udonarium/table-selector';
 
 import { ChatWindowComponent } from 'component/chat-window/chat-window.component';
 import { ContextMenuComponent } from 'component/context-menu/context-menu.component';
@@ -82,10 +82,10 @@ import { animate, keyframes, style, transition, trigger } from '@angular/animati
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('modalLayer', { read: ViewContainerRef, static: true }) modalLayerViewContainerRef: ViewContainerRef;
-  private immediateUpdateTimer: NodeJS.Timeout = null;
-  private lazyUpdateTimer: NodeJS.Timeout = null;
+  private immediateUpdateTimer: NodeJS.Timeout | null = null;
+  private lazyUpdateTimer: NodeJS.Timeout | null = null;
   private openPanelCount: number = 0;
-  isSaveing: boolean = false;
+  isSaving: boolean = false;
   progresPercent: number = 0;
 
   isHorizontal = false;
@@ -97,9 +97,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     return AppComponent.imageUrl;
   }
   
-  private noticeIntervalTimer: NodeJS.Timer = null;
+  private noticeIntervalTimer: NodeJS.Timeout | null = null;
 
-  get otherPeers(): PeerCursor[] { return [PeerCursor.myCursor, ...Network.peers.filter(peer => peer.isOpen).map(peer => PeerCursor.findByPeerId(peer.peerId))].filter(peerCursor => peerCursor); /* ObjectStore.instance.getObjects(PeerCursor); */ }
+  get otherPeers(): PeerCursor[] {
+    const peers: (PeerCursor | null)[] = [PeerCursor.myCursor, ...Network.peers.filter(peer => peer.isOpen).map(peer => PeerCursor.findByPeerId(peer.peerId))];
+    return peers.filter((peerCursor): peerCursor is PeerCursor => peerCursor !== null && peerCursor !== undefined);
+  }
   get isRoom(): boolean { return Network.peer?.isRoom; }
 
   private static _noticePlayer: AudioPlayer;
@@ -111,7 +114,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     return AppComponent._noticePlayer;
   }
  
-  notice(audioIdentifier=PresetSound.puyon) {
+  notice(audioIdentifier: string = PresetSound.puyon) {
     const audio = AudioStorage.instance.get(audioIdentifier);
     if (audio && audio.isReady) {
       EventSystem.unregister(this, 'UPDATE_AUDIO_RESOURE');
@@ -154,7 +157,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appConfigService.initialize();
     this.pointerDeviceService.initialize();
 
-    TableSelecter.instance.initialize();
+    TableSelector.instance.initialize();
     ChatTabList.instance.initialize();
     DataSummarySetting.instance.initialize();
 
@@ -170,7 +173,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ChatTabList.instance.addChatTab('主分頁', 'MainTab');
     const subTab = ChatTabList.instance.addChatTab('副分頁', 'SubTab');
-    subTab.recieveOperationLogLevel = 1;
+    subTab.receiveOperationLogLevel = 1;
 
     CutInList.instance.initialize();
 
@@ -234,30 +237,35 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     PresetSound.coinToss = AudioStorage.instance.add('./assets/sounds/niconicomons/nc146227.mp3').identifier;
     PresetSound.selectionStart = AudioStorage.instance.add('./assets/sounds/soundeffect-lab/decision50.mp3').identifier;
 
-    AudioStorage.instance.get(PresetSound.dicePick).isHidden = true;
-    AudioStorage.instance.get(PresetSound.dicePut).isHidden = true;
-    AudioStorage.instance.get(PresetSound.diceRoll1).isHidden = true;
-    AudioStorage.instance.get(PresetSound.diceRoll2).isHidden = true;
-    AudioStorage.instance.get(PresetSound.cardDraw).isHidden = true;
-    AudioStorage.instance.get(PresetSound.cardPick).isHidden = true;
-    AudioStorage.instance.get(PresetSound.cardPut).isHidden = true;
-    AudioStorage.instance.get(PresetSound.cardShuffle).isHidden = true;
-    AudioStorage.instance.get(PresetSound.piecePick).isHidden = true;
-    AudioStorage.instance.get(PresetSound.piecePut).isHidden = true;
-    AudioStorage.instance.get(PresetSound.blockPick).isHidden = true;
-    AudioStorage.instance.get(PresetSound.blockPut).isHidden = true;
-    AudioStorage.instance.get(PresetSound.lock).isHidden = true;
-    AudioStorage.instance.get(PresetSound.unlock).isHidden = true;
-    AudioStorage.instance.get(PresetSound.sweep).isHidden = true
-    AudioStorage.instance.get(PresetSound.puyon).isHidden = true;
-    AudioStorage.instance.get(PresetSound.surprise).isHidden = true;
-    AudioStorage.instance.get(PresetSound.coinToss).isHidden = true;
-    AudioStorage.instance.get(PresetSound.sweep).isHidden = true;
-    AudioStorage.instance.get(PresetSound.selectionStart).isHidden = true;
+    const hideAudio = (identifier: string) => {
+      const audio = AudioStorage.instance.get(identifier);
+      if (audio) audio.isHidden = true;
+    };
+    hideAudio(PresetSound.dicePick);
+    hideAudio(PresetSound.dicePut);
+    hideAudio(PresetSound.diceRoll1);
+    hideAudio(PresetSound.diceRoll2);
+    hideAudio(PresetSound.cardDraw);
+    hideAudio(PresetSound.cardPick);
+    hideAudio(PresetSound.cardPut);
+    hideAudio(PresetSound.cardShuffle);
+    hideAudio(PresetSound.piecePick);
+    hideAudio(PresetSound.piecePut);
+    hideAudio(PresetSound.blockPick);
+    hideAudio(PresetSound.blockPut);
+    hideAudio(PresetSound.lock);
+    hideAudio(PresetSound.unlock);
+    hideAudio(PresetSound.sweep);
+    hideAudio(PresetSound.puyon);
+    hideAudio(PresetSound.surprise);
+    hideAudio(PresetSound.coinToss);
+    hideAudio(PresetSound.selectionStart);
 
     PeerCursor.createMyCursor().then(() => {
-      if (PeerCursor.myCursor.name == null || PeerCursor.myCursor.name === '') PeerCursor.myCursor.name = PeerCursor.CHAT_DEFAULT_NAME;
-      if (!PeerCursor.myCursor.imageIdentifier) PeerCursor.myCursor.imageIdentifier = noneIconImage.identifier;
+      if (PeerCursor.myCursor) {
+        if (PeerCursor.myCursor.name == null || PeerCursor.myCursor.name === '') PeerCursor.myCursor.name = PeerCursor.CHAT_DEFAULT_NAME;
+        if (!PeerCursor.myCursor.imageIdentifier) PeerCursor.myCursor.imageIdentifier = noneIconImage.identifier;
+      }
     });
 
     EventSystem.register(this)
@@ -280,9 +288,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           fetch(event.data.dice.url + (API_VERSION == 1 ? '/v1/names' : '/v2/game_system'), {mode: 'cors'})
             .then(response => { return response.json() })
             .then(infos => {
-              const apiUrl = event.data.dice.url;
+              const apiUrl = event.data.dice?.url;
+              if (!apiUrl) return;
               DiceBot.apiUrl = apiUrl.endsWith('/') ? apiUrl.substring(0, apiUrl.length - 1) : apiUrl;
-              DiceBot.apiVersion = API_VERSION;
+              DiceBot.apiVersion = API_VERSION || 1;
               DiceBot.diceBotInfos = [];
               const tempInfos = (API_VERSION == 1 ? infos.names : infos.game_system)
                 .filter(info => (API_VERSION == 1 ? info.system : info.id) != 'DiceBot')
@@ -320,10 +329,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
               DiceBot.diceBotInfos = [];
               DiceBot.diceBotInfosIndexed = [];
-              DiceBot.diceBotInfos.push(...tempInfos.map(info => { return { id: (API_VERSION == 1 ? info.system : info.id), game: info.name } }));
+              const diceBotEntries = tempInfos.map(info => ({ id: (API_VERSION == 1 ? info.system : info.id), game: info.name }));
+              DiceBot.diceBotInfos.push(...diceBotEntries);
               if (tempInfos.length > 0) {
                 let sentinel = tempInfos[0].normalize.substring(0, 1);
-                let group = { index: tempInfos[0].normalize.substring(0, 1), infos: [] };
+                let group: any = { index: tempInfos[0].normalize.substring(0, 1), infos: [] };
                 for (const info of tempInfos) {
                   const index = info.lang == 'Other' ? 'Other' 
                     : info.lang == 'ChineseTraditional' ? '正體中文'
@@ -352,8 +362,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .on('OPEN_NETWORK', event => {
         console.log('OPEN_NETWORK', event.data.peerId);
-        PeerCursor.myCursor.peerId = Network.peer.peerId;
-        PeerCursor.myCursor.userId = Network.peer.userId;
+        if (PeerCursor.myCursor) {
+          PeerCursor.myCursor.peerId = Network.peer.peerId;
+          PeerCursor.myCursor.userId = Network.peer.userId;
+        }
         this.isLoggedin = false;
       })
       .on('NETWORK_ERROR', event => {
@@ -420,9 +432,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         // UIコンポーネントに設定持たせるべきか
         if (ChatWindowComponent.isNoticeOn) {
           if (event.data?.isDirect || !this.noticeIntervalTimer) {
-            clearTimeout(this.noticeIntervalTimer);
+            if (this.noticeIntervalTimer) clearTimeout(this.noticeIntervalTimer);
             this.noticeIntervalTimer = setTimeout(() => {
-              clearTimeout(this.noticeIntervalTimer);
+              if (this.noticeIntervalTimer) clearTimeout(this.noticeIntervalTimer);
               this.noticeIntervalTimer = null;
             }, 100);
             this.notice();
@@ -434,7 +446,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .on('PLAY_CUT_IN', -1000, event => {
         const cutIn = ObjectStore.instance.get<CutIn>(event.data.identifier);
-        this.cutInService.play(cutIn, event.data.secret ? event.data.secret : false, event.data.test ? event.data.test : false, event.data.sender);
+        if (cutIn) this.cutInService.play(cutIn, event.data.secret ? event.data.secret : false, event.data.test ? event.data.test : false, event.data.sender);
       })
       .on('STOP_CUT_IN', -1000, event => {
         this.cutInService.stop(event.data.identifier);
@@ -442,7 +454,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       .on('POPUP_STAND_IMAGE', -1000, event => {
         const standElement = ObjectStore.instance.get<DataElement>(event.data.standIdentifier);
         const gameCharacter = ObjectStore.instance.get<GameCharacter>(event.data.characterIdentifier);
-        this.standImageService.show(gameCharacter, standElement, event.data.color ? event.data.color : null, event.data.secret);
+        if (gameCharacter && standElement) {
+          this.standImageService.show(gameCharacter, standElement, event.data.color ? event.data.color : null, event.data.secret);
+        }
       })
       .on('FAREWELL_STAND_IMAGE', -1000, event => {
         this.standImageService.farewell(event.data.characterIdentifier);
@@ -475,7 +489,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     
     // PWA
-    let notification: Notification;
+    let notification: Notification | null = null;
     this.swUpdate.versionUpdates.subscribe(event => {
       switch (event.type) {
         case 'VERSION_DETECTED':
@@ -537,7 +551,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   open(componentName: string) {
-    let component: { new(...args: any[]): any } = null;
+    let component: { new(...args: any[]): any } | null = null;
     let option: PanelOption = { width: 450, height: 600, left: 100 }
     switch (componentName) {
       case 'PeerMenuComponent':
@@ -584,8 +598,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async save() {
-    if (this.isSaveing) return;
-    this.isSaveing = true;
+    if (this.isSaving) return;
+    this.isSaving = true;
     this.progresPercent = 0;
     const roomName = 0 < Network.peer.roomName.length
       ? Network.peer.roomName
@@ -595,15 +609,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     setTimeout(() => {
-      this.isSaveing = false;
+      this.isSaving = false;
       this.progresPercent = 0;
     }, 500);
   }
 
   handleFileSelect(event: Event) {
-    const input = <HTMLInputElement>event.target;
+    const input = event.target as HTMLInputElement;
     const files = input.files;
-    if (files.length) FileArchiver.instance.load(files);
+    if (files && files.length) FileArchiver.instance.load(files);
     input.value = '';
   }
 
@@ -632,14 +646,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toolBox(event: Event) {
-    const button = <HTMLElement>event.target;
+    const button = event.target as HTMLElement;
     const clientRect = button.getBoundingClientRect();
-    const position = { 
-      x: window.pageXOffset + clientRect.left + (this.isHorizontal ? 0 : button.clientWidth * 0.9), 
+    const position = {
+      x: window.pageXOffset + clientRect.left + (this.isHorizontal ? 0 : button.clientWidth * 0.9),
       y: window.pageYOffset + clientRect.top + (this.isHorizontal ? button.clientHeight * 0.9 : 0)
     };
-    const menu = [];
+    const menu: any[] = [];
     const cunIns = CutInList.instance.cutIns;
+    const myCursor = PeerCursor.myCursor;
     menu.push({ name: '插圖再生', materialIcon: 'play_arrow',
       action: null, subActions: cunIns.length === 0 ? [
         {
@@ -656,28 +671,28 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 EventSystem.call('PLAY_CUT_IN', {
                   identifier: cutIn.identifier,
                   secret: false,
-                  sender: PeerCursor.myCursor.peerId
+                  sender: myCursor?.peerId || ''
                 });
                 this.chatMessageService.sendOperationLog((cutIn.name == '' ? '(無名插圖)' : cutIn.name) + ' 播放');
               }
             }, ContextMenuSeparator, ...this.otherPeers.map(peer => {
             return {
-              name: peer.name + (peer === PeerCursor.myCursor ? ' (你)' : ''),
+              name: peer.name + (peer === myCursor ? ' (你)' : ''),
               color: peer.color,
               default: true,
               action: () => {
-                if (peer !== PeerCursor.myCursor) {
+                if (peer !== myCursor) {
                   EventSystem.call('PLAY_CUT_IN', {
                     identifier: cutIn.identifier,
                     secret: true,
-                    sender: PeerCursor.myCursor.peerId
+                    sender: myCursor?.peerId || ''
                   }, peer.peerId);
                 }
                 EventSystem.call('PLAY_CUT_IN', {
                   identifier: cutIn.identifier,
                   secret: true,
-                  sender: PeerCursor.myCursor.peerId
-                }, PeerCursor.myCursor.peerId);
+                  sender: myCursor?.peerId || ''
+                }, myCursor?.peerId || '');
               }
             }
           })]
@@ -691,7 +706,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   resetPointOfView(event: Event) {
-    const button = <HTMLElement>event.target;
+    const button = event.target as HTMLElement;
     const clientRect = button.getBoundingClientRect();
     const position = { 
       x: window.pageXOffset + clientRect.left + (this.isHorizontal ? 0 : button.clientWidth * 0.9), 
@@ -704,26 +719,26 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   standSetteings(event: Event) {
-    const button = <HTMLElement>event.target;
+    const button = event.target as HTMLElement;
     const clientRect = button.getBoundingClientRect();
-    const position = { 
-      x: window.pageXOffset + clientRect.left + (this.isHorizontal ? 0 : button.clientWidth * 0.9), 
+    const position = {
+      x: window.pageXOffset + clientRect.left + (this.isHorizontal ? 0 : button.clientWidth * 0.9),
       y: window.pageYOffset + clientRect.top + (this.isHorizontal ? button.clientHeight * 0.9 : 0)
     };
     const isShowStand = StandImageComponent.isShowStand;
     const isShowNameTag = StandImageComponent.isShowNameTag;
-    const isCanBeGone = StandImageComponent.isCanBeGone; 
-    this.contextMenuService.open(position, [
-      { name: `${ TableSelecter.instance.gridShow ? '☑' : '☐' }常駐顯示桌面格線`, 
+    const isCanBeGone = StandImageComponent.isCanBeGone;
+    const menu: any[] = [
+      { name: `${ TableSelector.instance.gridShow ? '☑' : '☐' }常駐顯示桌面格線`, 
         action: () => {
-          TableSelecter.instance.gridShow = !TableSelecter.instance.gridShow;
-          EventSystem.trigger('UPDATE_GAME_OBJECT', TableSelecter.instance.toContext()); 
+          TableSelector.instance.gridShow = !TableSelector.instance.gridShow;
+          EventSystem.trigger('UPDATE_GAME_OBJECT', TableSelector.instance.toContext()); 
         },
         checkBox: 'check'
       },
-      { name: `${ TableSelecter.instance.gridSnap ? '☑' : '☐' }物件移動時吸附`, 
+      { name: `${ TableSelector.instance.gridSnap ? '☑' : '☐' }物件移動時吸附`, 
         action: () => {
-          TableSelecter.instance.gridSnap = !TableSelecter.instance.gridSnap;
+          TableSelector.instance.gridSnap = !TableSelector.instance.gridSnap;
         },
         checkBox: 'check'
       },
@@ -759,7 +774,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       ContextMenuSeparator,
       { name: '清除全部立繪', action: () => EventSystem.trigger('DESTORY_STAND_IMAGE_ALL', null) }
-    ], '個人設定');
+    ];
+    this.contextMenuService.open(position, menu, '個人設定');
   }
 /*
   farewellStandAll() {
@@ -797,7 +813,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     throw new Error('Method not implemented.');
   }
 
-  rotateChange(isHorizontal) {
+  rotateChange(isHorizontal: boolean) {
     this.isHorizontal = isHorizontal;
   }
 

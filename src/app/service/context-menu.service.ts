@@ -45,9 +45,9 @@ export interface ContextMenuAction {
 export class ContextMenuService {
   /* Todo */
   static defaultParentViewContainerRef: ViewContainerRef;
-  static ContextMenuComponentClass: { new(...args: any[]): any } = null;
+  static ContextMenuComponentClass: { new(...args: any[]): any } | null = null;
 
-  private panelComponentRef: ComponentRef<any>
+  private panelComponentRef: ComponentRef<any> | null = null;
 
   title: string = '';
   actions: ContextMenuAction[] = [];
@@ -83,7 +83,7 @@ export class ContextMenuService {
     } else {
       childPanelService.titleColor = PeerCursor.CHAT_DEFAULT_COLOR;
     }
-    childPanelService.titleBold = titleBold;
+    childPanelService.titleBold = titleBold ?? false;
 
     childPanelService.title = title != null ? title : '';
 

@@ -20,7 +20,7 @@ import { SaveDataService } from 'service/save-data.service';
     standalone: false
 })
 export class ChatTabSettingComponent implements OnInit, OnDestroy {
-  selectedTab: ChatTab = null;
+  selectedTab: ChatTab | null = null;
   selectedTabXml: string = '';
 
   get tabName(): string { return this.selectedTab.name; }
@@ -29,8 +29,8 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
   get isUseStandImage(): boolean { return this.selectedTab.isUseStandImage; }
   set isUseStandImage(isUseStandImage: boolean) { if (this.isEditable) this.selectedTab.isUseStandImage = isUseStandImage; }
 
-  get recieveOperationLogLevel(): number { return this.selectedTab.recieveOperationLogLevel; }
-  set recieveOperationLogLevel(recieveOperationLogLevel: number) { if (this.isEditable) this.selectedTab.recieveOperationLogLevel = recieveOperationLogLevel; }
+  get receiveOperationLogLevel(): number { return this.selectedTab.receiveOperationLogLevel; }
+  set receiveOperationLogLevel(receiveOperationLogLevel: number) { if (this.isEditable) this.selectedTab.receiveOperationLogLevel = receiveOperationLogLevel; }
 
   get chatTabs(): ChatTab[] { return this.chatMessageService.chatTabs; }
   get isEmpty(): boolean { return this.chatMessageService.chatTabs.length < 1 }
@@ -44,7 +44,7 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
     return roomName;
   }
   
-  isSaveing: boolean = false;
+  isSaving: boolean = false;
   progresPercent: number = 0;
 
   constructor(
@@ -81,8 +81,8 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
   }
 
   async save() {
-    if (!this.selectedTab || this.isSaveing) return;
-    this.isSaveing = true;
+    if (!this.selectedTab || this.isSaving) return;
+    this.isSaving = true;
     this.progresPercent = 0;
 
     const fileName: string = 'fly_chat_' + this.selectedTab.name;
@@ -92,7 +92,7 @@ export class ChatTabSettingComponent implements OnInit, OnDestroy {
     });
 
     setTimeout(() => {
-      this.isSaveing = false;
+      this.isSaving = false;
       this.progresPercent = 0;
     }, 500);
   }

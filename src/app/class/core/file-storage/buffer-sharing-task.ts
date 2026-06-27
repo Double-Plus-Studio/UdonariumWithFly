@@ -11,14 +11,14 @@ interface ChankData {
 
 export class BufferSharingTask<T> {
   readonly identifier: string;
-  readonly sendTo: string;
+  readonly sendTo: string | undefined;
 
-  private data: T;
+  private data: T | undefined;
   private uint8Array: Uint8Array;
   private chanks: Uint8Array[] = [];
   private chankSize: number = 32 * 1024;
   private chankReceiveCount: number = 0;
-  private sendChankTimer: number;
+  private sendChankTimer: number | null;
 
   private sentChankIndex = 0;
   private bufferingChankRange: number = 4;
@@ -27,13 +27,13 @@ export class BufferSharingTask<T> {
   private startTime = 0;
   private isCanceled = false;
 
-  private onstart: () => void;
+  private onstart: (() => void) | null;
   onprogress: (task: BufferSharingTask<T>, loaded: number, total: number) => void;
   onfinish: (task: BufferSharingTask<T>, data: T) => void;
   ontimeout: (task: BufferSharingTask<T>) => void;
   oncancel: (task: BufferSharingTask<T>) => void;
 
-  private timeoutTimer: ResettableTimeout;
+  private timeoutTimer: ResettableTimeout | null;
 
   private constructor(identifier: string, sendTo?: string, data?: T) {
     this.identifier = identifier;
@@ -70,7 +70,7 @@ export class BufferSharingTask<T> {
   private finish() {
     if (this.isCanceled) return;
     this.isCanceled = true;
-    if (this.onfinish) this.onfinish(this, this.data);
+    if (this.onfinish) this.onfinish(this, this.data!);
     this.dispose();
   }
 
@@ -78,7 +78,7 @@ export class BufferSharingTask<T> {
     if (this.isCanceled) return;
     this.isCanceled = true;
     if (this.ontimeout) this.ontimeout(this);
-    if (this.onfinish) this.onfinish(this, this.data);
+    if (this.onfinish) this.onfinish(this, this.data!);
     this.dispose();
   }
 
@@ -92,7 +92,7 @@ export class BufferSharingTask<T> {
     if (this.isCanceled) return;
     this.isCanceled = true;
     if (this.oncancel) this.oncancel(this);
-    if (this.onfinish) this.onfinish(this, this.data);
+    if (this.onfinish) this.onfinish(this, this.data!);
     this.dispose();
   }
 
@@ -102,11 +102,14 @@ export class BufferSharingTask<T> {
     if (this.timeoutTimer) this.timeoutTimer.clear();
     this.sendChankTimer = null;
     this.timeoutTimer = null;
-    this.onprogress = this.onfinish = this.ontimeout = this.oncancel = null;
+    this.onprogress = null as any;
+    this.onfinish = null as any;
+    this.ontimeout = null as any;
+    this.oncancel = null as any;
   }
 
   private initializeSend() {
-    this.uint8Array = MessagePack.encode(this.data);
+    this.uint8Array = MessagePack.encode(this.data)!;
     const total = Math.ceil(this.uint8Array.byteLength / this.chankSize);
     this.chanks = new Array(total);
 
@@ -206,7 +209,7 @@ export class BufferSharingTask<T> {
 
   private resetTimeout() {
     if (this.timeoutTimer == null) this.timeoutTimer = new ResettableTimeout(() => this.timeout(), 10 * 1000);
-    this.timeoutTimer.reset();
+    this.timeoutTimer!.reset();
   }
 
   private outputTransferRate(byteLength: number) {

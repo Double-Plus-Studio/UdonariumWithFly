@@ -6,9 +6,9 @@ import { ObjectStore } from '@udonarium/core/synchronize-object/object-store';
 import { EventSystem, Network } from '@udonarium/core/system';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { FilterType, GameTable, GridType } from '@udonarium/game-table';
-import { TableSelecter } from '@udonarium/table-selecter';
+import { TableSelector } from '@udonarium/table-selector';
 
-import { FileSelecterComponent } from 'component/file-selecter/file-selecter.component';
+import { FileSelectorComponent } from 'component/file-selector/file-selector.component';
 import { ChatMessageService } from 'service/chat-message.service';
 import { ImageService } from 'service/image.service';
 import { ModalService } from 'service/modal.service';
@@ -27,14 +27,14 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
 
 
   get tableBackgroundImage(): ImageFile {
-    return this.imageService.getEmptyOr(this.selectedTable ? this.selectedTable.imageIdentifier : null);
+    return this.imageService.getEmptyOr(this.selectedTable ? this.selectedTable.imageIdentifier : '');
   }
 
   get tableDistanceviewImage(): ImageFile {
-    return this.imageService.getEmptyOr(this.selectedTable ? this.selectedTable.backgroundImageIdentifier : null);
+    return this.imageService.getEmptyOr(this.selectedTable ? this.selectedTable.backgroundImageIdentifier : '');
   }
   get tableDistanceviewImage2(): ImageFile {
-    return this.imageService.getEmptyOr(this.selectedTable ? this.selectedTable.backgroundImageIdentifier2 : null);
+    return this.imageService.getEmptyOr(this.selectedTable ? this.selectedTable.backgroundImageIdentifier2 : '');
   }
 
   get tableName(): string { return this.selectedTable.name; }
@@ -49,16 +49,16 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   get tableGridColor(): string { return this.selectedTable.gridColor; }
   set tableGridColor(tableGridColor: string) { if (this.isEditable) this.selectedTable.gridColor = tableGridColor; }
 
-  get tableGridShow(): boolean { return this.tableSelecter.gridShow; }
+  get tableGridShow(): boolean { return this.tableSelector.gridShow; }
   set tableGridShow(tableGridShow: boolean) {
-    this.tableSelecter.gridShow = tableGridShow;
-    if (tableGridShow) this.tableSelecter.viewTable.gridClipRect = null;
-    EventSystem.trigger('UPDATE_GAME_OBJECT', this.tableSelecter.toContext()); // 自分にだけイベントを発行してグリッド更新を誘発
+    this.tableSelector.gridShow = tableGridShow;
+    if (tableGridShow) this.tableSelector.viewTable.gridClipRect = null;
+    EventSystem.trigger('UPDATE_GAME_OBJECT', this.tableSelector.toContext()); // 自分にだけイベントを発行してグリッド更新を誘発
   }
 
-  get tableGridSnap(): boolean { return this.tableSelecter.gridSnap; }
+  get tableGridSnap(): boolean { return this.tableSelector.gridSnap; }
   set tableGridSnap(tableGridSnap: boolean) {
-    this.tableSelecter.gridSnap = tableGridSnap;
+    this.tableSelector.gridSnap = tableGridSnap;
   }
 
   get tableGridType(): GridType { return this.selectedTable.gridType; }
@@ -67,18 +67,18 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   get tableGridNumberShow(): boolean { return this.selectedTable.isShowNumber; }
   set tableGridNumberShow(isShowNumber: boolean) {
     this.selectedTable.isShowNumber = isShowNumber;
-    EventSystem.trigger('UPDATE_GAME_OBJECT', this.tableSelecter.toContext()); // 自分にだけイベントを発行してグリッド更新を誘発
+    EventSystem.trigger('UPDATE_GAME_OBJECT', this.tableSelector.toContext()); // 自分にだけイベントを発行してグリッド更新を誘発
   }
 
   get tableDistanceviewFilter(): FilterType { return this.selectedTable.backgroundFilterType; }
   set tableDistanceviewFilter(filterType: FilterType) { if (this.isEditable) this.selectedTable.backgroundFilterType = filterType; }
 
-  get tableSelecter(): TableSelecter { return TableSelecter.instance; }
+  get tableSelector(): TableSelector { return TableSelector.instance; }
 
-  selectedTable: GameTable = null;
+  selectedTable: GameTable | null = null;
   selectedTableXml: string = '';
 
-  get isEmpty(): boolean { return this.tableSelecter ? (this.tableSelecter.viewTable ? false : true) : true; }
+  get isEmpty(): boolean { return this.tableSelector ? (this.tableSelector.viewTable ? false : true) : true; }
   get isDeleted(): boolean {
     if (!this.selectedTable) return true;
     return ObjectStore.instance.get<GameTable>(this.selectedTable.identifier) == null;
@@ -88,7 +88,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     return !this.isEmpty && !this.isDeleted && this.isGMMode;
   }
 
-  isSaveing: boolean = false;
+  isSaving: boolean = false;
   progresPercent: number = 0;
 
   constructor(
@@ -102,7 +102,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     Promise.resolve().then(() => { this.modalService.title = this.panelService.title = '桌面設定' });
-    this.selectedTable = this.tableSelecter.viewTable;
+    this.selectedTable = this.tableSelector.viewTable;
     EventSystem.register(this)
       .on('DELETE_GAME_OBJECT', 2000, event => {
         if (!this.selectedTable || event.data.identifier !== this.selectedTable.identifier) return;
@@ -126,7 +126,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   getGameTables(): GameTable[] {
     const all = ObjectStore.instance.getObjects(GameTable);
     if (this.isGMMode) return all;
-    const current = this.tableSelecter.viewTable;
+    const current = this.tableSelector.viewTable;
     return current ? [current] : [];
   }
 
@@ -139,8 +139,8 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
   }
 
   async save() {
-    if (!this.selectedTable || this.isSaveing) return;
-    this.isSaveing = true;
+    if (!this.selectedTable || this.isSaving) return;
+    this.isSaving = true;
     this.progresPercent = 0;
 
     this.selectedTable.selected = true;
@@ -149,7 +149,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     });
 
     setTimeout(() => {
-      this.isSaveing = false;
+      this.isSaving = false;
       this.progresPercent = 0;
     }, 500);
   }
@@ -173,7 +173,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     if (!this.isGMMode || this.isDeleted) return;
     let currentImageIdentifires: string[] = [];
     if (this.selectedTable && this.selectedTable.imageIdentifier) currentImageIdentifires = [this.selectedTable.imageIdentifier];
-    this.modalService.open<string>(FileSelecterComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
+    this.modalService.open<string>(FileSelectorComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.selectedTable || !value) return;
       this.selectedTable.imageIdentifier = value;
     });
@@ -183,7 +183,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     if (!this.isGMMode || this.isDeleted) return;
     let currentImageIdentifires: string[] = [];
     if (this.selectedTable && this.selectedTable.backgroundImageIdentifier) currentImageIdentifires = [this.selectedTable.backgroundImageIdentifier];
-    this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: true, currentImageIdentifires: currentImageIdentifires }).then(value => {
+    this.modalService.open<string>(FileSelectorComponent, { isAllowedEmpty: true, currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.selectedTable || !value) return;
       this.selectedTable.backgroundImageIdentifier = value;
     });
@@ -193,7 +193,7 @@ export class GameTableSettingComponent implements OnInit, OnDestroy {
     if (!this.isGMMode || this.isDeleted) return;
     let currentImageIdentifires: string[] = [];
     if (this.selectedTable && this.selectedTable.backgroundImageIdentifier2) currentImageIdentifires = [this.selectedTable.backgroundImageIdentifier2];
-    this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: true, currentImageIdentifires: currentImageIdentifires }).then(value => {
+    this.modalService.open<string>(FileSelectorComponent, { isAllowedEmpty: true, currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.selectedTable || !value) return;
       this.selectedTable.backgroundImageIdentifier2 = value;
     });

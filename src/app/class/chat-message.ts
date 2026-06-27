@@ -98,8 +98,8 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
     return this._tags;
   }
 
-  get image(): ImageFile { return ImageStorage.instance.get(this.imageIdentifier); }
-  get toImage(): ImageFile { return ImageStorage.instance.get(this.toImageIdentifier); }
+  get image(): ImageFile | null { return ImageStorage.instance.get(this.imageIdentifier); }
+  get toImage(): ImageFile | null { return ImageStorage.instance.get(this.toImageIdentifier); }
 
   get index(): number { return this.minorIndex + this.timestamp; }
   get isDirect(): boolean { return 0 < this.sendTo.length || -1 < this.tags.indexOf('direct') ? true : false; }
@@ -144,7 +144,7 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
     return text;
   }
 
-  logFragment(logForamt: number, tabName: string=null, dateFormat='HH:mm', imageDict?: Record<string, unknown>): string {
+  logFragment(logForamt: number, tabName: string | null=null, dateFormat='HH:mm', imageDict?: Record<string, unknown>): string {
     if (logForamt == 0) {
       return this.logFragmentText(tabName, dateFormat);
     } else {
@@ -152,7 +152,7 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
     }
   }
 
-  logFragmentText(tabName: string=null, dateFormat='HH:mm'): string {
+  logFragmentText(tabName: string | null=null, dateFormat='HH:mm'): string {
     tabName = (!tabName || tabName.trim() == '') ? '' : `[${ tabName }] `;
     const dateStr = (dateFormat == '') ? '' : formatDate(new Date(this.timestamp), dateFormat, this.locale) + '：';
     const lastUpdateStr = !this.isEdited ? '' : 
@@ -166,7 +166,7 @@ export class ChatMessage extends ObjectNode implements ChatMessageContext {
     return `${ tabName }${ dateStr }${ this.name }${ this.toColor ? (' ➡ ' + this.toName) : '' }：${ (this.isSecret && !this.isSendFromSelf) ? '（秘密擲骰）' : text + lastUpdateStr }`
   }
 
-  logFragmentHtml(tabName: string=null, dateFormat='HH:mm', imageDict?: Record<string, unknown>): string {
+  logFragmentHtml(tabName: string | null=null, dateFormat='HH:mm', imageDict?: Record<string, unknown>): string {
     const isWithImage = !!imageDict;
     const color = StringUtil.escapeHtml(this.color ? this.color : PeerCursor.CHAT_DEFAULT_COLOR);
     const colorStyle = ` style="color: ${ color }"`;

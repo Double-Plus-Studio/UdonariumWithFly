@@ -78,7 +78,7 @@ export class DataElement extends ObjectNode {
     return children;
   }
 
-  getFirstElementByName(name: string, option: CompareOption = CompareOption.None): DataElement {
+  getFirstElementByName(name: string, option: CompareOption = CompareOption.None): DataElement | null {
     for (const child of this.children) {
       if (child instanceof DataElement) {
         if (StringUtil.equals(child.getAttribute('name'), name, option)) return child;
@@ -89,7 +89,7 @@ export class DataElement extends ObjectNode {
     return null;
   }
 
-  getFirstElementByNameUnsensitive(name: string, replacePattern: string|RegExp = null, replacement=''): DataElement {
+  getFirstElementByNameUnsensitive(name: string, replacePattern: string|RegExp | null = null, replacement=''): DataElement | null {
     for (const child of this.children) {
       if (child instanceof DataElement) {
         let normalizeName = StringUtil.cr(StringUtil.toHalfWidth(name.replace(/[―ー—‐]/g, '-')).toLowerCase()).replace(/[\s\r\n]+/, ' ').trim();

@@ -111,7 +111,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   private static MAX_HISTORY_NUM = 1000;
   private tmpText;
 
-  get character(): GameCharacter {
+  get character(): GameCharacter | null {
     const object = ObjectStore.instance.get(this.sendFrom);
     if (object instanceof GameCharacter) {
       return object;
@@ -127,13 +127,13 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   get standNameList(): string[] {
     if (!this.hasStand) return [];
     const ret: string[] = [];
-    for (const standElement of this.character.standList.standElements) {
+    for (const standElement of this.character!.standList.standElements) {
       const nameElement = standElement.getFirstElementByName('name');
       if (nameElement && nameElement.value != null && nameElement.value.toString().trim() != '' && ret.indexOf(nameElement.value.toString()) < 0) {
         ret.push(nameElement.value.toString());
       }
     }
-    return this.character.standList.isSortNameList ? ret.sort() : ret;
+    return this.character!.standList.isSortNameList ? ret.sort() : ret;
   }
   standName: string = '';
 
@@ -145,8 +145,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   get standListWithGroup(): StandGroup[] {
     if (!this.hasStand) return [];
     const ret = {};
-    const nameElements = this.character.standList.standElements.map((standElement) => standElement.getFirstElementByName('name')).filter(e => e);
-    nameElements.sort((a, b) => a.currentValue === b.currentValue ? 0 : a.currentValue > b.currentValue ? -1 : 1);
+    const nameElements = this.character!.standList.standElements.map((standElement) => standElement.getFirstElementByName('name')).filter(e => e);
+    nameElements.sort((a, b) => a!.currentValue === b!.currentValue ? 0 : a!.currentValue > b!.currentValue ? -1 : 1);
     for (const nameElement of nameElements) {
       if (nameElement && nameElement.value) {
         const groupName = (nameElement.currentValue && nameElement.currentValue.toString().length > 0) ? nameElement.currentValue.toString() : '';
@@ -161,7 +161,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
   get imageFile(): ImageFile {
     const object = ObjectStore.instance.get(this.sendFrom);
-    let image: ImageFile = null;
+    let image: ImageFile | null = null;
     if (object instanceof GameCharacter) {
       image = object.imageFile;
     } else if (object instanceof PeerCursor) {
@@ -180,7 +180,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   }
 
   set paletteColor(color: string) {
-    this.character.chatPalette.color = color ? color : PeerCursor.CHAT_TRANSPARENT_COLOR;
+    this.character!.chatPalette!.color = color ? color : PeerCursor.CHAT_TRANSPARENT_COLOR;
   }
 
   get myColor(): string {
@@ -219,7 +219,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
     return this._gameCharacters;
   }
 
-  private writingEventInterval: NodeJS.Timeout = null;
+  private writingEventInterval: NodeJS.Timeout | null = null;
   private previousWritingLength: number = 0;
 
   //writingPeers: Map<string, NodeJS.Timer> = new Map();
@@ -228,8 +228,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   //writingPeerNames: string[] = [];
 
   get diceBotInfos() { return DiceBot.diceBotInfos }
-  get myPeer(): PeerCursor { return PeerCursor.myCursor; }
-  get otherPeers(): PeerCursor[] { return [PeerCursor.myCursor, ...Network.peers.filter(peer => peer.isOpen).map(peer => PeerCursor.findByPeerId(peer.peerId))].filter(peerCursor => peerCursor); /** ObjectStore.instance.getObjects(PeerCursor); **/ }
+  get myPeer(): PeerCursor { return PeerCursor.myCursor!; }
+  get otherPeers(): PeerCursor[] { return [PeerCursor.myCursor, ...Network.peers.filter(peer => peer.isOpen).map(peer => PeerCursor.findByPeerId(peer.peerId))].filter((peerCursor): peerCursor is PeerCursor => peerCursor != null); /** ObjectStore.instance.getObjects(PeerCursor); **/ }
 
   get diceBotInfosIndexed() { return DiceBot.diceBotInfosIndexed }
 
@@ -251,10 +251,10 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       .on('MESSAGE_ADDED', event => {
         if (event.data.tabIdentifier !== this.chatTabidentifier) return;
         const message = ObjectStore.instance.get<ChatMessage>(event.data.messageIdentifier);
-        const peerCursor = ObjectStore.instance.getObjects<PeerCursor>(PeerCursor).find(obj => obj.userId === message.from);
+        const peerCursor = ObjectStore.instance.getObjects<PeerCursor>(PeerCursor).find(obj => obj.userId === message?.from);
         const sendFrom = peerCursor ? peerCursor.peerId : '?';
         if (this.writingPeers.has(sendFrom)) {
-          this.writingPeers.get(sendFrom).stop();
+          this.writingPeers.get(sendFrom)!.stop();
           this.writingPeers.delete(sendFrom);
           this.updateWritingPeerNameAndColors();
         }
@@ -295,7 +295,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
             this.ngZone.run(() => { });
           }, 2000));
         }
-        this.writingPeers.get(event.sendFrom).reset();
+        this.writingPeers.get(event.sendFrom)!.reset();
         //this.updateWritingPeerNames();
         this.updateWritingPeerNameAndColors();
         //this.batchService.add(() => this.ngZone.run(() => { }), this);
@@ -329,7 +329,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   onInput() {
     this.currentHistoryIndex = -1;
     if (this.writingEventInterval === null && this.previousWritingLength <= this.text.length) {
-      let sendTo: string = null;
+      let sendTo: string | null = null;
       if (this.isDirect) {
         const object = ObjectStore.instance.get(this.sendTo);
         if (object instanceof PeerCursor) {
@@ -337,7 +337,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
           if (peer) sendTo = peer.peerId;
         }
       }
-      EventSystem.call('WRITING_A_MESSAGE', this.chatTabidentifier, sendTo);
+      EventSystem.call('WRITING_A_MESSAGE', this.chatTabidentifier, sendTo ?? undefined);
       this.writingEventInterval = setTimeout(() => {
         this.writingEventInterval = null;
       }, 200);
@@ -347,7 +347,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   }
 
   moveHistory(event: Partial<KeyboardEvent>, direction: number) {
-    if (event) event.preventDefault();
+    if (event) event.preventDefault?.();
     if (this.currentHistoryIndex < 0) this.tmpText = this.text;
 
     if (direction < 0 && this.currentHistoryIndex < 0) {
@@ -414,7 +414,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
   }
 
   sendChat(event: Partial<KeyboardEvent>) {
-    if (event) event.preventDefault();
+    if (event) event.preventDefault?.();
     //if (!this.text.length) return;
     if (event && event.keyCode !== 13) return;
     if (!this.isAllowsChat) return;
@@ -450,7 +450,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
 
     (async () => {  
       let matchMostLongText = '';
-      let standIdentifier = null;
+      let standIdentifier: string | undefined = undefined;
       const delayRefs: string[] = [];
       // ステータス操作
       if (text != '' && /^[\\￥]+[:：]/.test(text)) {
@@ -460,41 +460,41 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         if (!targetCharacter) {
           this.chatMessageService.sendOperationLog('命令錯誤：目標不是角色');
         } else {
-          const commandsInfo = StringUtil.parseCommands(targetCharacter.chatPalette.evaluate(text.substring(1), targetCharacter.rootDataElement));
+          const commandsInfo = StringUtil.parseCommands(targetCharacter.chatPalette!.evaluate(text.substring(1), targetCharacter.rootDataElement));
           text = commandsInfo.endString;
           if (commandsInfo.commands.length) {
             //await (async () => {
               const loggingTexts: string[] = [`${targetCharacter.name == '' ? '(無名角色)' : targetCharacter.name} 的命令：${commandsInfo.commandString}`];
               let isDiceRoll = false;
               for (let i = 0; i < commandsInfo.commands.length; i++) {
-                let rollResult = null;
+                let rollResult: Awaited<ReturnType<typeof DiceBot.rollCommandAsync>> | null = null;
                 // ステータス操作のみ
                   try {
                   const command = commandsInfo.commands[i];
                   if (command.isIncomplete) throw '→ 命令錯誤：命令不完整：' + command.targetName;
 
-                  const targetName = targetCharacter.chatPalette.evaluate(command.targetName, targetCharacter.rootDataElement, delayRefs);
-                  const operator = StringUtil.toHalfWidth(command.operator);
-                  const operateValue = targetCharacter.chatPalette.evaluate(command.value, targetCharacter.rootDataElement, delayRefs);
-                  let target: DataElement;
-                  let delayRef: string;
+                  const targetName = targetCharacter.chatPalette!.evaluate(command.targetName!, targetCharacter.rootDataElement, delayRefs);
+                  const operator = StringUtil.toHalfWidth(command.operator!);
+                  const operateValue = targetCharacter.chatPalette!.evaluate(command.value!, targetCharacter.rootDataElement, delayRefs);
+                  let target: DataElement | null;
+                  let delayRef: string | undefined = undefined;
                   let isOperateNumber = false;
                   let isOperateMaxValue = false;
 
-                  target = targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName);
+                  target = targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName);
                   if (target) {
                     if (target.isNumberResource || target.isSimpleNumber || target.isAbilityScore) isOperateNumber = true;
                   } else {
-                    target = targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^最大/)
-                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^Max[\:\_\-\s]*/i)
-                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^初期|^初始/)
-                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /初期値$|初始值$/)
-                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /最大値$|最大值$/)
-                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^基本/)
-                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /^原/)
-                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /\^$/)
-                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /基本値$|基本值$/)
-                      || targetCharacter.detailDataElement.getFirstElementByNameUnsensitive(targetName, /原点$|原點$/);
+                    target = targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName, /^最大/)
+                      || targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName, /^Max[\:\_\-\s]*/i)
+                      || targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName, /^初期|^初始/)
+                      || targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName, /初期値$|初始值$/)
+                      || targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName, /最大値$|最大值$/)
+                      || targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName, /^基本/)
+                      || targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName, /^原/)
+                      || targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName, /\^$/)
+                      || targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName, /基本値$|基本值$/)
+                      || targetCharacter.detailDataElement!.getFirstElementByNameUnsensitive(targetName, /原点$|原點$/);
                     if (target) {
                       if (target.isNumberResource || target.isAbilityScore) {
                         isOperateNumber = true;
@@ -508,7 +508,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                   if (!target) throw `→ コマンドエラー：${(StringUtil.cr(targetName).trim() == '') ? '(無名變數)' : StringUtil.cr(targetName).trim()} 找不到`;
 
                   const oldValue = target.loggingValue;
-                  let value = null;
+                  let value: string | number | null = null;
                   if (command.isEscapeRoll || operator === '>') {
                     value = operateValue;
                   } else {
@@ -529,7 +529,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                       }
                       if (rollResult) {
                         //console.log(rollResult.result)
-                        let match = null;
+                        let match: RegExpMatchArray | null = null;
                         if (isOperateNumber && rollResult.result.length > 0 && (match = rollResult.result.match(/\s＞\s(?:成功数|計算結果)?(\-?\d+)$/))) {
                           value = match[1];
                         } else if (target.isCheckProperty && (rollResult.isSuccess || rollResult.isFailure)) {
@@ -543,11 +543,11 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     }
                   }
                   //console.log(value)
-                  if (value == null 
-                    || (rollResult && rollResult.isDiceRollTable && rollResult.isFailure) 
-                    || (isOperateNumber && value !== '' && isNaN(value))) {
+                  if (value == null
+                    || (rollResult && rollResult.isDiceRollTable && rollResult.isFailure)
+                    || (isOperateNumber && value !== '' && isNaN(value as number))) {
                     throw `→ ${target.name == '' ? '(無名變數)' : target.name} 操作 → 命令錯誤：` + command.operator + command.value;
-                  } else if (target.isUrl && !StringUtil.validUrl(StringUtil.cr(value))) {
+                  } else if (target.isUrl && !StringUtil.validUrl(StringUtil.cr(String(value)))) {
                     throw `→ ${target.name == '' ? '(無名變數)' : target.name} 操作 → URL無效：` + command.value;
                   }
                   //console.log(value)
@@ -556,28 +556,28 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                       if (value != '') {
                         if (target.isNumberResource && !isOperateMaxValue) {
                           const dValue: number = parseInt(target.currentValue + '');
-                          target.currentValue = parseInt(value);
-                          delayRef = (parseInt(value) - dValue).toString();
+                          target.currentValue = parseInt(String(value));
+                          delayRef = (parseInt(String(value)) - dValue).toString();
                         } else {
                           const dValue = target.value == null ? 0 : parseInt(target.value + '');
-                          target.value = parseInt(value);
-                          delayRef = (parseInt(value) - dValue).toString();
+                          target.value = parseInt(String(value));
+                          delayRef = (parseInt(String(value)) - dValue).toString();
                         }
                       } else {
                         delayRef = '0';
                       }
                     } else if (target.isCheckProperty) {
-                      target.value = (value == '' || parseInt(value) == 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off' || StringUtil.toHalfWidth(value).toLowerCase() === '☐') ? '' : target.name;
+                      target.value = (value == '' || parseInt(String(value)) == 0 || StringUtil.toHalfWidth(String(value)).toLowerCase() === 'off' || StringUtil.toHalfWidth(String(value)).toLowerCase() === '☐') ? '' : target.name;
                     } else if (target.isNote || target.isUrl) {
-                      target.value = StringUtil.cr(value);
+                      target.value = StringUtil.cr(String(value));
                     } else {
-                      target.value = StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/g, ' ');
+                      target.value = StringUtil.cr(String(value)).replace(/(:?\r\n|\r|\n)/g, ' ');
                     }
                   } else if (target.isNumberResource && !isOperateMaxValue) {
                     if (value != null && value.toString() != '') {
                       //console.log(value)
                       const dValue: number = parseInt(target.currentValue + '');
-                      const result: number = parseInt((target.currentValue && operator !== '=') ? target.currentValue.toString() : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                      const result: number = parseInt((target.currentValue && operator !== '=') ? target.currentValue.toString() : '0') + (parseInt(String(value)) * (operator === '-' ? -1 : 1));
                       if (result <= parseInt(target.currentValue + '')) {
                         target.currentValue = result;
                       } else if (result > parseInt(target.value + '') && parseInt(target.currentValue + '') < parseInt(target.value + '') && parseInt(target.value + '') != 0) {
@@ -591,13 +591,13 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     }
                   } else if (isOperateNumber) {
                     const dValue: number = target.currentValue == null ? 0 : parseInt(target.value.toString());
-                    if (value != null && value.toString() != '') target.value = parseInt(target.value && operator !== '=' ? target.value + '' : '0') + (parseInt(value) * (operator === '-' ? -1 : 1));
+                    if (value != null && value.toString() != '') target.value = parseInt(target.value && operator !== '=' ? target.value + '' : '0') + (parseInt(String(value)) * (operator === '-' ? -1 : 1));
                     delayRef = (parseInt(target.value + '') - dValue).toString();
                   } else if (target.isCheckProperty) {
                     //if (operator == '=') {
                     switch (operator) {
                     case '=':
-                      target.value = (value === '' || parseInt(value) === 0 || StringUtil.toHalfWidth(value).toLowerCase() === 'off' || StringUtil.toHalfWidth(value).toLowerCase() === '☐') ? '' : target.name;
+                      target.value = (value === '' || parseInt(String(value)) === 0 || StringUtil.toHalfWidth(String(value)).toLowerCase() === 'off' || StringUtil.toHalfWidth(String(value)).toLowerCase() === '☐') ? '' : target.name;
                       break;
                     case '+':
                       target.value = target.name;
@@ -608,9 +608,9 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     }
                   } else if (operator === '=') {
                     if (target.isNote || target.isUrl) {
-                      target.value = (isNaN(value) || value === '' || target.isUrl) ? StringUtil.cr(value) : parseInt(value);
+                      target.value = (isNaN(value as number) || value === '' || target.isUrl) ? StringUtil.cr(String(value)) : parseInt(String(value));
                     } else {
-                      target.value = (isNaN(value) || value === '') ? StringUtil.cr(value).replace(/(:?\r\n|\r|\n)/g, ' ') : parseInt(value);
+                      target.value = (isNaN(value as number) || value === '') ? StringUtil.cr(String(value)).replace(/(:?\r\n|\r|\n)/g, ' ') : parseInt(String(value));
                     }
                   } else {
                     throw `→ ${target.name === '' ? '(無名變數)' : target.name} 操作 → 命令錯誤：` + command.operator + command.value;
@@ -628,7 +628,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                     if (rollResult.isDiceRollTable) {
                       loggingText += ` (${rollResult.tableName}：${rollResult.isEmptyDice ? '' : '🎲'}${rollResult.result.split(/\s＞\s/)[0]})`;
                     } else {
-                      loggingText += ` (${ rollResult.result.split(/\s＞\s/g).map((str, j) => (j == 0 ? (rollResult.isEmptyDice ? '計算結果' : '🎲' + gameType + '：' + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') })`;
+                      loggingText += ` (${ rollResult.result.split(/\s＞\s/g).map((str, j) => (j == 0 ? (rollResult!.isEmptyDice ? '計算結果' : '🎲' + gameType + '：' + str.replace(/^c?\(/i, '').replace(/\)$/, '')) : str)).join(' → ') })`;
                     }
                     if (!rollResult.isEmptyDice) isDiceRoll = true;
                   }
@@ -657,19 +657,19 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         }
       }
       if (targetCharacter) {
-        text = targetCharacter.chatPalette.evaluate(text, targetCharacter.rootDataElement, delayRefs);
+        text = targetCharacter.chatPalette!.evaluate(text, targetCharacter.rootDataElement, delayRefs);
         // スタンド
         // 空文字でもスタンド反応するのは便利かと思ったがメッセージ送信後にもう一度エンター押すだけで誤爆するので指定時のみ
         if (StringUtil.cr(text).trim() || standName) {
           // 立ち絵
           if (targetCharacter.standList) {
-            let imageIdentifier = null;
+            let imageIdentifier: string | null = null;
             if (isUseFaceIcon && targetCharacter.faceIcon) {
               imageIdentifier = targetCharacter.faceIcon.identifier;
             } else {
               imageIdentifier = targetCharacter.imageFile ? targetCharacter.imageFile.identifier : null;
             }
-            const standInfo = targetCharacter.standList.matchStandInfo(text, imageIdentifier, standName);
+            const standInfo = targetCharacter.standList.matchStandInfo(text, imageIdentifier ?? '', standName);
             if (isUseStandImage && isUseStandImageOnChatTab) {
               if (standInfo.farewell) {
                 this.farewellStand(targetCharacter);
@@ -684,8 +684,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
                 if (sendObj.secret) {
                   const targetPeer = ObjectStore.instance.get<PeerCursor>(sendTo);
                   if (targetPeer) {
-                    if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('POPUP_STAND_IMAGE', sendObj, targetPeer.peerId);
-                    EventSystem.call('POPUP_STAND_IMAGE', sendObj, PeerCursor.myCursor.peerId);
+                    if (targetPeer.peerId != PeerCursor.myCursor!.peerId) EventSystem.call('POPUP_STAND_IMAGE', sendObj, targetPeer.peerId);
+                    EventSystem.call('POPUP_STAND_IMAGE', sendObj, PeerCursor.myCursor!.peerId);
                   }
                 } else {
                   EventSystem.call('POPUP_STAND_IMAGE', sendObj);
@@ -703,13 +703,13 @@ export class ChatInputComponent implements OnInit, OnDestroy {
           const sendObj = {
             identifier: identifier, 
             secret: sendTo ? true : false,
-            sender: PeerCursor.myCursor.peerId
+            sender: PeerCursor.myCursor!.peerId
           };
           if (sendObj.secret) {
             const targetPeer = ObjectStore.instance.get<PeerCursor>(sendTo);
             if (targetPeer) {
-              if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('PLAY_CUT_IN', sendObj, targetPeer.peerId);
-              EventSystem.call('PLAY_CUT_IN', sendObj, PeerCursor.myCursor.peerId);
+              if (targetPeer.peerId != PeerCursor.myCursor!.peerId) EventSystem.call('PLAY_CUT_IN', sendObj, targetPeer.peerId);
+              EventSystem.call('PLAY_CUT_IN', sendObj, PeerCursor.myCursor!.peerId);
             }
           } else {
             EventSystem.call('PLAY_CUT_IN', sendObj);
@@ -733,7 +733,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       if (this.isUseChatBalloon && isUseStandImageOnChatTab && targetCharacter && StringUtil.cr(text).trim()) {
         // CHOICEコマンドの引数は💭としない
         const regArray = /^(([sＳｓ][rＲｒ][eＥｅ][pＰｐ][eＥｅ][aＡａ][tＴｔ]|[rＲｒ][eＥｅ][pＰｐ][eＥｅ][aＡａ][tＴｔ]|[sＳｓ][rＲｒ][eＥｅ][pＰｐ]|[rＲｒ][eＥｅ][pＰｐ]|[sＳｓ][xＸｘ]|[xＸｘ])?([\d０-９]+)?[ 　]+)?([\s\S]*)?/igm.exec(text);
-        let dialogText = (regArray[4] != null) ? regArray[4].trim() : text.trim();
+        let dialogText = (regArray![4] != null) ? regArray![4].trim() : text.trim();
         let choiceMatch;
         if (/^([sＳｓ]?[cＣｃ][hＨｈ][oＯｏ][iＩｉ][cＣｃ][eＥｅ][\d０-９]*)[ 　]+([^ 　]*)/ig.test(dialogText)) {
           dialogText = '';
@@ -747,7 +747,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         // const dialogRegExp = /(?:^|[^\￥])「([\s\S]+?[^\￥])」/gm; 
         //ToDO ちゃんとパースする
         let match;
-        const dialog = [];
+        const dialog: string[] = [];
         if ((match = dialogRegExp.exec(dialogText)) !== null) {
           dialog.push(match[1]);
         }
@@ -773,8 +773,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
           if (dialogObj.secret) {
             const targetPeer = ObjectStore.instance.get<PeerCursor>(sendTo);
             if (targetPeer) {
-              if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('POPUP_CHAT_BALLOON', dialogObj, targetPeer.peerId);
-              EventSystem.call('POPUP_CHAT_BALLOON', dialogObj, PeerCursor.myCursor.peerId);
+              if (targetPeer.peerId != PeerCursor.myCursor!.peerId) EventSystem.call('POPUP_CHAT_BALLOON', dialogObj, targetPeer.peerId);
+              EventSystem.call('POPUP_CHAT_BALLOON', dialogObj, PeerCursor.myCursor!.peerId);
             }
           } else {
             EventSystem.call('POPUP_CHAT_BALLOON', dialogObj);
@@ -784,8 +784,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         }
       }
 
-      if (PeerCursor.isGMHold && !sendTo && !PeerCursor.myCursor.isGMMode && /成為\s*GM|GM\s*Mode/i.test(StringUtil.toHalfWidth(text))) {
-        PeerCursor.myCursor.isGMMode = true;
+      if (PeerCursor.isGMHold && !sendTo && !PeerCursor.myCursor!.isGMMode && /成為\s*GM|GM\s*Mode/i.test(StringUtil.toHalfWidth(text))) {
+        PeerCursor.myCursor!.isGMMode = true;
         this.chatMessageService.sendOperationLog('已進入GM模式');
         EventSystem.trigger('CHANGE_GM_MODE', null);
       }
@@ -802,7 +802,7 @@ export class ChatInputComponent implements OnInit, OnDestroy {
           isBlackPaint: targetCharacter ? targetCharacter.isBlackPaint : false,
           aura: targetCharacter ? targetCharacter.aura : -1,
           isUseFaceIcon: isUseFaceIcon,
-          characterIdentifier: targetCharacter ? targetCharacter.identifier : null,
+          characterIdentifier: targetCharacter ? targetCharacter.identifier : undefined,
           standIdentifier: standIdentifier,
           standName: standName,
           isUseStandImage: (isUseStandImage && isUseStandImageOnChatTab)
@@ -861,9 +861,9 @@ export class ChatInputComponent implements OnInit, OnDestroy {
             this.panelService.open(PeerMenuComponent, { width: 520, height: 600, top: position.y - 100, left: position.x - 100 });
           } }
         ],
-        PeerCursor.myCursor.name, 
-        null,
-        PeerCursor.myCursor.color,
+        PeerCursor.myCursor!.name,
+        undefined,
+        PeerCursor.myCursor!.color,
         true
       );
       return;
@@ -885,21 +885,21 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       }
     ];
     if (this.character) {
-      if (!this.isUseFaceIcon || !this.character.faceIcon) {
-        if (this.character.imageFiles.length > 1) {
+      if (!this.isUseFaceIcon || !this.character!.faceIcon) {
+        if (this.character!.imageFiles.length > 1) {
           contextMenuActions.push(ContextMenuSeparator);
           contextMenuActions.push({
             name: '画像切換',
-            action: null,
-            subActions: this.character.imageFiles.map((image, i) => {
-              return { 
-                name: `${this.character.currntImageIndex == i ? '◉' : '○'}`, 
-                action: () => { 
-                  this.character.currntImageIndex = i;
-                  if (!this.character.isHideIn && this.character.location.name === 'table') SoundEffect.play(PresetSound.surprise);
+            action: undefined,
+            subActions: this.character!.imageFiles.map((image, i) => {
+              return {
+                name: `${this.character!.currntImageIndex == i ? '◉' : '○'}`,
+                action: () => {
+                  this.character!.currntImageIndex = i;
+                  if (!this.character!.isHideIn && this.character!.location.name === 'table') SoundEffect.play(PresetSound.surprise);
                   EventSystem.trigger('UPDATE_INVENTORY', null);
-                }, 
-                default: this.character.currntImageIndex == i,
+                },
+                default: this.character!.currntImageIndex == i,
                 icon: image,
                 checkBox: 'radio'
               };
@@ -908,62 +908,62 @@ export class ChatInputComponent implements OnInit, OnDestroy {
         }
         contextMenuActions.push(ContextMenuSeparator);
         contextMenuActions.push(
-          { name: '圖片效果', action: null, subActions: [
-            (this.character.isInverse
+          { name: '圖片效果', action: undefined, subActions: [
+            (this.character!.isInverse
               ? {
                 name: '☑ 反転', action: () => {
-                  this.character.isInverse = false;
+                  this.character!.isInverse = false;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
                 },
                 checkBox: 'check'
               } : {
                 name: '☐ 反転', action: () => {
-                  this.character.isInverse = true;
+                  this.character!.isInverse = true;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
                 },
                 checkBox: 'check'
               }),
-            (this.character.isHollow
+            (this.character!.isHollow
               ? {
                 name: '☑ 模糊', action: () => {
-                  this.character.isHollow = false;
+                  this.character!.isHollow = false;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
                 },
                 checkBox: 'check'
               } : {
                 name: '☐ 模糊', action: () => {
-                  this.character.isHollow = true;
+                  this.character!.isHollow = true;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
                 },
                 checkBox: 'check'
               }),
-            (this.character.isBlackPaint
+            (this.character!.isBlackPaint
               ? {
                 name: '☑ 黑色塗抹', action: () => {
-                  this.character.isBlackPaint = false;
+                  this.character!.isBlackPaint = false;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
                 },
                 checkBox: 'check'
               } : {
                 name: '☐ 黑色塗抹', action: () => {
-                  this.character.isBlackPaint = true;
+                  this.character!.isBlackPaint = true;
                   EventSystem.trigger('UPDATE_INVENTORY', null);
                 },
                 checkBox: 'check'
               }),
-              { name: '光環', action: null, subActions: [{ name: `${this.character.aura == -1 ? '◉' : '○'} 無`, action: () => { this.character.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['黑', '藍', '綠', '青', '紅', '紫', '黃', '白'].map((color, i) => {  
-                return { name: `${this.character.aura == i ? '◉' : '○'} ${color}`, action: () => { this.character.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) }, colorSample: true, checkBox: 'radio' };
+              { name: '光環', action: undefined, subActions: [{ name: `${this.character!.aura == -1 ? '◉' : '○'} 無`, action: () => { this.character!.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['黑', '藍', '綠', '青', '紅', '紫', '黃', '白'].map((color, i) => {
+                return { name: `${this.character!.aura == i ? '◉' : '○'} ${color}`, action: () => { this.character!.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) }, colorSample: true, checkBox: 'radio' };
               })) },
             ContextMenuSeparator,
             {
               name: '重置', action: () => {
-                this.character.isInverse = false;
-                this.character.isHollow = false;
-                this.character.isBlackPaint = false;
-                this.character.aura = -1;
+                this.character!.isInverse = false;
+                this.character!.isHollow = false;
+                this.character!.isBlackPaint = false;
+                this.character!.aura = -1;
                 EventSystem.trigger('UPDATE_INVENTORY', null);
               },
-              disabled: !this.character.isInverse && !this.character.isHollow && !this.character.isBlackPaint && this.character.aura == -1
+              disabled: !this.character!.isInverse && !this.character!.isHollow && !this.character!.isBlackPaint && this.character!.aura == -1
             }
           ]
         });
@@ -972,35 +972,35 @@ export class ChatInputComponent implements OnInit, OnDestroy {
           contextMenuActions.push(ContextMenuSeparator);
           contextMenuActions.push({
             name: '切換大頭照 icon',
-            action: null,
-            subActions: this.character.faceIcons.map((faceIconImage, i) => {
-              return { 
-                name: `${this.character.currntIconIndex == i ? '◉' : '○'}`, 
-                action: () => { 
-                  if (this.character.currntIconIndex != i) {
-                    this.character.currntIconIndex = i;
+            action: undefined,
+            subActions: this.character!.faceIcons.map((faceIconImage, i) => {
+              return {
+                name: `${this.character!.currntIconIndex == i ? '◉' : '○'}`,
+                action: () => {
+                  if (this.character!.currntIconIndex != i) {
+                    this.character!.currntIconIndex = i;
                   }
-                }, 
-                default: this.character.currntIconIndex == i,
+                },
+                default: this.character!.currntIconIndex == i,
                 icon: faceIconImage,
                 checkBox: 'radio'
               };
             }),
-            disabled: this.character.faceIcons.length <= 1
+            disabled: this.character!.faceIcons.length <= 1
           });
         //}
       }
       contextMenuActions.push(ContextMenuSeparator);
-      contextMenuActions.push({ name: '顯示詳細...', action: () => { this.showDetail(this.character); } });
+      contextMenuActions.push({ name: '顯示詳細...', action: () => { this.showDetail(this.character!); } });
       if (!this.onlyCharacters) {
-        contextMenuActions.push({ name: '顯示聊天面板...', action: () => { this.showChatPalette(this.character) } });
+        contextMenuActions.push({ name: '顯示聊天面板...', action: () => { this.showChatPalette(this.character!) } });
       }
-      contextMenuActions.push({ name: '立繪設定...', action: () => { this.showStandSetting(this.character) } });
+      contextMenuActions.push({ name: '立繪設定...', action: () => { this.showStandSetting(this.character!) } });
     }
-    this.contextMenuService.open(position, contextMenuActions, this.character.name);
+    this.contextMenuService.open(position, contextMenuActions, this.character!.name);
   }
 
-  farewellStand(targetCharacter: GameCharacter=null) {
+  farewellStand(targetCharacter: GameCharacter | null = null) {
     if (!targetCharacter) targetCharacter = this.character;
     if (this.character) {
       const sendObj = {
@@ -1009,8 +1009,8 @@ export class ChatInputComponent implements OnInit, OnDestroy {
       if (this.sendTo) {
         const targetPeer = ObjectStore.instance.get<PeerCursor>(this.sendTo);
         if (targetPeer) {
-          if (targetPeer.peerId != PeerCursor.myCursor.peerId) EventSystem.call('FAREWELL_STAND_IMAGE', sendObj, targetPeer.peerId);
-          EventSystem.call('FAREWELL_STAND_IMAGE', sendObj, PeerCursor.myCursor.peerId);
+          if (targetPeer.peerId != PeerCursor.myCursor!.peerId) EventSystem.call('FAREWELL_STAND_IMAGE', sendObj, targetPeer.peerId);
+          EventSystem.call('FAREWELL_STAND_IMAGE', sendObj, PeerCursor.myCursor!.peerId);
         }
       } else {
         EventSystem.call('FAREWELL_STAND_IMAGE', sendObj);

@@ -12,7 +12,7 @@ import { GameTableMask } from '@udonarium/game-table-mask';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { RangeArea } from '@udonarium/range';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
-import { TableSelecter } from '@udonarium/table-selecter';
+import { TableSelector } from '@udonarium/table-selector';
 import { Terrain } from '@udonarium/terrain';
 import { TextNote } from '@udonarium/text-note';
 
@@ -45,7 +45,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('pickArea', { static: true }) pickArea: ElementRef<HTMLElement>;
   @ViewChild('pickCursor', { static: true }) pickCursor: ElementRef<HTMLElement>;
 
-  get tableSelecter(): TableSelecter { return this.tabletopService.tableSelecter; }
+  get tableSelector(): TableSelector { return this.tabletopService.tableSelector; }
   get currentTable(): GameTable { return this.tabletopService.currentTable; }
   get gridHeight(): number { return this.tabletopService.currentTable.gridHeight; }
 
@@ -67,9 +67,9 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
   private viewRotateY: number = 0;
   private viewRotateZ: number = 10;
 
-  private mouseGesture: TableMouseGesture = null;
-  private touchGesture: TableTouchGesture = null;
-  private pickGesture: TablePickGesture = null;
+  private mouseGesture: TableMouseGesture | null = null;
+  private touchGesture: TableTouchGesture | null = null;
+  private pickGesture: TablePickGesture | null = null;
 
   get characters(): GameCharacter[] { return this.tabletopService.characters; }
   get tableMasks(): GameTableMask[] { return this.tabletopService.tableMasks; }
@@ -82,7 +82,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
   get peerCursors(): PeerCursor[] { return this.tabletopService.peerCursors; }
 
   get isStealthMode(): boolean { return GameCharacter.isStealthMode; }
-  get isGMMode(): boolean { return PeerCursor.myCursor && PeerCursor.myCursor.isGMMode; }
+  get isGMMode(): boolean { return !!(PeerCursor.myCursor && PeerCursor.myCursor.isGMMode); }
 
   get clipCss(): string {
     const rect = this.currentTable.gridClipRect;
@@ -178,7 +178,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     EventSystem.register(this)
       .on('UPDATE_GAME_OBJECT', event => {
-        if (event.data.identifier !== this.currentTable.identifier && event.data.identifier !== this.tableSelecter.identifier) return;
+        if (event.data.identifier !== this.currentTable.identifier && event.data.identifier !== this.tableSelector.identifier) return;
         console.log('UPDATE_GAME_OBJECT GameTableComponent ' + this.currentTable.identifier);
 
         this.setGameTableGrid(this.currentTable.width, this.currentTable.height, this.currentTable.gridSize, this.currentTable.gridType, this.currentTable.gridColor, this.currentTable.isShowNumber);
@@ -186,7 +186,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
       .on('DRAG_LOCKED_OBJECT', event => {
         this.isTableTransformMode = true;
         this.pointerDeviceService.isDragging = false;
-        const opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
+        const opacity: number = this.tableSelector.gridShow ? 1.0 : 0.0;
         this.gridCanvas.nativeElement.style.opacity = opacity + '';
       })
       .on('RESET_POINT_OF_VIEW', event => {
@@ -198,7 +198,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
           this.gridCanvas.nativeElement.style.opacity = '0.0';
           this.gameTable.nativeElement.style.transition = '0.1s ease-out';
           setTimeout(() => {
-            this.gameTable.nativeElement.style.transition = null;
+            this.gameTable.nativeElement.style.transition = '';
           }, 100);
           if (event && event.data == 'top') {
             this.setTransform(0, 0, 0, 0, 0, 0, true);
@@ -213,7 +213,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
           //console.log(`move table to focus (${event.data.x}, ${event.data.y})`);
           this.gameTable.nativeElement.style.transition = '0.1s ease-out';
           setTimeout(() => {
-            this.gameTable.nativeElement.style.transition = null;
+            this.gameTable.nativeElement.style.transition = '';
           }, 100);
           /* 
           Porting from Udonarium Lily
@@ -273,9 +273,9 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy() {
     EventSystem.unregister(this);
-    this.mouseGesture.destroy();
-    this.touchGesture.destroy();
-    this.pickGesture.destroy();
+    this.mouseGesture?.destroy();
+    this.touchGesture?.destroy();
+    this.pickGesture?.destroy();
     if (this._currentTableImageUrl) URL.revokeObjectURL(this._currentTableImageUrl);
     if (this._currentBackgroundImageUrl) URL.revokeObjectURL(this._currentBackgroundImageUrl);
     if (this._currentBackgroundImageUrl2) URL.revokeObjectURL(this._currentBackgroundImageUrl2);
@@ -313,7 +313,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onTableTouchStart() {
-    this.mouseGesture.cancel();
+    this.mouseGesture?.cancel();
   }
 
   onTableTouchEnd() {
@@ -354,7 +354,7 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
       this.gridCanvas.nativeElement.style.opacity = 1.0 + '';
     }
 
-    if (!document.activeElement.contains(e.target)) {
+    if (!document.activeElement?.contains(e.target)) {
       this.removeSelectionRanges();
       this.removeFocus();
     }
@@ -386,14 +386,14 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isTableTransformMode = false;
     SoundEffect.playLocal(PresetSound.selectionStart);
 
-    if (!this.pickGesture.isMagneticMode) {
-      const opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
+    if (!this.pickGesture?.isMagneticMode) {
+      const opacity: number = this.tableSelector.gridShow ? 1.0 : 0.0;
       this.gridCanvas.nativeElement.style.opacity = opacity + '';
     }
   }
 
   onTablePickEnd() {
-    if (this.pickGesture.isKeepSelection) return;
+    if (this.pickGesture?.isKeepSelection) return;
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (!this.contextMenuService.isShow) this.selectionService.clear();
@@ -412,16 +412,16 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   cancelInput() {
-    this.mouseGesture.cancel();
+    this.mouseGesture?.cancel();
     this.isTableTransformMode = true;
     this.pointerDeviceService.isDragging = false;
-    const opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
+    const opacity: number = this.tableSelector.gridShow ? 1.0 : 0.0;
     this.gridCanvas.nativeElement.style.opacity = opacity + '';
   }
 
   @HostListener('contextmenu', ['$event'])
   onContextMenu(e: any) {
-    if (!document.activeElement.contains(this.gameObjects.nativeElement)) return;
+    if (!document.activeElement?.contains(this.gameObjects.nativeElement)) return;
     e.preventDefault();
 
     if (!this.pointerDeviceService.isAllowedToOpenContextMenu) return;
@@ -502,13 +502,13 @@ export class GameTableComponent implements OnInit, OnDestroy, AfterViewInit {
     const render = new GridLineRender(this.gridCanvas.nativeElement);
     render.render(width, height, gridSize, gridType, gridColor, isShowNumber);
 
-    const opacity: number = this.tableSelecter.gridShow ? 1.0 : 0.0;
+    const opacity: number = this.tableSelector.gridShow ? 1.0 : 0.0;
     this.gridCanvas.nativeElement.style.opacity = opacity + '';
   }
 
   private removeSelectionRanges() {
     const selection = window.getSelection();
-    if (!selection.isCollapsed) {
+    if (selection && !selection.isCollapsed) {
       selection.removeAllRanges();
     }
   }

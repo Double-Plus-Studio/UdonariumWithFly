@@ -19,7 +19,7 @@ export class DiceRollTableList extends ObjectNode implements InnerXml {
   addDiceRollTable(diceRollTable: DiceRollTable)
   addDiceRollTable(name: string, identifier?: string)
   addDiceRollTable(...args: any[]) {
-    let diceRollTable: DiceRollTable = null;
+    let diceRollTable: DiceRollTable | null = null;
     if (args[0] instanceof DiceRollTable) {
       diceRollTable = args[0];
     } else {

@@ -83,18 +83,18 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
       loggingNativeElement.addEventListener(eventName, endFunc);
     });
     */
-    loggingNativeElement.addEventListener('input', () => { 
+    loggingNativeElement.addEventListener('input', () => {
       //if (!LoggingValueMap.get(identifier).isEditing) return;
-      if (LoggingValueMap.get(identifier).timerId) clearTimeout(LoggingValueMap.get(identifier).timerId);
-      LoggingValueMap.get(identifier).timerId = setTimeout(() => {
+      if (LoggingValueMap.get(identifier)!.timerId) clearTimeout(LoggingValueMap.get(identifier)!.timerId);
+      LoggingValueMap.get(identifier)!.timerId = setTimeout(() => {
         this.doLogging();
       }, this.timeout);
     });
 
     // 汚い、本来初期化要るだろうけどとりあえずコマンドへの対処なのでこのまま
     this.dataElement.changeObserver = () => {
-      if (LoggingValueMap.get(identifier).timerId) clearTimeout(LoggingValueMap.get(identifier).timerId);
-      LoggingValueMap.get(identifier).timerId = setTimeout(() => {
+      if (LoggingValueMap.get(identifier)!.timerId) clearTimeout(LoggingValueMap.get(identifier)!.timerId);
+      LoggingValueMap.get(identifier)!.timerId = setTimeout(() => {
         if (this.doLogging) this.doLogging(false);
       }, 0);
     }
@@ -112,7 +112,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
   ngOnDestroy() {
     const LoggingValueMap = LoggingInputDirective.LoggingValueMap;
     const identifier = this.dataElement.identifier;
-    if (LoggingValueMap.get(identifier) && LoggingValueMap.get(identifier).timerId) {
+    if (LoggingValueMap.get(identifier) && LoggingValueMap.get(identifier)!.timerId) {
       this.doLogging();
     }
   }
@@ -121,11 +121,11 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
     const LoggingValueMap = LoggingInputDirective.LoggingValueMap;
     const identifier = this.dataElement.identifier;
     //LoggingValueMap.get(identifier).isEditing = false;
-    if (LoggingValueMap.get(identifier).timerId) {
-      clearTimeout(LoggingValueMap.get(identifier).timerId);
-      LoggingValueMap.get(identifier).timerId = null;
+    if (LoggingValueMap.get(identifier)!.timerId) {
+      clearTimeout(LoggingValueMap.get(identifier)!.timerId);
+      LoggingValueMap.get(identifier)!.timerId = undefined;
     }
-    const oldValue = LoggingValueMap.get(identifier).oldValue;
+    const oldValue = LoggingValueMap.get(identifier)!.oldValue;
     const value = this.dataElement.loggingValue;
     const dataElement = this.dataElement;
     if (sendMsssage && !this.isDisable && value != oldValue) {
@@ -137,7 +137,7 @@ export class LoggingInputDirective implements AfterViewInit, OnDestroy {
       }
       this.chatMessageService.sendOperationLog(text);
     }
-    LoggingValueMap.get(identifier).oldValue = value;
+    LoggingValueMap.get(identifier)!.oldValue = value;
   }
 
   constructor(

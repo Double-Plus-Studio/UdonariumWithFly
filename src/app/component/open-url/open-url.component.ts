@@ -14,7 +14,7 @@ export class OpenUrlComponent implements OnInit, OnDestroy {
   url: string = '';
   title: string = '';
   subTitle: string = '';
-  urlObj: URL;
+  urlObj: URL | null;
 
   constructor(
     private panelService: PanelService,

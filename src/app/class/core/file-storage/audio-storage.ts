@@ -91,7 +91,7 @@ export class AudioStorage {
     return false;
   }
 
-  get(identifier: string): AudioFile {
+  get(identifier: string): AudioFile | null {
     const audio: AudioFile = this.hash[identifier];
     if (audio) return audio;
     return null;

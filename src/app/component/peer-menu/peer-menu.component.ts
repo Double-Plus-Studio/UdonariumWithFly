@@ -6,7 +6,7 @@ import { PeerContext } from '@udonarium/core/system/network/peer-context';
 import { PeerSessionGrade } from '@udonarium/core/system/network/peer-session-state';
 import { PeerCursor } from '@udonarium/peer-cursor';
 
-import { FileSelecterComponent } from 'component/file-selecter/file-selecter.component';
+import { FileSelectorComponent } from 'component/file-selector/file-selector.component';
 import { LobbyComponent } from 'component/lobby/lobby.component';
 import { AppConfig, AppConfigService } from 'service/app-config.service';
 import { ModalService } from 'service/modal.service';
@@ -58,7 +58,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   private interval: NodeJS.Timeout;
   get myPeer(): PeerCursor { return PeerCursor.myCursor; }
 
-  get myPeerName(): string {
+  get myPeerName(): string | null {
     if (!PeerCursor.myCursor) return null;
     return PeerCursor.myCursor.name;
   }
@@ -133,7 +133,7 @@ export class PeerMenuComponent implements OnInit, OnDestroy, AfterViewInit {
   changeIcon() {
     let currentImageIdentifires: string[] = [];
     if (this.myPeer && this.myPeer.imageIdentifier) currentImageIdentifires = [this.myPeer.imageIdentifier];
-    this.modalService.open<string>(FileSelecterComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
+    this.modalService.open<string>(FileSelectorComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.myPeer || !value) return;
       this.myPeer.imageIdentifier = value;
       const file: ImageFile = ImageStorage.instance.get(value);

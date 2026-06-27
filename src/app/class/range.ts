@@ -17,7 +17,7 @@ export class RangeArea extends TabletopObject {
   @SyncVar() isLocked: boolean = false;
   @SyncVar() rotate: number = 0;
   @SyncVar() zindex: number = 0;
-  @SyncVar() followingCharctorIdentifier: string = null;
+  @SyncVar() followingCharctorIdentifier: string | null = null;
   @SyncVar() followingCounterDummy: number = 0; // 追従時再描画用ダミー
 
   @SyncVar() offSetX: boolean = false;
@@ -56,7 +56,7 @@ export class RangeArea extends TabletopObject {
     return this.type === 'LINE' || this.type === 'CORN';
   }
 
-  get followingCharactor(): GameCharacter {
+  get followingCharactor(): GameCharacter | null {
     if (this.followingCharctorIdentifier) {
       if (!this.followingCharactorCache || this.followingCharactorCache.identifier !== this.followingCharctorIdentifier) {
         const object = ObjectStore.instance.get(this.followingCharctorIdentifier);
@@ -72,7 +72,7 @@ export class RangeArea extends TabletopObject {
     }
     return this.followingCharactorCache;
   }
-  set followingCharactor(followingCharacter: GameCharacter) {
+  set followingCharactor(followingCharacter: GameCharacter | null) {
     if (!followingCharacter) {
       this. followingCharactorCache = null;
       this.followingCharctorIdentifier = null;
@@ -81,7 +81,7 @@ export class RangeArea extends TabletopObject {
       this.followingCharctorIdentifier = followingCharacter.identifier;
     }
   }
-  private followingCharactorCache: GameCharacter = null;
+  private followingCharactorCache: GameCharacter | null = null;
 
   gridSize: number = 50;
 
@@ -113,7 +113,7 @@ export class RangeArea extends TabletopObject {
   }
 
   static create(name: string, width: number, length: number, opacity: number, identifier?: string): RangeArea {
-    let object: RangeArea = null;
+    let object: RangeArea | null = null;
 
     if (identifier) {
       object = new RangeArea(identifier);

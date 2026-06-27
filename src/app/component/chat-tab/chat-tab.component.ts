@@ -87,10 +87,10 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
   @ViewChild('logContainer', { static: true }) logContainerRef: ElementRef<HTMLDivElement>;
   @ViewChild('messageContainer', { static: true }) messageContainerRef: ElementRef<HTMLDivElement>;
 
-  private topElm: HTMLElement = null;
-  private bottomElm: HTMLElement = null;
-  private topElmBox: DOMRect = null;
-  private bottomElmBox: DOMRect = null;
+  private topElm: HTMLElement | null = null;
+  private bottomElm: HTMLElement | null = null;
+  private topElmBox: DOMRect | null = null;
+  private bottomElmBox: DOMRect | null = null;
 
   private topIndex = 0;
   private bottomIndex = 0;
@@ -136,9 +136,9 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
 
   get isEmpty(): boolean { return this.chatTab.chatMessages.every(chatMessage => !chatMessage.isDisplayable); }
 
-  private scrollEventShortTimer: ResettableTimeout = null;
-  private scrollEventLongTimer: ResettableTimeout = null;
-  private addMessageEventTimer: NodeJS.Timeout = null;
+  private scrollEventShortTimer: ResettableTimeout | null = null;
+  private scrollEventLongTimer: ResettableTimeout | null = null;
+  private addMessageEventTimer: NodeJS.Timeout | null = null;
 
   private callbackOnScroll: any = () => this.onScroll();
   private callbackOnScrollToBottom: any = () => this.resetMessages();
@@ -189,8 +189,8 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
     EventSystem.unregister(this);
     this.panelService.scrollablePanel.removeEventListener('scroll', this.callbackOnScroll, false);
     this.panelService.scrollablePanel.removeEventListener('scrolltobottom', this.callbackOnScrollToBottom, false);
-    this.scrollEventShortTimer.clear();
-    this.scrollEventLongTimer.clear();
+    this.scrollEventShortTimer?.clear();
+    this.scrollEventLongTimer?.clear();
     if (this.addMessageEventTimer) clearTimeout(this.addMessageEventTimer);
     this.addMessageEventTimer = null;
   }
@@ -286,9 +286,9 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
 
     if (!hasTopElm && !hasBotomElm) return { hasTopBlank, hasBotomBlank };
 
-    let elm: HTMLElement = null;
-    let prevBox: DOMRect = null;
-    let currentBox: DOMRect = null;
+    let elm: HTMLElement | null = null;
+    let prevBox: DOMRect | null = null;
+    let currentBox: DOMRect | null = null;
     let diff: number = 0;
     if (hasBotomElm) {
       elm = this.bottomElm;
@@ -297,8 +297,8 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
       elm = this.topElm;
       prevBox = this.topElmBox;
     }
-    currentBox = elm.getBoundingClientRect();
-    diff = prevBox.top - currentBox.top - this.scrollSpeed;
+    currentBox = elm!.getBoundingClientRect();
+    diff = prevBox!.top - currentBox.top - this.scrollSpeed;
     if ((!hasTopBlank || !hasBotomBlank) && 0.5 ** 2 < diff ** 2) {
       this.panelService.scrollablePanel.scrollTop -= diff;
     }
@@ -331,15 +331,15 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
   }
 
   onScroll() {
-    this.scrollEventShortTimer.reset();
-    if (!this.scrollEventLongTimer.isActive) {
-      this.scrollEventLongTimer.reset();
+    this.scrollEventShortTimer!.reset();
+    if (!this.scrollEventLongTimer!.isActive) {
+      this.scrollEventLongTimer!.reset();
     }
   }
 
   private lazyScrollUpdate(isNormalUpdate: boolean = true) {
-    this.scrollEventShortTimer.stop();
-    this.scrollEventLongTimer.stop();
+    this.scrollEventShortTimer!.stop();
+    this.scrollEventLongTimer!.stop();
 
     const chatMessageElements = this.messageContainerRef.nativeElement.querySelectorAll<HTMLElement>('chat-message');
 
@@ -425,14 +425,14 @@ Ctrl+滑鼠左鍵+拖曳：將滑鼠游標接觸到的物件設為選取
     this.adjustIndex();
   }
 
-  private makeSampleMessage(from: string, to: string, name: string, toName: string, text: string, tag='mine'): ChatMessage {
+  private makeSampleMessage(from: string, to: string | null, name: string, toName: string | null, text: string, tag='mine'): ChatMessage {
     const message = new ChatMessage();
     message.from = from;
-    message.to = to;
+    message.to = to ?? '';
     message.name = name;
-    message.toName = toName;
+    message.toName = toName ?? '';
     message.color = '#444444';
-    message.toColor = toName ? '#444444' : null;
+    message.toColor = toName ? '#444444' : '';
     message.tag = tag;
     message.value = text;
     return message;

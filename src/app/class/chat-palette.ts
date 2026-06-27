@@ -67,7 +67,7 @@ export class ChatPalette extends ObjectNode {
       evaluate = line.palette;
     }
     
-    const delayRefName = [];
+    const delayRefName: string[] = [];
     //console.log(evaluate);
     const limit = 128;
     let loop = 0;
@@ -163,7 +163,7 @@ export class ChatPalette extends ObjectNode {
     this.isAnalized = true;
   }
 
-  private parseVariable(palette: string): PaletteVariable {
+  private parseVariable(palette: string): PaletteVariable | null {
     const array = /^[\s　]*[/／]{2}([^=＝{}｛｝\s　]+)[\s　]*[=＝][\s　]*(.+)[\s　]*/gi.exec(palette);
     if (!array) return null;
     const variable: PaletteVariable = {

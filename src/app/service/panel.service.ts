@@ -17,9 +17,9 @@ export interface PanelOption {
 export class PanelService {
   /* Todo */
   static defaultParentViewContainerRef: ViewContainerRef;
-  static UIPanelComponentClass: { new(...args: any[]): any } = null;
+  static UIPanelComponentClass: { new(...args: any[]): any } | null = null;
 
-  private panelComponentRef: ComponentRef<any>
+  private panelComponentRef: ComponentRef<any> | null = null;
   title: string = '無名面板';
   left: number = 0;
   top: number = 0;
@@ -30,7 +30,7 @@ export class PanelService {
   isAbleCloseButton: boolean = true;
   isAbleRotateButton: boolean = false;
 
-  scrollablePanel: HTMLDivElement = null;
+  scrollablePanel: HTMLDivElement | null = null;
 
   get isShow(): boolean {
     return this.panelComponentRef ? true : false;
@@ -43,8 +43,8 @@ export class PanelService {
 
     const injector = parentViewContainerRef.injector;
 
-    let panelComponentRef: ComponentRef<any> = parentViewContainerRef.createComponent(PanelService.UIPanelComponentClass, { index: parentViewContainerRef.length, injector: injector });
-    let bodyComponentRef: ComponentRef<any> = panelComponentRef.instance.content.createComponent(childComponent);
+    let panelComponentRef: ComponentRef<any> | null = parentViewContainerRef.createComponent(PanelService.UIPanelComponentClass!, { index: parentViewContainerRef.length, injector: injector });
+    let bodyComponentRef: ComponentRef<any> | null = panelComponentRef.instance.content.createComponent(childComponent);
 
     const childPanelService: PanelService = panelComponentRef.injector.get(PanelService);
 

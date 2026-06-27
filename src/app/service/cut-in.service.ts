@@ -21,7 +21,7 @@ export class CutInService {
       .map(cutInComponentRef => cutInComponentRef.instance.cutIn.identifier);
   }
 
-  play(cutIn: CutIn, isSecret=false, isTest=false, sender: string=null) {
+  play(cutIn: CutIn, isSecret=false, isTest=false, sender: string | null = null) {
     if (!cutIn) return;
     for (const cutInComponentRef of CutInService.cutInComponentRefQueue) {
       if (cutInComponentRef && cutInComponentRef.instance) {

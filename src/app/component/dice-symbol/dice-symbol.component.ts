@@ -113,7 +113,7 @@ import { SelectionState, TabletopSelectionService } from 'service/tabletop-selec
     standalone: false
 })
 export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy {
-  @Input() diceSymbol: DiceSymbol = null;
+  @Input() diceSymbol: DiceSymbol | null = null;
   @Input() is3D: boolean = false;
 
   get face(): string { return this.diceSymbol.face; }
@@ -157,7 +157,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
 
   animeState: string = 'inactive';
 
-  private iconHiddenTimer: NodeJS.Timeout = null;
+  private iconHiddenTimer: NodeJS.Timeout | null = null;
   get isIconHidden(): boolean { return this.iconHiddenTimer != null };
 
   gridSize: number = 50;
@@ -165,7 +165,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
   movableOption: MovableOption = {};
   rotableOption: RotableOption = {};
 
-  private interactGesture: ObjectInteractGesture = null;
+  private interactGesture: ObjectInteractGesture | null = null;
 
   viewRotateX = 50;
   viewRotateZ = 10;
@@ -328,7 +328,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
       const isContainDice = selectedDiceSymbols().some(diceSymbol => !diceSymbol.isCoin);
       actions.push(
         {
-          name: `選取的${isContainCoin ? '硬幣' : ''}${isContainCoin && isContainDice ? '／' : ''}${isContainDice ? '骰子' : ''}`, action: null, subActions: [
+          name: `選取的${isContainCoin ? '硬幣' : ''}${isContainCoin && isContainDice ? '／' : ''}${isContainDice ? '骰子' : ''}`, action: undefined, subActions: [
             {
               name: `全部${isContainCoin ? '拋擲' : ''}${isContainCoin && isContainDice ? '／' : ''}${isContainDice ? '擲骰' : ''}`, action: () => {
                 let needsSound = false;
@@ -463,7 +463,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
           checkBox: 'radio'
         });
       });
-      actions.push({ name: this.isCoin ? '正面／背面' : '骰面', action: null, subActions: subActions });
+      actions.push({ name: this.isCoin ? '正面／背面' : '骰面', action: undefined, subActions: subActions });
     }
 
     actions.push(ContextMenuSeparator);
@@ -485,7 +485,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
     actions.push({ name: '顯示詳細...', action: () => { this.showDetail(this.diceSymbol); } });
     if (this.diceSymbol.getUrls().length > 0) {
       actions.push({
-        name: '開啟參考URL', action: null,
+        name: '開啟參考URL', action: undefined,
         subActions: this.diceSymbol.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
@@ -498,7 +498,7 @@ export class DiceSymbolComponent implements OnChanges, AfterViewInit, OnDestroy 
               }
             },
             disabled: !StringUtil.validUrl(url),
-            error: !StringUtil.validUrl(url) ? 'URL無效' : null,
+            error: !StringUtil.validUrl(url) ? 'URL無效' : undefined,
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         }),

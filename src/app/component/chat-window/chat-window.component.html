@@ -16,7 +16,7 @@
             <input name="chat-tab" type="radio" value="{{chatTab.identifier}}" ng-control="options" [(ngModel)]="chatTabidentifier">
             <div><span [style.cursor]="chatTabidentifier !== chatTab.identifier ? 'pointer' : ''" [style.color]="chatTab.name === '' && chatTabidentifier !== chatTab.identifier ? 'gray' : ''">{{chatTab.name === '' ? '(無名分頁)' : chatTab.name}}</span>@if (chatTab.isUseStandImage) {
             <i class="material-icons small-font">how_to_reg</i>
-            }@if (chatTab.recieveOperationLogLevel > 0) {
+            }@if (chatTab.receiveOperationLogLevel > 0) {
             <i class="material-icons small-font">history_edu</i>
             }@if (chatTab.hasUnread) {
             <badge class="badge" [count]="chatTab.unreadLength"></badge>

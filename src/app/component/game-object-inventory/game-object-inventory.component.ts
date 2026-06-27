@@ -78,7 +78,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
   isEdit: boolean = false;
 
   stringUtil = StringUtil;
-  private sortStopTimerId = null;
+  private sortStopTimerId: NodeJS.Timeout | null = null;
 
   get sortTag(): string { return this.inventoryService.sortTag; }
   set sortTag(sortTag: string) { this.inventoryService.sortTag = sortTag; }
@@ -173,7 +173,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
   }
 
   getInventoryTags(gameObject: GameCharacter): DataElement[] {
-    return this.getInventory(gameObject.location.name).dataElementMap.get(gameObject.identifier);
+    return this.getInventory(gameObject.location.name).dataElementMap.get(gameObject.identifier) ?? [];
   }
 
   onContextMenu(event: Event, gameObject: GameCharacter) {
@@ -262,7 +262,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
       }
       actions.push({
         name: '選取的角色',
-        action: null,
+        action: undefined,
         subActions: subActions
       });
       actions.push(ContextMenuSeparator);
@@ -335,7 +335,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     if (gameObject.imageFiles.length > 1) {
       actions.push({
         name: '画像切換',
-        action: null,
+        action: undefined,
         subActions: gameObject.imageFiles.map((image, i) => {
           return {
             name: `${gameObject.currntImageIndex == i ? '◉' : '○'}`,
@@ -396,7 +396,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
         checkBox: 'check'
       })
     );
-    actions.push({ name: '圖片效果', action: null,
+    actions.push({ name: '圖片效果', action: undefined,
       subActions: [
       (gameObject.isInverse
         ? {
@@ -440,7 +440,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
           },
           checkBox: 'check'
         }),
-        { name: '光環', action: null, subActions: [ { name: `${gameObject.aura == -1 ? '◉' : '○'} 無`, action: () => { gameObject.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['黑', '藍', '綠', '青', '紅', '紫', '黃', '白'].map((color, i) => {
+        { name: '光環', action: undefined, subActions: [ { name: `${gameObject.aura == -1 ? '◉' : '○'} 無`, action: () => { gameObject.aura = -1; EventSystem.trigger('UPDATE_INVENTORY', null) }, checkBox: 'radio' }, ContextMenuSeparator].concat(['黑', '藍', '綠', '青', '紅', '紫', '黃', '白'].map((color, i) => {
           return { name: `${gameObject.aura == i ? '◉' : '○'} ${color}`, action: () => { gameObject.aura = i; EventSystem.trigger('UPDATE_INVENTORY', null) }, colorSample: true, checkBox: 'radio' };
         })) },
         ContextMenuSeparator,
@@ -521,7 +521,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     actions.push({ name: '立繪設定...', action: () => { this.showStandSetting(gameObject) }, disabled: !gameObject.isAllowsChat || gameObject.location.name === 'graveyard' });
     actions.push(ContextMenuSeparator);
     actions.push({
-      name: '開啟參考URL', action: null,
+      name: '開啟參考URL', action: undefined,
       subActions: gameObject.getUrls().map((urlElement) => {
         const url = urlElement.value.toString();
         return {
@@ -534,7 +534,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
             }
           },
           disabled: !StringUtil.validUrl(url),
-          error: !StringUtil.validUrl(url) ? 'URL無效' : null,
+          error: !StringUtil.validUrl(url) ? 'URL無效' : undefined,
           isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
         };
       }),
@@ -563,7 +563,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     ];
     actions.push({
       name: `從${ (locations.find((location) => { return location.name == gameObject.location.name }) || locations[1]).alias }移出`,
-      action: null,
+      action: undefined,
       subActions: locations
         .filter((location, i) => { return !(gameObject.location.name == location.name || (i == 1 && !locations.map(loc => loc.name).includes(gameObject.location.name))) })
         .map((location) => {
@@ -701,7 +701,7 @@ export class GameObjectInventoryComponent implements OnInit, OnDestroy {
     component.character = gameObject;
   }
 
-  selectGameObject(gameObject: GameObject, e: Event=null) {
+  selectGameObject(gameObject: GameObject, e: Event | null = null) {
     if (!(gameObject instanceof TabletopObject)) return;
     if (e && e instanceof MouseEvent && e.ctrlKey) {
       SoundEffect.playLocal(PresetSound.selectionStart);

@@ -13,7 +13,7 @@ const HOURS = 60 * 60 * 1000;
 
 @Injectable()
 export class ChatMessageService {
-  private intervalTimer: NodeJS.Timeout = null;
+  private intervalTimer: NodeJS.Timeout | null = null;
   private timeOffset: number = Date.now();
   private performanceOffset: number = performance.now();
 
@@ -80,7 +80,7 @@ export class ChatMessageService {
     const effective = !(isUseFaceIcon && this.findFaceIconIdentifier(sendFrom));
     const chatMessage: ChatMessageContext = {
       from: Network.peer.userId,
-      to: ChatMessageService.findId(sendTo),
+      to: ChatMessageService.findId(sendTo ?? ''),
       //to: this.findId(sendTo),
       //name: this.makeMessageName(sendFrom, sendTo),
       name: this.findObjectName(sendFrom),
@@ -107,7 +107,7 @@ export class ChatMessageService {
 
   sendOperationLog(text: string, logLevel: number=1) {
     for (const chatTab of this.chatTabs) {
-      if (chatTab.recieveOperationLogLevel < logLevel) continue;
+      if (chatTab.receiveOperationLogLevel < logLevel) continue;
       const chatMessage: ChatMessageContext = {
         from: Network.peer.userId,
         //to: ChatMessageService.findId(PeerCursor.myCursor.userId),
@@ -125,7 +125,7 @@ export class ChatMessageService {
     }
   }
 
-  static findId(identifier: string): string {
+  static findId(identifier: string): string | null {
     const object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter) {
       return object.identifier;
@@ -145,7 +145,7 @@ export class ChatMessageService {
     return identifier;
   }
 
-  private findObjectColor(identifier: string): string {
+  private findObjectColor(identifier: string): string | null {
     const object = ObjectStore.instance.get(identifier);
     if (object instanceof GameCharacter) {
       return object.chatPalette.color;

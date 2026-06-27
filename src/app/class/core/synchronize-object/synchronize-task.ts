@@ -15,12 +15,12 @@ export class SynchronizeTask {
   private static key: any = {};
   private static tasksMap: Map<ObjectIdentifier, SynchronizeTask[]> = new Map();
 
-  onsynchronize: (task: SynchronizeTask, identifier: string) => void;
-  onfinish: (task: SynchronizeTask) => void;
-  ontimeout: (task: SynchronizeTask, remainedRequests: SynchronizeRequest[]) => void;
+  onsynchronize: ((task: SynchronizeTask, identifier: string) => void) | null;
+  onfinish: ((task: SynchronizeTask) => void) | null;
+  ontimeout: ((task: SynchronizeTask, remainedRequests: SynchronizeRequest[]) => void) | null;
 
   private requestMap: Map<ObjectIdentifier, SynchronizeRequest> = new Map();
-  private timeoutTimer: ResettableTimeout;
+  private timeoutTimer: ResettableTimeout | null;
 
   private constructor(readonly peerId: PeerId) { }
 
@@ -47,7 +47,9 @@ export class SynchronizeTask {
   private cancel() {
     if (this.timeoutTimer) this.timeoutTimer.clear();
     this.timeoutTimer = null;
-    this.onsynchronize = this.onfinish = this.ontimeout = null;
+    this.onsynchronize = null;
+    this.onfinish = null;
+    this.ontimeout = null;
 
     for (const request of this.requestMap.values()) {
       this.deleteTasksMap(request.identifier);
@@ -60,11 +62,10 @@ export class SynchronizeTask {
     for (const request of requests) {
       request.ttl--;
       this.requestMap.set(request.identifier, request);
-      let tasks: SynchronizeTask[] = SynchronizeTask.tasksMap.get(request.identifier);
-      if (tasks == null) tasks = [];
+      let tasks: SynchronizeTask[] = SynchronizeTask.tasksMap.get(request.identifier) ?? [];
       tasks.push(this);
       SynchronizeTask.tasksMap.set(request.identifier, tasks);
-      const sendTo = this.peerId != null && request.holderIds.includes(this.peerId) ? this.peerId : null;
+      const sendTo = this.peerId != null && request.holderIds.includes(this.peerId) ? this.peerId : undefined;
       EventSystem.call('REQUEST_GAME_OBJECT', request.identifier, sendTo);
     }
 
@@ -97,7 +98,7 @@ export class SynchronizeTask {
 
   private static onUpdate(identifier: ObjectIdentifier) {
     if (!SynchronizeTask.tasksMap.has(identifier)) return;
-    const tasks = SynchronizeTask.tasksMap.get(identifier);
+    const tasks = SynchronizeTask.tasksMap.get(identifier)!;
     for (const task of tasks.concat()) {
       task.onUpdate(identifier);
     }
@@ -115,7 +116,7 @@ export class SynchronizeTask {
   }
 
   private deleteTasksMap(identifier: ObjectIdentifier) {
-    const tasks = SynchronizeTask.tasksMap.get(identifier);
+    const tasks = SynchronizeTask.tasksMap.get(identifier)!;
     const index = tasks.indexOf(this);
     if (-1 < index) tasks.splice(index, 1);
     if (tasks.length < 1) SynchronizeTask.tasksMap.delete(identifier);
@@ -123,6 +124,6 @@ export class SynchronizeTask {
 
   private resetTimeout() {
     if (this.timeoutTimer == null) this.timeoutTimer = new ResettableTimeout(() => this.timeout(), 30 * 1000);
-    this.timeoutTimer.reset();
+    this.timeoutTimer!.reset();
   }
 }

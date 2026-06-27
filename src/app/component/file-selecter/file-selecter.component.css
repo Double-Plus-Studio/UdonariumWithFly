@@ -70,21 +70,21 @@
   color: red;
 }
 
-.word-selecter {
+.word-selector {
   padding : 5px;
   user-select: none;
 }
 
-.word-selecter label {
+.word-selector label {
   display: inline-block;
   position: relative;
 }
 
-.word-selecter input[type="checkbox"] {
+.word-selector input[type="checkbox"] {
   display: none;
 }
 
-.word-selecter input[type="checkbox"] + div {
+.word-selector input[type="checkbox"] + div {
   display: inline-block;
   vertical-align: middle;
   outline: 0;
@@ -100,18 +100,18 @@
   height: 1.6em;
 }
 
-.word-selecter input[type="checkbox"] + div:hover {
+.word-selector input[type="checkbox"] + div:hover {
   background-color: #888;
   color: #eee;
   border: solid 1px #555;
 }
 
-.word-selecter input[type="checkbox"]:checked + div {
+.word-selector input[type="checkbox"]:checked + div {
   background: #555;
   color: #CCC;
 }
 
-.word-selecter input[type="checkbox"]:checked + div.all-tags {
+.word-selector input[type="checkbox"]:checked + div.all-tags {
   background-color: #eee;
   color: darkcyan;
 }

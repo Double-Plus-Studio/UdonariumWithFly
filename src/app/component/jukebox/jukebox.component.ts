@@ -125,7 +125,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   set percentNoticeVolume(percentNoticeVolume: number) { this.noticeVolume = percentNoticeVolume / 100; }
 
   readonly auditionPlayer: AudioPlayer = new AudioPlayer();
-  private lazyUpdateTimer: NodeJS.Timeout = null;
+  private lazyUpdateTimer: NodeJS.Timeout | null = null;
 
   private readonly soundTestPlayer: AudioPlayer = new AudioPlayer();
   private readonly noticeTestPlayer: AudioPlayer = new AudioPlayer();
@@ -173,7 +173,7 @@ export class JukeboxComponent implements OnInit, OnDestroy {
   handleFileSelect(event: Event) {
     const input = <HTMLInputElement>event.target;
     const files = input.files;
-    if (files.length) FileArchiver.instance.load(files);
+    if (files && files.length) FileArchiver.instance.load(files);
     input.value = '';
   }
 

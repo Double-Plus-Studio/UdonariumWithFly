@@ -84,7 +84,7 @@ export class UIPanelComponent implements OnInit {
     this.panelService.scrollablePanel = this.scrollablePanel.nativeElement;
   }
 
-  toggleMinimize(e: Event = null) {
+  toggleMinimize(e: Event | null = null) {
     if (e) {
       e.stopPropagation();
       e.preventDefault();
@@ -125,7 +125,7 @@ export class UIPanelComponent implements OnInit {
     */
   }
 
-  toggleFullScreen(e: Event = null) {
+  toggleFullScreen(e: Event | null = null) {
     if (e) {
       e.stopPropagation();
       e.preventDefault();
@@ -187,7 +187,7 @@ export class UIPanelComponent implements OnInit {
     */
   }
 
-  toggleRotate(e: Event = null) {
+  toggleRotate(e: Event | null = null) {
     if (e) {
       e.stopPropagation();
       e.preventDefault();
@@ -229,7 +229,7 @@ export class UIPanelComponent implements OnInit {
     return false;
   }
 
-  close(e: Event = null) {
+  close(e: Event | null = null) {
     if (e) {
       e.stopPropagation();
       e.preventDefault();
@@ -237,7 +237,7 @@ export class UIPanelComponent implements OnInit {
     if (this.panelService) this.panelService.close();
   }
 
-  notOperaion(e: Event = null) {
+  notOperaion(e: Event | null = null) {
     if (e) {
       e.stopPropagation();
       e.preventDefault();

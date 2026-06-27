@@ -11,8 +11,8 @@ export interface AudioFileContext {
   identifier: string;
   name: string;
   type: string;
-  blob: Blob;
-  url: string;
+  blob: Blob | null;
+  url: string | null;
 }
 
 export class AudioFile {
@@ -26,8 +26,8 @@ export class AudioFile {
 
   get identifier(): string { return this.context.identifier };
   get name(): string { return this.context.name };
-  get blob(): Blob { return this.context.blob; };
-  get url(): string { return this.context.url; };
+  get blob(): Blob | null { return this.context.blob; };
+  get url(): string | null { return this.context.url; };
   get isReady(): boolean { return AudioState.NULL < this.state; }
   get state(): AudioState {
     if (!this.url && !this.blob) return AudioState.NULL;
@@ -70,6 +70,7 @@ export class AudioFile {
     } else if (arg instanceof Blob) {
       return await AudioFile._createAsync(arg);
     }
+    return new AudioFile();
   }
 
   private static async _createAsync(blob: Blob, name?: string): Promise<AudioFile> {
@@ -77,7 +78,7 @@ export class AudioFile {
 
     const audio = new AudioFile();
     audio.context.identifier = await FileReaderUtil.calcSHA256Async(arrayBuffer);
-    audio.context.name = name;
+    audio.context.name = name ?? '';
     audio.context.blob = new Blob([arrayBuffer], { type: blob.type });
     audio.context.type = audio.context.blob.type;
     audio.context.url = window.URL.createObjectURL(audio.context.blob);
@@ -108,7 +109,7 @@ export class AudioFile {
 
   private revokeURLs() {
     if (this.state === AudioState.URL) return;
-    window.URL.revokeObjectURL(this.context.url);
+    if (this.context.url) window.URL.revokeObjectURL(this.context.url);
   }
 
   toContext(): AudioFileContext {

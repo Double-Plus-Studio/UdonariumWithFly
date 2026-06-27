@@ -6,7 +6,7 @@ import { UUID } from '@udonarium/core/system/util/uuid';
 import { DataElement } from '@udonarium/data-element';
 import { GameCharacter } from '@udonarium/game-character';
 import { StandConditionType } from '@udonarium/stand-list';
-import { FileSelecterComponent } from 'component/file-selecter/file-selecter.component';
+import { FileSelectorComponent } from 'component/file-selector/file-selector.component';
 import { ModalService } from 'service/modal.service';
 
 @Component({
@@ -16,9 +16,9 @@ import { ModalService } from 'service/modal.service';
     standalone: false
 })
 export class StandElementComponent {
-  @Input() standElement: DataElement = null;
+  @Input() standElement: DataElement | null = null;
   @Input() imageList: ImageFile[] = [];
-  @Input() gameCharacter: GameCharacter = null;
+  @Input() gameCharacter: GameCharacter | null = null;
   @Input() isSpeaking: boolean = false;
 
   private _imageFile: ImageFile = ImageFile.Empty;
@@ -32,7 +32,7 @@ export class StandElementComponent {
 
   get standImage(): ImageFile {
     if (!this.standElement) return this._imageFile;
-    let elm = null;
+    let elm: DataElement | null = null;
     if (this.isSpeaking) {
       elm = this.standElement.getFirstElementByName('speakingImageIdentifier');
       if (!elm) {
@@ -56,55 +56,55 @@ export class StandElementComponent {
     return this._imageFile;
   }
 
-  get nameElement(): DataElement {
+  get nameElement(): DataElement | null {
     if (!this.standElement) return null;
     const elm = this.standElement.getFirstElementByName('name');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('name', '', { }, 'name_' + this.standElement.identifier));
   }
 
-  get heightElement(): DataElement {
+  get heightElement(): DataElement | null {
     if (!this.standElement) return null;
     const elm = this.standElement.getFirstElementByName('height');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('height', 0, { 'currentValue': 0 }, 'height_' + this.standElement.identifier));
   }
 
-  get conditionTypeElement(): DataElement {
+  get conditionTypeElement(): DataElement | null {
     if (!this.standElement) return null;
     const elm = this.standElement.getFirstElementByName('conditionType');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('conditionType', StandConditionType.Default, { }, 'conditionType_' + this.standElement.identifier));
   }
 
-  get postfixElement(): DataElement {
+  get postfixElement(): DataElement | null {
     if (!this.standElement) return null;
     const elm = this.standElement.getFirstElementByName('postfix');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('postfix', '', { }, 'postfix_' + this.standElement.identifier));
   }
- 
-  get applyImageEffectElement() {
+
+  get applyImageEffectElement(): DataElement | null {
     if (!this.standElement) return null;
     const elm = this.standElement.getFirstElementByName('applyImageEffect');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('applyImageEffect', '', { }, 'applyImageEffect_' + this.standElement.identifier));
   }
 
-  get applyRollElement() {
+  get applyRollElement(): DataElement | null {
     if (!this.standElement) return null;
     const elm = this.standElement.getFirstElementByName('applyRoll');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('applyRoll', '', { }, 'applyRoll_' + this.standElement.identifier));
   }
 
-  get applyDialogElement() {
+  get applyDialogElement(): DataElement | null {
     if (!this.standElement) return null;
     const elm = this.standElement.getFirstElementByName('applyDialog');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('applyDialog', 'applyDialog', { }, 'applyDialog_' + this.standElement.identifier));
   }
 
-  get showNameElement() {
+  get showNameElement(): DataElement | null {
     if (!this.standElement) return null;
     const elm = this.standElement.getFirstElementByName('showName');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('showName', 'showName', { }, 'showName_' + this.standElement.identifier));
   }
 
-  get positionElement(): DataElement {
+  get positionElement(): DataElement | null {
     if (!this.standElement) return null;
     const elm = this.standElement.getFirstElementByName('position');
     return elm ? elm : <DataElement>this.standElement.appendChild(DataElement.create('position', 0, { 'currentValue': '' }, 'position_' + this.standElement.identifier));
@@ -145,7 +145,7 @@ export class StandElementComponent {
   get isSpeakable(): boolean {
     if (!this.standElement) return false;
     const elm = this.standElement.getFirstElementByName('speakingImageIdentifier');
-    return elm && elm.value && elm.value !== ImageFile.Empty.identifier;
+    return !!(elm && elm.value && elm.value !== ImageFile.Empty.identifier);
   }
 
   openModal(name='imageIdentifier', isAllowedEmpty=false) {
@@ -157,7 +157,7 @@ export class StandElementComponent {
     } else {
       currentImageIdentifires = [elm.value + ''];
     }
-    this.modalService.open<string>(FileSelecterComponent, { isAllowedEmpty: isAllowedEmpty, currentImageIdentifires: currentImageIdentifires }).then(value => {
+    this.modalService.open<string>(FileSelectorComponent, { isAllowedEmpty: isAllowedEmpty, currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!value) return;
       elm.value = value;
     });

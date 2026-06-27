@@ -15,8 +15,8 @@ import { ModalService } from 'service/modal.service';
     standalone: false
 })
 export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() tabletopObject: TabletopObject = null;
-  @Input() gameDataElement: DataElement = null;
+  @Input() tabletopObject: TabletopObject | null = null;
+  @Input() gameDataElement: DataElement | null = null;
   @Input() isEdit: boolean = false;
   @Input() isTagLocked: boolean = false;
   @Input() isValueLocked: boolean = false;
@@ -112,7 +112,7 @@ export class GameDataElementComponent implements OnInit, OnDestroy, OnChanges {
     return this.gameDataElement.identifier;
   }
 
-  private updateTimer: NodeJS.Timeout = null;
+  private updateTimer: NodeJS.Timeout | null = null;
 
   constructor(
     private changeDetector: ChangeDetectorRef,

@@ -10,7 +10,7 @@ import { StringUtil } from './core/system/util/string-util';
 export class ChatTab extends ObjectNode implements InnerXml {
   @SyncVar() name: string = '分頁';
   @SyncVar() isUseStandImage: boolean = true;
-  @SyncVar() recieveOperationLogLevel: number = 0;
+  @SyncVar() receiveOperationLogLevel: number = 0;
   get chatMessages(): ChatMessage[] { return <ChatMessage[]>this.children; }
 
   private _unreadLength: number = 0;
@@ -29,7 +29,7 @@ export class ChatTab extends ObjectNode implements InnerXml {
       this._unreadLength++;
       EventSystem.trigger('MESSAGE_ADDED', { tabIdentifier: this.identifier, messageIdentifier: child.identifier });
       if (!child.isSendFromSelf && !child.isOperationLog && !child.isSystem) {
-        EventSystem.trigger('MESSAGE_NORTIFICATION', { tabIdentifier: this.identifier, messageIdentifier: child.identifier, isDirect: child.isDirect });
+        EventSystem.trigger('MESSAGE_NOTIFICATION', { tabIdentifier: this.identifier, messageIdentifier: child.identifier, isDirect: child.isDirect });
       }
     }
   }
@@ -42,7 +42,7 @@ export class ChatTab extends ObjectNode implements InnerXml {
       if (key === 'identifier') continue;
       if (key === 'tabIdentifier') continue;
       if (key === 'text') {
-        chat.value = message[key];
+        chat.value = message[key] ?? '';
         continue;
       }
       if (message[key] == null || message[key] === '') continue;

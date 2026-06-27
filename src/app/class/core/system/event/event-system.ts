@@ -46,7 +46,7 @@ export class EventSystem implements Subject {
     }
   }
 
-  private _unregister(key: any = this, eventName: string, callback: Callback<any>) {
+  private _unregister(key: any = this, eventName: string | null, callback: Callback<any> | null) {
     let listeners: Listener[] = [];
     if (key != null) {
       listeners = this.getListenersByKey(key);
@@ -82,7 +82,7 @@ export class EventSystem implements Subject {
   unregisterListener(listener: Listener): Listener {
     let listeners = this.getListenersByEventName(listener.eventName);
     let index = listeners.indexOf(listener);
-    if (index < 0) return null;
+    if (index < 0) return null as any;
     listeners.splice(index, 1);
     if (listeners.length < 1) this.listenerMap.delete(listener.eventName);
 
@@ -117,7 +117,7 @@ export class EventSystem implements Subject {
   trigger<T>(event: EventContext<T>): Event<T>
   trigger<T>(...args: any[]): Event<T> {
     if (args.length === 2) {
-      this._trigger(new Event(args[0], args[1]));
+      return this._trigger(new Event(args[0], args[1]));
     } else if (args[0] instanceof Event) {
       return this._trigger(args[0]);
     } else {
@@ -134,11 +134,11 @@ export class EventSystem implements Subject {
   }
 
   private getListenersByEventName(eventName: string): Listener[] {
-    return this.listenerMap.has(eventName) ? this.listenerMap.get(eventName) : [];
+    return this.listenerMap.has(eventName) ? this.listenerMap.get(eventName)! : [];
   }
 
   private getListenersByKey(key: any): Listener[] {
-    return this.keyMap.has(key) ? this.keyMap.get(key) : [];
+    return this.keyMap.has(key) ? this.keyMap.get(key)! : [];
   }
 
   private initializeNetworkEvent() {

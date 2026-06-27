@@ -12,7 +12,7 @@ import { TextViewComponent } from 'component/text-view/text-view.component';
 import { ImageFile } from '@udonarium/core/file-storage/image-file';
 import { ImageStorage } from '@udonarium/core/file-storage/image-storage';
 import { ImageTag } from '@udonarium/image-tag';
-import { FileSelecterComponent } from 'component/file-selecter/file-selecter.component';
+import { FileSelectorComponent } from 'component/file-selector/file-selector.component';
 import { CutInService } from 'service/cut-in.service';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { AudioFile } from '@udonarium/core/file-storage/audio-file';
@@ -31,14 +31,14 @@ import { ChatMessageService } from 'service/chat-message.service';
     standalone: false
 })
 export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('cutInSelecter') cutInSelecter: ElementRef<HTMLSelectElement>;
+  @ViewChild('cutInSelector') cutInSelector: ElementRef<HTMLSelectElement>;
   readonly minSize: number = 0;
   readonly maxSize: number = 100;
 
   panelId: string;
 
   isShowHideImages = false;
-  selectedCutIn: CutIn = null;
+  selectedCutIn: CutIn | null = null;
   selectedCutInXml: string = '';
 
   get cutIns(): CutIn[] { return CutInList.instance.cutIns; }
@@ -161,7 +161,7 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
   get audios(): AudioFile[] { return AudioStorage.instance.audios.filter(audio => !audio.isHidden); }
 
   sendTo: string = '';
-  isSaveing: boolean = false;
+  isSaving: boolean = false;
   progresPercent: number = 0;
 
   constructor(
@@ -186,7 +186,7 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
     queueMicrotask(() => {
       if (this.cutIns.length > 0) {
         this.onChangeCutIn(this.cutIns[0].identifier);
-        this.cutInSelecter.nativeElement.selectedIndex = 0;
+        this.cutInSelector.nativeElement.selectedIndex = 0;
       }
     });
   }
@@ -209,13 +209,13 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
     cutIn.imageIdentifier = 'stand_no_image';
     queueMicrotask(() => {
       this.onChangeCutIn(cutIn.identifier);
-      this.cutInSelecter.nativeElement.value = cutIn.identifier;
+      this.cutInSelector.nativeElement.value = cutIn.identifier;
     })
   }
   
   async save() {
-    if (!this.selectedCutIn || this.isSaveing) return;
-    this.isSaveing = true;
+    if (!this.selectedCutIn || this.isSaving) return;
+    this.isSaving = true;
     this.progresPercent = 0;
 
     const fileName: string = 'fly_cutIn_' + this.selectedCutIn.name;
@@ -225,7 +225,7 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     setTimeout(() => {
-      this.isSaveing = false;
+      this.isSaving = false;
       this.progresPercent = 0;
     }, 500);
   }
@@ -249,7 +249,7 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
       queueMicrotask(() => {
         const cutIns = this.cutIns;
         this.onChangeCutIn(cutIns[cutIns.length - 1].identifier);
-        this.cutInSelecter.nativeElement.selectedIndex = cutIns.length - 1;
+        this.cutInSelector.nativeElement.selectedIndex = cutIns.length - 1;
       });
     }
   }
@@ -283,7 +283,7 @@ export class CutInSettingComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isDeleted) return;
     let currentImageIdentifires: string[] = [];
     if (this.selectedCutIn && this.selectedCutIn.imageIdentifier) currentImageIdentifires = [this.selectedCutIn.imageIdentifier];
-    this.modalService.open<string>(FileSelecterComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
+    this.modalService.open<string>(FileSelectorComponent, { currentImageIdentifires: currentImageIdentifires }).then(value => {
       if (!this.selectedCutIn || !value) return;
       this.selectedCutIn.imageIdentifier = value;
     });

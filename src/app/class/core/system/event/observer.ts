@@ -48,5 +48,5 @@ export interface Observer {
   unregister(): Observer
 
   trigger(event: Event<any>)
-  isEqual(key: any, eventName: string, callback: Callback<any>)
+  isEqual(key: any, eventName: string | null, callback: Callback<any> | null)
 }

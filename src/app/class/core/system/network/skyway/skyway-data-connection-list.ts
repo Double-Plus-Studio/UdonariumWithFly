@@ -49,7 +49,7 @@ export class SkyWayDataConnectionList implements Iterable<SkyWayDataConnection> 
     return this._peerIds
   }
 
-  add(conn: SkyWayDataConnection): SkyWayDataConnection {
+  add(conn: SkyWayDataConnection): SkyWayDataConnection | null {
     const existConn = this.find(conn.remoteId);
     if (existConn != null) {
       console.log('add() is Fail. ' + conn.remoteId + ' is already connecting.', existConn);
@@ -69,7 +69,7 @@ export class SkyWayDataConnectionList implements Iterable<SkyWayDataConnection> 
     return conn;
   }
 
-  remove(conn: SkyWayDataConnection): SkyWayDataConnection {
+  remove(conn: SkyWayDataConnection): SkyWayDataConnection | null {
     conn.close();
     const index = this.connections.indexOf(conn);
     if (0 <= index) {
@@ -81,7 +81,7 @@ export class SkyWayDataConnectionList implements Iterable<SkyWayDataConnection> 
     return 0 <= index ? conn : null;
   }
 
-  find(peerId: string): SkyWayDataConnection {
+  find(peerId: string): SkyWayDataConnection | undefined {
     return this.connections.find(conn => conn.remoteId === peerId);
   }
 

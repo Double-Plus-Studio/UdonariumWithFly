@@ -22,7 +22,7 @@ import { PointerDeviceService } from 'service/pointer-device.service';
 export class ChatPaletteComponent implements OnInit, OnDestroy {
   @ViewChild('chatInput', { static: true }) chatInputComponent: ChatInputComponent;
   @ViewChild('chatPlette') chatPletteElementRef: ElementRef<HTMLSelectElement>;
-  @Input() character: GameCharacter = null;
+  @Input() character: GameCharacter | null = null;
 
   get palette(): ChatPalette { return this.character.chatPalette; }
   
@@ -66,7 +66,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
 
   filterText: string = '';
 
-  private doubleClickTimer: NodeJS.Timer = null;
+  private doubleClickTimer: NodeJS.Timer | null = null;
 
   private selectedPaletteIndex = -1;
 
@@ -125,7 +125,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     if (this.doubleClickTimer && this.selectedPaletteIndex === this.chatPletteElementRef.nativeElement.selectedIndex) {
       clearTimeout(this.doubleClickTimer);
       this.doubleClickTimer = null;
-      this.chatInputComponent.sendChat(null);
+      this.chatInputComponent.sendChat({ keyCode: 13 });
     } else {
       this.selectedPaletteIndex = this.chatPletteElementRef.nativeElement.selectedIndex;
       this.text = evaluatedLine;
@@ -158,7 +158,7 @@ export class ChatPaletteComponent implements OnInit, OnDestroy {
     }
   }
 
-  enterPalette(line: string, e: Event=null) {
+  enterPalette(line: string, e: Event | null = null) {
     if (!this.chatPletteElementRef.nativeElement) return;
     this.text = this.palette.evaluate(line, this.character.rootDataElement);
     //this.chatInputComponent.sendChat(null);

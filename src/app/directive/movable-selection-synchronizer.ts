@@ -43,7 +43,7 @@ export class MovableSelectionSynchronizer {
     this.unregister();
     this._isDestroyed = true;
     this.removeEventListeners();
-    this.movable = null;
+    this.movable = null as any;
   }
 
   private onPickStart(e: CustomEvent) {
@@ -318,7 +318,7 @@ function checkOverlapSAT(rectA: IPoint2D[], rectB: IPoint2D[]) {
 }
 
 function getEdges(points: IPoint2D[]): IPoint2D[] {
-  const edges = [];
+  const edges: IPoint2D[] = [];
   for (let i = 0; i < points.length; i++) {
     const next = (i + 1) % points.length;
     edges.push({ x: points[next].x - points[i].x, y: points[next].y - points[i].y });

@@ -10,7 +10,7 @@ import {
   Output
 } from '@angular/core';
 import { EventSystem } from '@udonarium/core/system';
-import { TableSelecter } from '@udonarium/table-selecter';
+import { TableSelector } from '@udonarium/table-selector';
 import { TabletopObject } from '@udonarium/tabletop-object';
 import { BatchService } from 'service/batch.service';
 import { CoordinateService } from 'service/coordinate.service';
@@ -52,7 +52,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     this.unregister();
     this.synchronizer.unregister();
 
-    this._tabletopObject = option.tabletopObject ?? null;
+    this._tabletopObject = option.tabletopObject!;
     this._layerName = option.layerName ?? '';
     this._colideLayers = option.colideLayers ?? [];
     this._transformCssOffset = option.transformCssOffset ?? '';
@@ -110,7 +110,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
   get state(): SelectionState { return this.selectionService.state(this.tabletopObject); }
   set state(state: SelectionState) { this.selectionService.add(this.tabletopObject, state); }
 
-  private get isGridSnap(): boolean { return TableSelecter.instance.gridSnap; }
+  private get isGridSnap(): boolean { return TableSelector.instance.gridSnap; }
 
   constructor(
     private ngZone: NgZone,
@@ -174,7 +174,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     this.setPointerEvents(true);
     this.setAnimatedTransition(true);
     this.setCollidableLayer(false);
-    if (this.tabletopService.tableSelecter.viewTable) this.tabletopService.tableSelecter.viewTable.gridHeight = 0;
+    if (this.tabletopService.tableSelector.viewTable) this.tabletopService.tableSelector.viewTable.gridHeight = 0;
   }
 
   dispose() {
@@ -223,8 +223,8 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     //this.height = this.input.target.clientHeight;
     this.ratio = 1.0;
     
-    const viewTable = TableSelecter.instance.viewTable;
-    viewTable.gridClipRect = null;
+    const viewTable = TableSelector.instance.viewTable;
+    viewTable.gridClipRect = null as any;
     viewTable.gridHeight = this.posZ + 0.5;
     //this.setUpdateTimer();
 
@@ -274,9 +274,9 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
     //this.posY = pointer3d.y;
     //this.posZ = pointer3d.z;
     
-    //let tableSelecter = ObjectStore.instance.get<TableSelecter>('tableSelecter');
-    const viewTable = TableSelecter.instance.viewTable;
-    viewTable.gridClipRect = null;
+    //let tableSelector = ObjectStore.instance.get<TableSelector>('tableSelector');
+    const viewTable = TableSelector.instance.viewTable;
+    viewTable.gridClipRect = null as any;
     viewTable.gridHeight = this.posZ + 0.5;
     const delta = {
       x: pointer3d.x - this.posX,
@@ -432,7 +432,7 @@ export class MovableDirective implements AfterViewInit, OnChanges, OnDestroy {
       } else {
         isEnable = !isCollidable;
       }
-      MovableDirective.layerMap.get(layerName).forEach(movable => {
+      MovableDirective.layerMap.get(layerName)?.forEach(movable => {
         if (movable === this || (movable.input?.isGrabbing)) return;
         movable.setPointerEvents(isEnable);
       });

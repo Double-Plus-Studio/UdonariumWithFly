@@ -17,7 +17,7 @@ import { GameTableMask } from '@udonarium/game-table-mask';
 import { PeerCursor } from '@udonarium/peer-cursor';
 import { RangeArea } from '@udonarium/range';
 import { PresetSound, SoundEffect } from '@udonarium/sound-effect';
-import { TableSelecter } from '@udonarium/table-selecter';
+import { TableSelector } from '@udonarium/table-selector';
 import { TabletopObject } from '@udonarium/tabletop-object';
 import { Terrain } from '@udonarium/terrain';
 import { TextNote } from '@udonarium/text-note';
@@ -31,9 +31,9 @@ type LocationName = string;
 @Injectable()
 export class TabletopService {
   private _emptyTable: GameTable = new GameTable('');
-  get tableSelecter(): TableSelecter { return TableSelecter.instance; }
+  get tableSelector(): TableSelector { return TableSelector.instance; }
   get currentTable(): GameTable {
-    const table = this.tableSelecter.viewTable;
+    const table = this.tableSelector.viewTable;
     return table ? table : this._emptyTable;
   }
 
@@ -44,12 +44,12 @@ export class TabletopService {
   private cardCache = new TabletopCache<Card>(() => ObjectStore.instance.getObjects(Card).filter(obj => obj.isVisibleOnTable));
   private cardStackCache = new TabletopCache<CardStack>(() => ObjectStore.instance.getObjects(CardStack).filter(obj => obj.isVisibleOnTable));
   private tableMaskCache = new TabletopCache<GameTableMask>(() => {
-    const viewTable = this.tableSelecter.viewTable;
+    const viewTable = this.tableSelector.viewTable;
     return viewTable ? viewTable.masks : [];
   });
   private rangeCache = new TabletopCache<RangeArea>(() => ObjectStore.instance.getObjects(RangeArea).filter(obj => obj.isVisibleOnTable));
   private terrainCache = new TabletopCache<Terrain>(() => {
-    const viewTable = this.tableSelecter.viewTable;
+    const viewTable = this.tableSelector.viewTable;
     return viewTable ? viewTable.terrains : [];
   });
   private textNoteCache = new TabletopCache<TextNote>(() => ObjectStore.instance.getObjects(TextNote));
@@ -75,7 +75,7 @@ export class TabletopService {
     this.refreshCacheAll();
     EventSystem.register(this)
       .on('UPDATE_GAME_OBJECT', event => {
-        if (event.data.identifier === this.currentTable.identifier || event.data.identifier === this.tableSelecter.identifier) {
+        if (event.data.identifier === this.currentTable.identifier || event.data.identifier === this.tableSelector.identifier) {
           this.refreshCache(GameTableMask.aliasName);
           this.refreshCache(Terrain.aliasName);
           return;
@@ -125,7 +125,7 @@ export class TabletopService {
       });
   }
 
-  private findCache(aliasName: string): TabletopCache<any> {
+  private findCache(aliasName: string): TabletopCache<any> | null {
     switch (aliasName) {
       case GameCharacter.aliasName:
         return this.characterCache;
@@ -194,15 +194,15 @@ export class TabletopService {
         // falls through
       case Terrain.aliasName:
         if (gameObject instanceof Terrain) gameObject.isLocked = false;
-        if (!this.tableSelecter || !this.tableSelecter.viewTable) return;
-        this.tableSelecter.viewTable.appendChild(gameObject);
+        if (!this.tableSelector || !this.tableSelector.viewTable) return;
+        this.tableSelector.viewTable.appendChild(gameObject);
         break;
       case Card.aliasName:
       case CardStack.aliasName:
       case RangeArea.aliasName:
       case TextNote.aliasName:
         if (gameObject instanceof Card || gameObject instanceof CardStack || gameObject instanceof RangeArea || gameObject instanceof TextNote) gameObject.isLocked = false;
-        if (gameObject instanceof RangeArea) gameObject.followingCharctorIdentifier = null;
+        if (gameObject instanceof RangeArea) gameObject.followingCharctorIdentifier = '';
         // falls through
       default:
         gameObject.setLocation('table');

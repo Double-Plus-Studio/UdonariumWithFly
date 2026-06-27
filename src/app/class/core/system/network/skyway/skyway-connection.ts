@@ -11,7 +11,7 @@ import { SkyWayDataConnection } from './skyway-data-connection';
 import { SkyWayDataConnectionList } from './skyway-data-connection-list';
 
 interface DataContainer {
-  data: Uint8Array;
+  data: Uint8Array | null;
   users?: string[];
   ttl: number;
   isCompressed?: boolean;
@@ -30,7 +30,7 @@ export class SkyWayConnection implements Connection {
   bandwidthUsage: number = 0;
 
   private key: string = '';
-  private skyWay: Peer;
+  private skyWay: Peer | null;
   private connections: SkyWayDataConnectionList = new SkyWayDataConnectionList();
 
   private listAllPeersCache: string[] = [];
@@ -71,7 +71,7 @@ export class SkyWayConnection implements Connection {
   connect(peer: IPeerContext): boolean {
     if (!this.shouldConnect(peer.peerId)) return false;
 
-    const conn: SkyWayDataConnection = new SkyWayDataConnection(this.skyWay.connect(peer.peerId, {
+    const conn: SkyWayDataConnection = new SkyWayDataConnection(this.skyWay!.connect(peer.peerId, {
       serialization: 'none',
       metadata: {
         sortKey: this.peer.digestUserId,
@@ -228,7 +228,7 @@ export class SkyWayConnection implements Connection {
       const errorMessage = `${this.getSkyWayErrorMessage(err.type)}\n\n${err.type}: ${err.message}`;
       switch (err.type) {
         case 'peer-unavailable': {
-          const peerId = /"(.+)"/.exec(err.message)[1];
+          const peerId = /"(.+)"/.exec(err.message)![1];
           this.disconnect(PeerContext.parse(peerId));
           break;
         }
@@ -309,7 +309,7 @@ export class SkyWayConnection implements Connection {
   private onRelay(conn: SkyWayDataConnection, container: DataContainer) {
     container.ttl--;
 
-    const relayingPeerIds: string[] = this.relayingPeerIds.get(conn.remoteId);
+    const relayingPeerIds: string[] | undefined = this.relayingPeerIds.get(conn.remoteId);
     if (relayingPeerIds == null) return;
 
     if (container.users && 0 < container.users.length) {

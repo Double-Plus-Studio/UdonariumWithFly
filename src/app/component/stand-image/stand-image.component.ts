@@ -80,9 +80,9 @@ export class StandImageComponent implements OnInit, OnDestroy {
   isSpeaking = false;
   math = Math;
 
-  private _speakingImageIdentifier: string;
-  private _imageIdentifier: string;
-  private _speakingImageUrl: string;
+  private _speakingImageIdentifier: string | null = null;
+  private _imageIdentifier: string | null = null;
+  private _speakingImageUrl: string | null = null;
   private _imageUrl: string = ImageFile.Empty.url;
 
   constructor(
@@ -135,7 +135,7 @@ export class StandImageComponent implements OnInit, OnDestroy {
     clearTimeout(this._dialogTimeoutId);
     let text = StringUtil.cr(dialog.text);
     const isEmote = StringUtil.isEmote(text);
-    const rubys = [];
+    const rubys: {base: string; ruby: string; start: number; end: number}[] = [];
     const re = /[\|｜]([^\|｜\s]+?)《(.+?)》/g;
     let ary;
     let count = 0;
@@ -186,8 +186,8 @@ export class StandImageComponent implements OnInit, OnDestroy {
             tmpText += StringUtil.escapeHtml(c);
             if (isOpenRuby) {
                 rubyCount += 1;
-                const rt = carrentRuby.ruby;
-                rubyText = '<rt>' + StringUtil.escapeHtml(Array.from(rt).slice(0, Math.ceil(Array.from(rt).length * (rubyCount / Array.from(carrentRuby.base).length))).join('')) + '</rt>'
+                const rt = carrentRuby!.ruby;
+                rubyText = '<rt>' + StringUtil.escapeHtml(Array.from(rt).slice(0, Math.ceil(Array.from(rt).length * (rubyCount / Array.from(carrentRuby!.base).length))).join('')) + '</rt>'
             }
             if (isOpenRuby && carrentRuby && countLength >= carrentRuby.end - (isMulti ? 1 : 0)) {
                 tmpText += (rubyText + '</ruby>');
@@ -239,16 +239,16 @@ export class StandImageComponent implements OnInit, OnDestroy {
   get isSpeakable(): boolean {
     if (!this.standElement) return false;
     const elm = this.standElement.getFirstElementByName('speakingImageIdentifier');
-    return elm && elm.value && elm.value !== ImageFile.Empty.identifier;
+    return !!(elm && elm.value && elm.value !== ImageFile.Empty.identifier);
   }
 
-  get dialogFaceIcon(): ImageFile {
-    if (!this.dialog || !this.dialog.faceIconIdentifier) return null;
-    return ImageStorage.instance.get(<string>this.dialog.faceIconIdentifier);
+  get dialogFaceIcon(): ImageFile | null {
+    if (!this.dialog || !(this.dialog as any).faceIconIdentifier) return null;
+    return ImageStorage.instance.get(<string>(this.dialog as any).faceIconIdentifier);
   }
 
-  get isUseFaceIcon(): ImageFile {
-    return this.dialog && this.dialog.faceIconIdentifier;
+  get isUseFaceIcon(): boolean {
+    return !!(this.dialog && (this.dialog as any).faceIconIdentifier);
   }
   
   get isRubied(): boolean {

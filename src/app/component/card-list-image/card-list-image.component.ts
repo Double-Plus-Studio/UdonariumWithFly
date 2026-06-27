@@ -37,7 +37,7 @@ import { StringUtil } from '@udonarium/core/system/util/string-util';
     standalone: false
 })
 export class CardListImageComponent {
-  @Input() card: Card = null;
+  @Input() card: Card | null = null;
   @ViewChild('cardImage', { static: true }) cardImageElement: ElementRef;
   
   readonly CardStateFront = CardState.FRONT;

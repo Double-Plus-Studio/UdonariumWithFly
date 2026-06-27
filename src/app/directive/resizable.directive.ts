@@ -218,7 +218,7 @@ export class ResizableDirective implements AfterViewInit, OnDestroy {
   private calcCorrectionPosition(diff: BoxSize = { left: 0, top: 0, width: 0, height: 0 }): BoxSize {
     const correction: BoxSize = { left: 0, top: 0, width: 0, height: 0 };
     const box = this.elementRef.nativeElement.getBoundingClientRect();
-    const bounds = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector).getBoundingClientRect();
+    const bounds = this.elementRef.nativeElement.ownerDocument.querySelector(this.boundsSelector)!.getBoundingClientRect();
 
     if (bounds.right < box.right + diff.left + diff.width) {
       correction.width += bounds.right - (box.right + diff.left + diff.width);
@@ -242,10 +242,10 @@ export class ResizableDirective implements AfterViewInit, OnDestroy {
   private calcElementPosition(target: HTMLElement): BoxSize {
     const css: CSSStyleDeclaration = window.getComputedStyle(target);
     return {
-      left: CSSNumber.relation(css.left, target.parentElement.offsetWidth, target.parentElement.offsetWidth * 0.5),
-      top: CSSNumber.relation(css.top, target.parentElement.offsetHeight, target.parentElement.offsetHeight * 0.5),
-      width: CSSNumber.relation(css.width, target.parentElement.offsetWidth, target.parentElement.offsetWidth * 0.5),
-      height: CSSNumber.relation(css.height, target.parentElement.offsetHeight, target.parentElement.offsetHeight * 0.5),
+      left: CSSNumber.relation(css.left, target.parentElement!.offsetWidth, target.parentElement!.offsetWidth * 0.5),
+      top: CSSNumber.relation(css.top, target.parentElement!.offsetHeight, target.parentElement!.offsetHeight * 0.5),
+      width: CSSNumber.relation(css.width, target.parentElement!.offsetWidth, target.parentElement!.offsetWidth * 0.5),
+      height: CSSNumber.relation(css.height, target.parentElement!.offsetHeight, target.parentElement!.offsetHeight * 0.5),
     };
   }
 
@@ -270,7 +270,7 @@ export class ResizableDirective implements AfterViewInit, OnDestroy {
 
   private removeSelectionRanges() {
     const selection = window.getSelection();
-    if (!selection.isCollapsed) {
+    if (selection && !selection.isCollapsed) {
       selection.removeAllRanges();
     }
   }

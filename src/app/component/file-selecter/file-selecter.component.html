@@ -5,14 +5,14 @@
       <i class="material-icons" style="font-size: smaller" [ngClass]="{'red-eye': isShowHideImages}">{{ isShowHideImages ? 'visibility' : 'visibility_off' }}</i>
     </label>
   </div>
-  <span class="word-selecter">
+  <span class="word-selector">
     <label>
-      <input name="word-selecter" type="checkbox" value="ALL" checked="{{searchAllImage ? 'checked' : ''}}" (click)="onSearchAllImage()">
+      <input name="word-selector" type="checkbox" value="ALL" checked="{{searchAllImage ? 'checked' : ''}}" (click)="onSearchAllImage()">
       <div class="all-tags"><b>ALL</b><badge class="badge" [count]="images.length" [@.disabled]="true"></badge></div>
     </label>
     @if (countAllImagesHasWord(null) > 0) {
       <label>
-        <input name="word-selecter" type="checkbox" value="No Tag" [(ngModel)]="searchNoTagImage" checked="{{searchNoTagImage ? 'checked' : ''}}" (change)="searchNoTagImage = (searchNoTagImage ? true : false)">
+        <input name="word-selector" type="checkbox" value="No Tag" [(ngModel)]="searchNoTagImage" checked="{{searchNoTagImage ? 'checked' : ''}}" (change)="searchNoTagImage = (searchNoTagImage ? true : false)">
         <div class="no-tag"><s>No Tag</s>@if (countImagesHasWord(null) > 0) {
         <badge class="badge" [count]="countImagesHasWord(null)" [@.disabled]="true"></badge>
       }</div>
@@ -20,7 +20,7 @@
   }
   @for (word of allImagesOwnWords; track word) {
     <label>
-      <input name="word-selecter" type="checkbox" value="{{word}}" [checked]="searchWords.includes(word)" (change)="onSelectedWord(word)">
+      <input name="word-selector" type="checkbox" value="{{word}}" [checked]="searchWords.includes(word)" (change)="onSelectedWord(word)">
       <div>{{word}}@if (countImagesHasWord(word) > 0) {
         <badge class="badge" [count]="countImagesHasWord(word)" [@.disabled]="true"></badge>
       }</div>

@@ -129,10 +129,10 @@
           吸附<sup class="self-only">*</sup>
         </label>
         @if (isGMMode && !isDeleted) {
-          <button style="margin-left: 2em" [disabled]="isSaveing" (click)="save()">
+          <button style="margin-left: 2em" [disabled]="isSaving" (click)="save()">
             <div style="position: relative;">
-              <div [ngClass]="{'is-hidden': isSaveing}">儲存</div>
-              @if (isSaveing) {
+              <div [ngClass]="{'is-hidden': isSaving}">儲存</div>
+              @if (isSaving) {
                 <div class="progress">{{progresPercent}}%</div>
               }
             </div>

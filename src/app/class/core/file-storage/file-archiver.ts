@@ -71,7 +71,7 @@ export class FileArchiver {
     event.preventDefault();
 
     console.log('onDrop', event.dataTransfer);
-    const files = event.dataTransfer.files
+    const files = event.dataTransfer!.files
     this.load(files);
   };
 
@@ -114,7 +114,7 @@ export class FileArchiver {
     if (file.type.indexOf('text/') < 0) return;
     console.log(file.name + ' type:' + file.type);
     try {
-      const xmlElement: Element = XmlUtil.xml2element(await FileReaderUtil.readAsTextAsync(file));
+      const xmlElement: Element | null = XmlUtil.xml2element(await FileReaderUtil.readAsTextAsync(file));
       if (xmlElement) EventSystem.trigger('XML_LOADED', { xmlElement: xmlElement });
     } catch (reason) {
       console.warn(reason);
@@ -129,7 +129,7 @@ export class FileArchiver {
 
     for (const entry of entries) {
       try {
-        const blob = await entry.getData(new BlobWriter());
+        const blob = await entry.getData!(new BlobWriter());
         console.log(entry.filename + ' 解凍...');
         await this.load([new File([blob], entry.filename, { type: MimeType.type(entry.filename) })]);
       } catch (reason) {
@@ -156,7 +156,7 @@ export class FileArchiver {
           sumProgress += progress - prevProgress;
           prevProgress = progress;
           const percent = sumProgress * 100 / sumTotal;
-          updateCallback({ percent: percent, currentFile: file.name });
+          updateCallback!({ percent: percent, currentFile: file.name });
         }
       });
     }));

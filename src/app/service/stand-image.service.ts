@@ -15,7 +15,7 @@ export class StandImageService {
     //private componentFactoryResolver: ComponentFactoryResolver
   ) { }
   
-  show(gameCharacter: GameCharacter, standElement: DataElement, color: string=null, isSecret=false) {
+  show(gameCharacter: GameCharacter, standElement: DataElement, color: string | null = null, isSecret=false) {
     let isNewbee = true;
     for (const pair of StandImageService.currentStandImageShowing) {
       // 型を厳密にやりつつkey, valueをもう少し楽にイテレートできないか？

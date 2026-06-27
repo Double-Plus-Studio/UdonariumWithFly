@@ -12,7 +12,7 @@ import { SkyWayFacade } from './skyway-facade';
 type PeerId = string;
 
 interface DataContainer {
-  data: Uint8Array;
+  data: Uint8Array | null;
   users?: string[];
   ttl: number;
   isCompressed?: boolean;
@@ -299,7 +299,7 @@ export class SkyWayConnection implements Connection {
   private onRelay(stream: SkyWayDataStream, container: DataContainer) {
     container.ttl--;
 
-    const relayingPeerIds: string[] = this.relayingPeerIds.get(stream.peer.peerId);
+    const relayingPeerIds: string[] | undefined = this.relayingPeerIds.get(stream.peer.peerId);
     if (relayingPeerIds == null) return;
 
     if (container.users && 0 < container.users.length) {

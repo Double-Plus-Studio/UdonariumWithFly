@@ -38,7 +38,7 @@ import { SelectionState, TabletopSelectionService } from 'service/tabletop-selec
     standalone: false
 })
 export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
-  @Input() terrain: Terrain = null;
+  @Input() terrain: Terrain | null = null;
   @Input() is3D: boolean = false;
 
   get name(): string { return this.terrain.name; }
@@ -98,7 +98,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
   gridSize: number = 50;
 
   get isWallExist(): boolean {
-    return this.hasWall && this.wallImage && this.wallImage.url && this.wallImage.url.length > 0;
+    return !!(this.hasWall && this.wallImage && this.wallImage.url && this.wallImage.url.length > 0);
   }
 
   get terreinAltitude(): number {
@@ -136,7 +136,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
   math = Math;
   slopeDirectionState = SlopeDirection;
 
-  private input: InputHandler = null;
+  private input: InputHandler | null = null;
 
   constructor(
     private ngZone: NgZone,
@@ -297,7 +297,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
       const selectedGameTableMasks = () => this.selectionService.objects.filter(object => object.aliasName === this.terrain.aliasName) as Terrain[];
       actions.push(
         {
-          name: '選取的地形', action: null, subActions: [
+          name: '選取的地形', subActions: [
             {
               name: '全部鎖定', action: () => {
                 selectedGameTableMasks().forEach(terrain => terrain.isLocked = true);
@@ -342,7 +342,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
           checkBox: 'check'
         }
       ),
-      (this.isLocked ? null : { name: `層疊順序 ${this.height === 0 ? '' : ' (僅限平面地形)' }`, action: null, subActions: [
+      ...(this.isLocked ? [] : [{ name: `層疊順序 ${this.height === 0 ? '' : ' (僅限平面地形)' }`, subActions: [
         {
           name: '移至平面地形最上層', action: () => {
             if (!this.isLocked) {
@@ -362,9 +362,9 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
           disabled: this.isLocked
         }],
         disabled: this.isLocked || this.height != 0
-      }),
+      }]),
       ContextMenuSeparator,
-      { name: '傾斜', action: null, subActions: [
+      { name: '傾斜', subActions: [
         {
           name: `${ this.slopeDirection == SlopeDirection.NONE ? '◉' : '○' } 無`, action: () => {
             this.slopeDirection = SlopeDirection.NONE;
@@ -397,7 +397,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
           checkBox: 'radio'
         }
       ]},
-      { name: '顯示牆壁', action: null, subActions: [
+      { name: '顯示牆壁', subActions: [
         {
           name: `${ this.hasWall && this.isSurfaceShading ? '◉' : '○' } 通常`, action: () => {
             this.mode = TerrainViewState.ALL;
@@ -476,8 +476,8 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
       },
       ContextMenuSeparator,
       { name: '編輯地形設定...', action: () => { this.showDetail(this.terrain); } },
-      (this.terrain.getUrls().length <= 0 ? null : {
-        name: '開啟參考URL', action: null,
+      ...(this.terrain.getUrls().length <= 0 ? [] : [{
+        name: '開啟參考URL',
         subActions: this.terrain.getUrls().map((urlElement) => {
           const url = urlElement.value.toString();
           return {
@@ -486,16 +486,15 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
               if (StringUtil.sameOrigin(url)) {
                 window.open(url.trim(), '_blank', 'noopener');
               } else {
-                this.modalService.open(OpenUrlComponent, { url: url, title: this.terrain.name, subTitle: urlElement.name });
-              } 
+                this.modalService.open(OpenUrlComponent, { url: url, title: this.terrain!.name, subTitle: urlElement.name });
+              }
             },
             disabled: !StringUtil.validUrl(url),
             error: !StringUtil.validUrl(url) ? 'URL無效' : null,
             isOuterLink: StringUtil.validUrl(url) && !StringUtil.sameOrigin(url)
           };
         })
-      }),
-      (this.terrain.getUrls().length <= 0 ? null : ContextMenuSeparator),
+      } as ContextMenuAction, ContextMenuSeparator]),
       {
         name: '建立副本', action: () => {
           const cloneObject = this.terrain.clone();
@@ -513,7 +512,7 @@ export class TerrainComponent implements OnChanges, OnDestroy, AfterViewInit {
         }
       },
       ContextMenuSeparator,
-      { name: '建立物件', action: null, subActions: this.tabletopActionService.makeDefaultContextMenuActions(objectPosition) }
+      { name: '建立物件', subActions: this.tabletopActionService.makeDefaultContextMenuActions(objectPosition) }
     ];
 
     return actions;

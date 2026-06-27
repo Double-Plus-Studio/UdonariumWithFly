@@ -4,8 +4,8 @@ export class ObjectInteractGesture {
   private hammer: HammerManager = new Hammer.Manager(this.targetElement, { inputClass: Hammer.TouchMouseInput });
   private isEnable = true;
 
-  onstart: Callback = null;
-  oninteract: Callback = null;
+  onstart: Callback | null = null;
+  oninteract: Callback | null = null;
 
   constructor(readonly targetElement: HTMLElement) {
     this.initializeHammer();

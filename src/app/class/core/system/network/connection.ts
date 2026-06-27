@@ -6,7 +6,7 @@ export class ConnectionCallback {
   onClose: (peer: IPeerContext) => void;
   onConnect: (peer: IPeerContext) => void;
   onDisconnect: (peer: IPeerContext) => void;
-  onData: (peer: IPeerContext, data: any) => void;
+  onData: (peer: IPeerContext | null, data: any) => void;
   onError: (peer: IPeerContext, errorType: string, errorMessage: string, errorObject: any) => void;
 }
 

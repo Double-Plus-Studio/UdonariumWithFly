@@ -102,8 +102,8 @@ export class ObjectSerializer {
     return attributes;
   }
 
-  parseXml(xml: string | Element): GameObject {
-    let xmlElement: Element = null;
+  parseXml(xml: string | Element): GameObject | null {
+    let xmlElement: Element | null = null;
     if (typeof xml === 'string') {
       xmlElement = XmlUtil.xml2element(xml);
     } else {
@@ -114,7 +114,7 @@ export class ObjectSerializer {
       return null;
     }
 
-    const gameObject: GameObject = ObjectFactory.instance.create(xmlElement.tagName);
+    const gameObject: GameObject | null = ObjectFactory.instance.create(xmlElement.tagName);
     if (!gameObject) return null;
 
     if ('parseAttributes' in gameObject) {
@@ -145,7 +145,7 @@ export class ObjectSerializer {
       value = XmlUtil.decodeEntityReference(value);
 
       const split: string[] = attributes[i].name.split('.');
-      let key: string | number = split[0];
+      let key: string | number | null = split[0];
       let obj: object | Array<any> = syncData;
 
       const pollutionKey = split.find(splitKey => objectPropertyKeys.includes(splitKey));
@@ -171,7 +171,7 @@ export class ObjectSerializer {
   private static attributes2object(split: string[], obj: object | any[], key: string | number) {
     // 階層構造の解析 foo.bar.0="abc" 等
     // 処理として実装こそしているが、xmlの仕様としては良くないので使用するべきではない.
-    let parentObj: object | Array<any> = null;
+    let parentObj: object | Array<any> | null = null;
     const length = split.length;
     for (let i = 0; i < length; i++) {
       const index = parseInt(split[i]);
@@ -195,7 +195,7 @@ export class ObjectSerializer {
     return { obj, key };
   }
 
-  private static parseInnerXml(element: Element): GameObject {
+  private static parseInnerXml(element: Element): GameObject | null {
     return null;
   }
 }

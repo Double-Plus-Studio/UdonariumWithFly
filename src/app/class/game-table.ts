@@ -33,7 +33,7 @@ export class GameTable extends ObjectNode {
   @SyncVar() isShowNumber: boolean = true;
 
   gridHeight: number = 0;
-  gridClipRect: {top: number, right: number, bottom: number, left: number} = null;
+  gridClipRect: {top: number, right: number, bottom: number, left: number} | null = null;
 
   get terrains(): Terrain[] {
     const terrains: Terrain[] = [];

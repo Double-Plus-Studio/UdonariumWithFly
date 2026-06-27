@@ -13,7 +13,7 @@ export enum StandConditionType {
 }
 
 export interface StandInfo {
-  standElementIdentifier: string,
+  standElementIdentifier: string | null,
   matchMostLongText: string,
   farewell?: boolean
 }
@@ -50,11 +50,11 @@ export class StandList extends DataElement {
     this.removeChild(stand);
   }
 
-  matchStandInfo(text: string, image: ImageFile | string, standName: string=null): StandInfo {
+  matchStandInfo(text: string, image: ImageFile | string, standName: string | null=null): StandInfo {
     const imageIdentifier = (image instanceof ImageFile) ? image.identifier : image;
     let textTagMatch = '';
     let farewell = false;
-    let useStands = [];
+    let useStands: DataElement[] = [];
 
     // 退去コマンド
     ['＠退去', '@farewell'].forEach((command) => {
@@ -101,7 +101,7 @@ export class StandList extends DataElement {
         }
         if (targetImageIdentifiers.length > 0 
           && (conditionType == StandConditionType.Image || conditionType == StandConditionType.PostfixOrImage || conditionType == StandConditionType.PostfixAndImage)) {
-          conditionImage = (imageIdentifier && targetImageIdentifiers.indexOf(imageIdentifier) >= 0);
+          conditionImage = !!(imageIdentifier && targetImageIdentifiers.indexOf(imageIdentifier) >= 0);
         }
         if ((conditionPostfix && (conditionType == StandConditionType.Postfix || conditionType == StandConditionType.PostfixOrImage))
           || (conditionImage && (conditionType == StandConditionType.Image || conditionType == StandConditionType.PostfixOrImage))

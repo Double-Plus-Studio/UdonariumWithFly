@@ -3,7 +3,7 @@ import { ObjectNode } from './core/synchronize-object/object-node';
 import { StringUtil } from './core/system/util/string-util';
 
 export interface DiceRollTableRow {
-  range: { start: number, end: number },
+  range: { start: number | null, end: number | null },
   result: string
 }
 @SyncObject('dice-roll-table')
@@ -16,7 +16,7 @@ export class DiceRollTable extends ObjectNode {
     if (!this.value) return [];
     return (<string>this.value).split(/[\r\n]+/).map(row => {
       row = row.trim();
-      let match = null;
+      let match: RegExpMatchArray | null = null;
       match = row.match(/([\-－‐]?[\d０-９]+)[\s　]*[\-―－~～][\s　]*([\-－‐]?[\d０-９]+)[\s　]*[:：](.+)/);
       if (match) {
         const start = +StringUtil.toHalfWidth(match[1].replace(/[\-－‐]/, '-'));
@@ -48,6 +48,6 @@ export class DiceRollTable extends ObjectNode {
       } else {
         return null;
       }
-    }).filter(elm => elm);
+    }).filter((elm): elm is DiceRollTableRow => elm !== null);
   }
 }

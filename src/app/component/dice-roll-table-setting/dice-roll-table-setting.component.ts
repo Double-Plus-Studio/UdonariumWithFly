@@ -17,9 +17,9 @@ import { SaveDataService } from 'service/save-data.service';
     standalone: false
 })
 export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('diceRollTableSelecter') diceRollTableSelecter: ElementRef<HTMLSelectElement>;
+  @ViewChild('diceRollTableSelector') diceRollTableSelector: ElementRef<HTMLSelectElement>;
 
-  selectedDiceRollTable: DiceRollTable = null;
+  selectedDiceRollTable: DiceRollTable | null = null;
   selectedDiceRollTableXml: string = '';
 
   get diceRollTableName(): string { return this.selectedDiceRollTable.name; }
@@ -39,7 +39,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
   get isDeleted(): boolean { return this.selectedDiceRollTable ? ObjectStore.instance.get(this.selectedDiceRollTable.identifier) == null : false; }
   get isEditable(): boolean { return !this.isEmpty && !this.isDeleted; }
 
-  isSaveing: boolean = false;
+  isSaving: boolean = false;
   progresPercent: number = 0;
 
   constructor(
@@ -66,7 +66,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
     if (this.diceRollTables.length > 0) {
       queueMicrotask(() => {
         this.onChangeDiceRollTable(this.diceRollTables[0].identifier);
-        this.diceRollTableSelecter.nativeElement.selectedIndex = 0;
+        this.diceRollTableSelector.nativeElement.selectedIndex = 0;
       });
     }
   }
@@ -88,13 +88,13 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
     const diceRollTable = this.create();
     queueMicrotask(() => {
       this.onChangeDiceRollTable(diceRollTable.identifier);
-      this.diceRollTableSelecter.nativeElement.value = diceRollTable.identifier;
+      this.diceRollTableSelector.nativeElement.value = diceRollTable.identifier;
     })
   }
   
   async save() {
-    if (!this.selectedDiceRollTable || this.isSaveing) return;
-    this.isSaveing = true;
+    if (!this.selectedDiceRollTable || this.isSaving) return;
+    this.isSaving = true;
     this.progresPercent = 0;
 
     const fileName: string = 'fly_rollTable_' + this.selectedDiceRollTable.name;
@@ -104,14 +104,14 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
     });
 
     setTimeout(() => {
-      this.isSaveing = false;
+      this.isSaving = false;
       this.progresPercent = 0;
     }, 500);
   }
 
   async saveAll() {
-    if (this.isSaveing) return;
-    this.isSaveing = true;
+    if (this.isSaving) return;
+    this.isSaving = true;
     this.progresPercent = 0;
 
     await this.saveDataService.saveGameObjectAsync(DiceRollTableList.instance, 'fly_rollTable_All', percent => {
@@ -119,7 +119,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
     });
 
     setTimeout(() => {
-      this.isSaveing = false;
+      this.isSaving = false;
       this.progresPercent = 0;
     }, 500);
   }
@@ -139,7 +139,7 @@ export class DiceRollTableSettingComponent implements OnInit, OnDestroy, AfterVi
       queueMicrotask(() => {
         const diceRollTables = this.diceRollTables;
         this.onChangeDiceRollTable(diceRollTables[diceRollTables.length - 1].identifier);
-        this.diceRollTableSelecter.nativeElement.selectedIndex = diceRollTables.length - 1;
+        this.diceRollTableSelector.nativeElement.selectedIndex = diceRollTables.length - 1;
       });
     }
   }

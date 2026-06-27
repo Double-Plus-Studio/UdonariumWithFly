@@ -12,8 +12,8 @@ export enum HandleType {
 }
 
 export class ResizeHandler {
-  input: InputHandler = null;
-  private handle: HTMLElement = null;
+  input: InputHandler | null = null;
+  private handle: HTMLElement | null = null;
   private width = 12;
 
   constructor(

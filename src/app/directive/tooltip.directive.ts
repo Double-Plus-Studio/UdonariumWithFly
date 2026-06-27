@@ -31,10 +31,10 @@ export class TooltipDirective implements AfterViewInit, OnDestroy {
   private callbackOnMouseDown = (e) => this.onMouseDown(e);
   private callbackOnPick = (e) => this.ngZone.run(() => this.closeAll());
 
-  private openTooltipTimer: NodeJS.Timeout;
-  private closeTooltipTimer: NodeJS.Timeout;
+  private openTooltipTimer: NodeJS.Timeout | null = null;
+  private closeTooltipTimer: NodeJS.Timeout | null = null;
 
-  private tooltipComponentRef: ComponentRef<OverviewPanelComponent>
+  private tooltipComponentRef: ComponentRef<OverviewPanelComponent> | null = null;
 
   constructor(
     private ngZone: NgZone,

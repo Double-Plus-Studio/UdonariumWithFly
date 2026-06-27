@@ -2,8 +2,8 @@ import { ComponentRef, Injectable, Injector, OnChanges, ViewContainerRef } from 
 
 class ModalContext {
   constructor(
-    private _resolve: (value?: unknown) => void,
-    private _reject: (reason?: unknown) => void,
+    private _resolve: ((value?: unknown) => void) | null,
+    private _reject: ((reason?: unknown) => void) | null,
     public option?: any
   ) {
   }
@@ -19,14 +19,14 @@ class ModalContext {
 
 @Injectable()
 export class ModalService {
-  private modalContext: ModalContext = null;
+  private modalContext: ModalContext | null = null;
   private count = 0;
 
   title: string = '無名對話框';
 
   /* Todo */
   static defaultParentViewContainerRef: ViewContainerRef;
-  static ModalComponentClass: { new(...args: any[]): any } = null;
+  static ModalComponentClass: { new(...args: any[]): any } | null = null;
 
   get option(): any {
     return this.modalContext ? this.modalContext.option : null;
@@ -64,8 +64,8 @@ export class ModalService {
       const parentInjector = parentViewContainerRef.injector;
       const injector = Injector.create({ providers: [{ provide: ModalService, useValue: childModalService }], parent: parentInjector });
 
-      let panelComponentRef: ComponentRef<any> = parentViewContainerRef.createComponent(ModalService.ModalComponentClass, { index: parentViewContainerRef.length, injector: injector });
-      let bodyComponentRef: ComponentRef<any> = panelComponentRef.instance.content.createComponent(childComponent);
+      let panelComponentRef: ComponentRef<any> | null = parentViewContainerRef.createComponent(ModalService.ModalComponentClass!, { index: parentViewContainerRef.length, injector: injector });
+      let bodyComponentRef: ComponentRef<any> | null = panelComponentRef.instance.content.createComponent(childComponent);
 
       panelComponentRef.onDestroy(() => {
         panelComponentRef = null;

@@ -52,7 +52,7 @@
           <div>骰子全體公開</div>
         </a>
       </li>
-      <li (click)="standSetteings($event)">
+      <li (click)="standSettings($event)">
         <a routerLink="/" routerLinkActive="active" style="pointer-events: none">
           <div><i class="material-icons icon-size">how_to_reg</i></div>
           <div>個人設定<sup class="self-only">*</sup></div>
@@ -74,7 +74,7 @@
           </label>
         </a>
       </li>
-      @if (!isSaveing) {
+      @if (!isSaving) {
         <li (click)="save()">
           <a routerLink="/" routerLinkActive="active">
             <div><i class="material-icons">sd_storage</i></div>
@@ -82,7 +82,7 @@
           </a>
         </li>
       }
-      @if (isSaveing) {
+      @if (isSaving) {
         <li style="pointer-events: none;">
           <a>
             <div><i class="material-icons vibration-amine">sd_storage</i></div>

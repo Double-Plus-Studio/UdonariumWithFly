@@ -57,12 +57,12 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   @ViewChild('fullCardImage', { static: false }) fullCardImageElement: ElementRef<HTMLElement>;
   @ViewChild('textArea', { static: false }) textAreaElementRef: ElementRef;
 
-  @Input() tabletopObject: TabletopObject = null;
+  @Input() tabletopObject: TabletopObject | null = null;
 
   @Input() left: number = 0;
   @Input() top: number = 0;
 
-  @Input() cardState: CardState = null;
+  @Input() cardState: CardState | null = null;
 
   readonly CardStateFront = CardState.FRONT;
   readonly CardStateBack = CardState.BACK;
@@ -321,7 +321,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
     return false; 
   }
   private getInventoryTags(gameObject: TabletopObject): DataElement[] {
-    return this.inventoryService.tableInventory.dataElementMap.get(gameObject.identifier);
+    return this.inventoryService.tableInventory.dataElementMap.get(gameObject.identifier) ?? [];
   }
 
   onCardImageLoad() {
@@ -360,7 +360,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
       rect.top = offset + (viewHeight - rect.height) / 2;
     } 
 
-    let card = null;
+    let card: Card | null = null;
     if (this.tabletopObject instanceof CardStack) {
       card = this.tabletopObject.topCard;
     } else if (this.tabletopObject instanceof Card) {
@@ -375,7 +375,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   get cardColor(): string {
-    let card = null;
+    let card: Card | null = null;
     if (this.tabletopObject instanceof CardStack) {
       card = this.tabletopObject.topCard;
     } else if (this.tabletopObject instanceof Card) {
@@ -385,7 +385,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   get cardFontSize(): number {
-    let card = null;
+    let card: Card | null = null;
     if (this.tabletopObject instanceof CardStack) {
       card = this.tabletopObject.topCard;
     } else if (this.tabletopObject instanceof Card) {
@@ -395,7 +395,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   get cardText(): string {
-    let card = null;
+    let card: Card | null = null;
     if (this.tabletopObject instanceof CardStack) {
       card = this.tabletopObject.topCard;
     } else if (this.tabletopObject instanceof Card) {
@@ -417,7 +417,7 @@ export class OverviewPanelComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   get rangeElms(): DataElement[] {
-    const ret = []
+    const ret: DataElement[] = []
     if (!this.tabletopObject || !(this.tabletopObject instanceof RangeArea) || !this.tabletopObject.commonDataElement) return ret;
     if (this.tabletopObject.commonDataElement.getFirstElementByName('length')) ret.push(this.tabletopObject.commonDataElement.getFirstElementByName('length'));
     if ((this.tabletopObject.type === 'CORN' || this.tabletopObject.type === 'LINE') && this.tabletopObject.commonDataElement.getFirstElementByName('width')) ret.push(this.tabletopObject.commonDataElement.getFirstElementByName('width'));

@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-type AudioCache = { url: string, blob: Blob };
+type AudioCache = { url: string, blob: Blob | null };
 
 export class AudioPlayer {
 
@@ -157,7 +157,7 @@ export class AudioPlayer {
     return this._mediaElementSource;
   }
 
-  audio: AudioFile;
+  audio: AudioFile | undefined;
   volumeType: VolumeType = VolumeType.MASTER;
 
   get volume(): number { return this.audioElm.volume; }
@@ -180,7 +180,7 @@ export class AudioPlayer {
     this.playBufferAsyncBase(AudioPlayer.soundEffectNode, audio, volume);
   }
 
-  play(audio: AudioFile = this.audio) {
+  play(audio: AudioFile = this.audio!) {
     this.stop();
     this.audio = audio;
     if (!this.audio) return;
@@ -189,7 +189,7 @@ export class AudioPlayer {
 
     if (audio.state === AudioState.URL) {
       if (AudioPlayer.cacheMap.has(audio.identifier)) {
-        url = AudioPlayer.cacheMap.get(audio.identifier).url;
+        url = AudioPlayer.cacheMap.get(audio.identifier)!.url;
       } else {
         AudioPlayer.createCacheAsync(audio);
       }
@@ -270,13 +270,13 @@ export class AudioPlayer {
     source.start();
   }
 
-  private static async createBufferSourceAsync(audio: AudioFile): Promise<AudioBufferSourceNode> {
+  private static async createBufferSourceAsync(audio: AudioFile): Promise<AudioBufferSourceNode | null> {
     if (!audio) return null;
     try {
-      let blob = audio.blob;
+      let blob: Blob | null = audio.blob;
       if (audio.state === AudioState.URL) {
         if (AudioPlayer.cacheMap.has(audio.identifier)) {
-          blob = AudioPlayer.cacheMap.get(audio.identifier).blob;
+          blob = AudioPlayer.cacheMap.get(audio.identifier)!.blob;
         } else {
           const cache = await AudioPlayer.createCacheAsync(audio);
           blob = cache && cache.blob ? cache.blob : null;
@@ -320,7 +320,7 @@ export class AudioPlayer {
   }
 
   private static async createCacheAsync(audio: AudioFile): Promise<AudioCache> {
-    const cache = { url: audio.url, blob: null };
+    const cache: AudioCache = { url: audio.url, blob: null };
     try {
       cache.blob = await AudioPlayer.getBlobAsync(audio);
     } catch (e) {
@@ -329,10 +329,10 @@ export class AudioPlayer {
     }
 
     if (AudioPlayer.cacheMap.has(audio.identifier)) {
-      return AudioPlayer.cacheMap.get(audio.identifier);
+      return AudioPlayer.cacheMap.get(audio.identifier)!;
     }
 
-    cache.url = URL.createObjectURL(cache.blob);
+    cache.url = URL.createObjectURL(cache.blob!);
     AudioPlayer.cacheMap.set(audio.identifier, cache);
     return cache;
   }

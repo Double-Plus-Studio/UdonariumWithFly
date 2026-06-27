@@ -37,8 +37,8 @@ export class Terrain extends TabletopObject {
   get name(): string { return this.getCommonValue('name', ''); }
   set name(name: string) { this.setCommonValue('name', name); }
 
-  get wallImage(): ImageFile { return this.getImageFile('wall'); }
-  get floorImage(): ImageFile { return this.getImageFile('floor'); }
+  get wallImage(): ImageFile | null { return this.getImageFile('wall'); }
+  get floorImage(): ImageFile | null { return this.getImageFile('floor'); }
 
   get hasWall(): boolean { return this.mode & TerrainViewState.WALL ? true : false; }
   get hasFloor(): boolean { return this.mode & TerrainViewState.FLOOR ? true : false; }
@@ -51,7 +51,7 @@ export class Terrain extends TabletopObject {
   }
 
   static create(name: string, width: number, depth: number, height: number, wall: string, floor: string, identifier?: string): Terrain {
-    let object: Terrain = null;
+    let object: Terrain | null = null;
 
     if (identifier) {
       object = new Terrain(identifier);

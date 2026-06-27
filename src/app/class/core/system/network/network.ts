@@ -3,7 +3,7 @@ import { Connection, ConnectionCallback } from './connection';
 import { IPeerContext, PeerContext } from './peer-context';
 import { IRoomInfo } from './room-info';
 
-type QueueItem = { data: any, sendTo: string };
+type QueueItem = { data: any, sendTo: string | undefined };
 type ConnectionClass = new (...args: any[]) => Connection;
 
 const unknownPeer = PeerContext.parse('???');
@@ -26,12 +26,12 @@ export class Network {
   get bandwidthUsage(): number { return this.connection ? this.connection.bandwidthUsage : 0; }
 
   private config: any = {}
-  private connectionClassPromise: Promise<ConnectionClass>;
+  private connectionClassPromise: Promise<ConnectionClass> | null;
   private connectionClass: ConnectionClass;
-  private connection: Connection;
+  private connection: Connection | null;
 
   private queue: Set<QueueItem> = new Set();
-  private sendInterval: number = null;
+  private sendInterval: number | null = null;
   private sendCallback = () => { this.sendQueue(); }
   private callbackUnload: any = (e) => { this.close(); };
 
@@ -46,7 +46,7 @@ export class Network {
   open(userId?: string)
   open(userId: string, roomId: string, roomName: string, password: string)
   open(...args: any[]) {
-    if (this.connectionClassPromise) {
+    if (this.connectionClassPromise != null) {
       console.warn('It is already opened.');
       this.close();
     }

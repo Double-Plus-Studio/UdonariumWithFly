@@ -25,7 +25,7 @@ export class ChatLogOutputComponent implements OnInit, AfterViewInit, OnDestroy 
   selectedTabs: ChatTab[] = [];
   panelId;
 
-  isSaveing: boolean = false;
+  isSaving: boolean = false;
   progresPercent: number = 0;
 
   get isAllTabs(): boolean { return ChatLogOutputComponent.isAllTabs; }
@@ -46,7 +46,7 @@ export class ChatLogOutputComponent implements OnInit, AfterViewInit, OnDestroy 
   get chatTabs(): ChatTab[] { return this.chatMessageService.chatTabs; }
   get isEmpty(): boolean { return this.chatMessageService.chatTabs.length < 1 }
 
-  get isDisable(): boolean { return this.isEmpty || this.isSaveing || (!this.isAllTabs && this.selectedTabs.length === 0) }
+  get isDisable(): boolean { return this.isEmpty || this.isSaving || (!this.isAllTabs && this.selectedTabs.length === 0) }
 
   get roomName():string {
     const roomName = Network.peer && 0 < Network.peer.roomName.length
@@ -103,16 +103,16 @@ export class ChatLogOutputComponent implements OnInit, AfterViewInit, OnDestroy 
   saveLog() {
     if (this.isDisable) return;
     const fileName = this.roomName + '_聊天日誌_' + (this.isAllTabs ? '全部分頁' : this.selectedTabs[0].name + (this.selectedTabs.length > 1 ? '、其他' : ''));
-    const tabs = this.isAllTabs ? null : this.selectedTabs;
+    const tabs = this.isAllTabs ? undefined : this.selectedTabs;
     this.saveDataService.saveChatLog(this.logFormat, fileName, tabs, this.dateFormat, this.isWriteOerationLog);
   }
 
   async saveLogWithImages() {
     if (this.isDisable) return;
     const fileName = this.roomName + '_聊天日誌含圖片_' + (this.isAllTabs ? '全部分頁' : this.selectedTabs[0].name + (this.selectedTabs.length > 1 ? '、其他' : ''));
-    const tabs = this.isAllTabs ? null : this.selectedTabs;
+    const tabs = this.isAllTabs ? undefined : this.selectedTabs;
 
-    this.isSaveing = true;
+    this.isSaving = true;
     this.progresPercent = 0;
 
     await this.saveDataService.saveChatLogAsync(this.logFormat, fileName, tabs, this.dateFormat, this.isWriteOerationLog, percent => {
@@ -120,7 +120,7 @@ export class ChatLogOutputComponent implements OnInit, AfterViewInit, OnDestroy 
     });
 
     setTimeout(() => {
-      this.isSaveing = false;
+      this.isSaving = false;
       this.progresPercent = 0;
     }, 500);
   }

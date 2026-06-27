@@ -28,19 +28,19 @@ export class TabletopObject extends ObjectNode {
   private _imageFile: ImageFile = ImageFile.Empty;
   private _shadowImageFile: ImageFile = ImageFile.Empty;
   //private _faceIcon: ImageFile = null;
-  private _dataElements: { [name: string]: string } = {};
+  private _dataElements: { [name: string]: string | null } = {};
 
   // GameDataElement getter/setter
-  get rootDataElement(): DataElement {
+  get rootDataElement(): DataElement | null {
     for (const node of this.children) {
       if (node.getAttribute('name') === this.aliasName) return <DataElement>node;
     }
     return null;
   }
 
-  get imageDataElement(): DataElement { return this.getElement('image'); }
-  get commonDataElement(): DataElement { return this.getElement('common'); }
-  get detailDataElement(): DataElement { return this.getElement('detail'); }
+  get imageDataElement(): DataElement | null { return this.getElement('image'); }
+  get commonDataElement(): DataElement | null { return this.getElement('common'); }
+  get detailDataElement(): DataElement | null { return this.getElement('detail'); }
 
   @SyncVar() currntImageIndex: number = 0;
   /*
@@ -54,12 +54,12 @@ export class TabletopObject extends ObjectNode {
     return this._imageFile;
   }
   */
-  get imageElement(): DataElement {
+  get imageElement(): DataElement | null {
     if (!this.imageDataElement) return null;
     const imageIdElements: DataElement[] = this.imageDataElement.getElementsByName('imageIdentifier');
     return imageIdElements[this.currntImageIndex < 0 ? 0 : this.currntImageIndex >= imageIdElements.length ? imageIdElements.length - 1 : this.currntImageIndex];
   }
-  get imageFile(): ImageFile {
+  get imageFile(): ImageFile | null {
     if (!this.imageDataElement) return this._imageFile;
     const imageIdElement = this.imageElement;
     if (imageIdElement && this._imageFile.identifier !== imageIdElement.value) {
@@ -79,7 +79,7 @@ export class TabletopObject extends ObjectNode {
 
   @SyncVar() isUseIconToOverviewImage: boolean = false;
   @SyncVar() currntIconIndex: number = 0;
-  get faceIcon(): ImageFile {
+  get faceIcon(): ImageFile | null {
     if (!this.imageDataElement) return null;
     const elements = this.imageDataElement.getElementsByName('faceIcon');
     if (elements) {
@@ -157,16 +157,16 @@ export class TabletopObject extends ObjectNode {
     }
 
     if (!this.imageDataElement) {
-      this.rootDataElement.appendChild(DataElement.create('image', '', {}, 'image_' + this.identifier));
-      this.imageDataElement.appendChild(DataElement.create('imageIdentifier', '', { type: 'image' }, 'imageIdentifier_' + this.identifier));
+      this.rootDataElement!.appendChild(DataElement.create('image', '', {}, 'image_' + this.identifier));
+      this.imageDataElement!.appendChild(DataElement.create('imageIdentifier', '', { type: 'image' }, 'imageIdentifier_' + this.identifier));
     }
-    if (!this.commonDataElement) this.rootDataElement.appendChild(DataElement.create('common', '', {}, 'common_' + this.identifier));
-    if (!this.detailDataElement) this.rootDataElement.appendChild(DataElement.create('detail', '', {}, 'detail_' + this.identifier));
+    if (!this.commonDataElement) this.rootDataElement!.appendChild(DataElement.create('common', '', {}, 'common_' + this.identifier));
+    if (!this.detailDataElement) this.rootDataElement!.appendChild(DataElement.create('detail', '', {}, 'detail_' + this.identifier));
   }
 
-  protected getElement(name: string, from: DataElement = this.rootDataElement): DataElement {
+  protected getElement(name: string, from: DataElement | null = this.rootDataElement): DataElement | null {
     if (!from) return null;
-    let element: DataElement = this._dataElements[name] ? ObjectStore.instance.get(this._dataElements[name]) : null;
+    let element: DataElement | null = this._dataElements[name] ? ObjectStore.instance.get(this._dataElements[name]) : null;
     if (!element || !from.contains(element)) {
       element = from.getFirstElementByName(name);
       this._dataElements[name] = element ? element.identifier : null;
@@ -196,7 +196,7 @@ export class TabletopObject extends ObjectNode {
     element.value = value;
   }
 
-  protected getImageFile(elementName: string) {
+  protected getImageFile(elementName: string): ImageFile | null {
     if (!this.imageDataElement) return null;
     const image = this.getElement(elementName, this.imageDataElement);
     return image ? ImageStorage.instance.get(<string>image.value) : null;

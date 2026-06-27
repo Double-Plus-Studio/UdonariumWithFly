@@ -19,7 +19,7 @@ export namespace CanvasUtil {
     const ratio_w_half = Math.ceil(ratio_w / 2);
     const ratio_h_half = Math.ceil(ratio_h / 2);
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d')!;
     const img = ctx.getImageData(0, 0, width_source, height_source);
     const img2 = ctx.createImageData(width, height);
     const data = img.data;
@@ -77,10 +77,10 @@ export namespace CanvasUtil {
       canvas.width = width;
       canvas.height = height;
     } else {
-      ctx.clearRect(0, 0, width_source, height_source);
+      ctx!.clearRect(0, 0, width_source, height_source);
     }
 
     //draw
-    ctx.putImageData(img2, 0, 0);
+    ctx!.putImageData(img2, 0, 0);
   }
 }

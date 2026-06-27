@@ -65,7 +65,7 @@ export class Listener implements Observer {
 
   unregister(): this {
     this.subject.unregisterListener(this);
-    this._callback = null;
+    this._callback = null as any;
     this._isRegistered = false;
     return this;
   }
@@ -77,7 +77,7 @@ export class Listener implements Observer {
     }
   }
 
-  isEqual(key: any, eventName: string, callback: Callback<any>) {
+  isEqual(key: any, eventName: string | null, callback: Callback<any> | null) {
     const matchTarget = (key == null || key === this.key);
     const matchEventName = (eventName == null || eventName === this.eventName);
     const matchCallback = (callback == null || callback === this.callback);

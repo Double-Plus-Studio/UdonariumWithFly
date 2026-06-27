@@ -6,7 +6,7 @@ export interface WebRTCConnection {
 }
 
 export class WebRTCStatsMonitor {
-  private static updateWebRTCStatsTimer: ResettableTimeout = null;
+  private static updateWebRTCStatsTimer: ResettableTimeout | null = null;
   private static monitoringConnections: Set<WebRTCConnection> = new Set();
 
   private constructor() { }

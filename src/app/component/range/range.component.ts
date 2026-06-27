@@ -37,7 +37,7 @@ import { TabletopActionService } from 'service/tabletop-action.service';
 
 import { TabletopService } from 'service/tabletop.service';
 import { RangeRender, RangeRenderSetting, ClipAreaCorn, ClipAreaLine, ClipAreaSquare, ClipAreaDiamond} from './range-render'; // 注意別のコンポーネントフォルダにアクセスしてグリッドの描画を行っている
-import { TableSelecter } from '@udonarium/table-selecter';
+import { TableSelector } from '@udonarium/table-selector';
 import { GameTable } from '@udonarium/game-table';
 import { StringUtil } from '@udonarium/core/system/util/string-util';
 import { ModalService } from 'service/modal.service';
@@ -53,7 +53,7 @@ import { SelectionState, TabletopSelectionService } from 'service/tabletop-selec
     standalone: false
 })
 export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
-  @Input() range: RangeArea = null;
+  @Input() range: RangeArea | null = null;
   @Input() is3D: boolean = false;
 //  @Input() rotateDeg : string = ''
 
@@ -64,7 +64,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   
   public get clipPathText() {
     let text = '';
-    switch (this.range.type) {
+    switch (this.range?.type) {
       case 'LINE':
         text = this.clipLine;
         break;
@@ -87,7 +87,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   public get gripPathText() {
     let text = '';
-    switch (this.range.type) {
+    switch (this.range?.type) {
       case 'LINE':
         text = this.gripLine;
         break;
@@ -296,7 +296,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     clip04y: 0,
   }
 
-  get tableSelecter(): TableSelecter { return this.tabletopService.tableSelecter; }
+  get tableSelector(): TableSelector { return this.tabletopService.tableSelector; }
   get currentTable(): GameTable { return this.tabletopService.currentTable; }
 
   get name(): string { return this.range.name; }
@@ -345,8 +345,8 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     return `${shadow} 0px 0px 3px`;
   }
 
-  get followingCharactor(): GameCharacter { return this.range.followingCharactor; }
-  set followingCharactor(followingCharactor: GameCharacter) { this.range.followingCharactor = followingCharactor; }
+  get followingCharactor(): GameCharacter | null { return this.range.followingCharactor; }
+  set followingCharactor(followingCharactor: GameCharacter | null) { this.range.followingCharactor = followingCharactor; }
 
   get isFollowed(): boolean {
     return this.followingCharactor 
@@ -398,7 +398,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
   isMoving = false;
   math = Math;
 
-  private input: InputHandler = null;
+  private input: InputHandler | null = null;
 
   get isInverse(): boolean {
     const rotate = Math.abs(this.viewRotateZ + this.rotateDeg) % 360;
@@ -519,7 +519,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     const menuPosition = this.pointerDeviceService.pointers[0];
     const objectPosition = this.coordinateService.calcTabletopLocalCoordinate();
 
-    const menuArray = [];
+    const menuArray: ContextMenuAction[] = [];
 
     if (this.selectionService.objects.length) {
       menuArray.push({ name: '集中於此', action: () => this.selectionService.congregate(objectPosition) });
@@ -545,7 +545,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     )
     menuArray.push(
       {
-        name: '判定影響格線的方式', action: null, 
+        name: '判定影響格線的方式',
         subActions: [
           { name: `${this.range.fillType == 0 ? '◉' : '○'} 無判定（填滿輪廓內）`, action: () => { this.range.fillType = 0; }, checkBox: 'radio' },
           ContextMenuSeparator,
@@ -560,7 +560,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
 
     if (this.range.type == 'CIRCLE' || this.range.type == 'SQUARE' || this.range.type == 'DIAMOND') {
       const menu: ContextMenuAction[] = this.dockableCharacters.length <= 0
-        ? this.followingCharactor ? [] : [{ name: '沒有角色', action: null, disabled: true, center: true }] 
+        ? this.followingCharactor ? [] : [{ name: '沒有角色', disabled: true, center: true } as ContextMenuAction]
         : this.dockableCharacters.map(character => {
           return {
             name: `${this.followingCharactor && this.followingCharactor.identifier === character.identifier ? '◉' : '○'} ${character.name}`,
@@ -586,7 +586,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
           });
       //}
       menuArray.push({
-          name: '跟隨附近的角色', action: null, 
+          name: '跟隨附近的角色',
           subActions: menu
         });
       menuArray.push(
@@ -684,7 +684,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     if (this.range.getUrls().length > 0) {
       menuArray.push(
         {
-          name: '開啟參考URL', action: null,
+          name: '開啟參考URL',
           subActions: this.range.getUrls().map((urlElement) => {
             const url = urlElement.value.toString();
             return {
@@ -714,7 +714,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
           cloneObject.location.y += this.gridSize;
           cloneObject.toTopmost();
           cloneObject.isLocked = false;
-          cloneObject.followingCharctorIdentifier = null;
+          cloneObject.followingCharctorIdentifier = '';
           if (this.range.parent) this.range.parent.appendChild(cloneObject);
           SoundEffect.play(PresetSound.cardPut);
         }
@@ -730,7 +730,7 @@ export class RangeComponent implements OnChanges, OnDestroy, AfterViewInit {
     );
     menuArray.push( ContextMenuSeparator );
     menuArray.push(
-      { name: '建立物件', action: null, subActions: this.tabletopActionService.makeDefaultContextMenuActions(objectPosition) }
+      { name: '建立物件', subActions: this.tabletopActionService.makeDefaultContextMenuActions(objectPosition) }
     );
 
     this.contextMenuService.open(menuPosition, menuArray, this.name);

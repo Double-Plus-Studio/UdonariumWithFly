@@ -1,10 +1,10 @@
 type TimerCallback = (...args: any[]) => void;
 
 export class ResettableTimeout {
-  private callback: TimerCallback;
+  private callback: TimerCallback | null;
   private timerMilliSecond: number = 0;
   private timeoutDate: number = 0;
-  private timeoutTimer: NodeJS.Timeout;
+  private timeoutTimer: NodeJS.Timeout | null;
   private isStopped: boolean = false;
 
   get isActive(): boolean { return this.timeoutTimer != null; }

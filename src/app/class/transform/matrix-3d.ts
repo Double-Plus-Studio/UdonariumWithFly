@@ -41,13 +41,13 @@ export class Matrix3D {
   constructor() {
   }
 
-  static create(element: HTMLElement, style: CSSStyleDeclaration = null, ret = new Matrix3D()): Matrix3D {
+  static create(element: HTMLElement, style: CSSStyleDeclaration | null = null, ret = new Matrix3D()): Matrix3D {
     if (element && element.ownerDocument)
       return ret.setCSS((style || window.getComputedStyle(element)).transform);
     return ret.identity();
   }
 
-  setData(data: number[]): Matrix3D {
+  setData(data: number[]): Matrix3D | undefined {
     if (data == null)
       return;
 
