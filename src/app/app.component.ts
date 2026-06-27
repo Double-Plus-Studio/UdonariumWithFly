@@ -718,7 +718,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     ], '重置視角');
   }
 
-  standSetteings(event: Event) {
+  standSettings(event: Event) {
     const button = event.target as HTMLElement;
     const clientRect = button.getBoundingClientRect();
     const position = {

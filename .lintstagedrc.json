@@ -1,7 +1,6 @@
 {
   "*.ts": [
-    "eslint --fix",
-    "tsc --noEmit"
+    "eslint --fix"
   ],
   "*.html": [
     "eslint --fix"
