@@ -199,6 +199,7 @@ export class TrysteroConnection implements Connection {
       }
 
       const trysteroRoomId = this.calcTrysteroRoomId(peer);
+      console.log('Trystero: joining room', trysteroRoomId, 'as', peer.peerId);
       this.room = joinRoom(
         {
           appId: firebaseConfig.databaseURL,
@@ -291,6 +292,7 @@ export class TrysteroConnection implements Connection {
       this.trysteroToContext.set(trysteroId, context);
       this.udonariumToTrystero.set(payload.peerId, trysteroId);
       this.pendingHelloPeers.delete(trysteroId);
+      console.log('Trystero: hello registered', payload.peerId, 'via', trysteroId, '(peers:', this.trysteroToContext.size + ')');
 
       if (this.callback.onConnect) this.callback.onConnect(context);
 

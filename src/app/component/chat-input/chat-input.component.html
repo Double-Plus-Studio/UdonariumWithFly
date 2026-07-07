@@ -117,7 +117,7 @@
     </div>
     <div class="writing-info">
       @if (0 < writingPeerNameAndColors.length) {
-        @for (peerNameAndColor of writingPeerNameAndColors; track peerNameAndColor; let i = $index) {
+        @for (peerNameAndColor of writingPeerNameAndColors; track $index; let i = $index) {
           <div style="display: inline; white-space: pre">
             @if (peerNameAndColor.imageUrl) {
               <div class="cover mini-icon" [style.background-image]="'url(' + peerNameAndColor.imageUrl + ')' | safe: 'style' "></div>

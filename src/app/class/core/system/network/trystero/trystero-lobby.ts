@@ -47,6 +47,9 @@ export class TrysteroLobby {
   }
 
   async ensureSignedIn(): Promise<void> {
+    // 先等待 auth 從 IndexedDB 還原完成再判斷是否已登入，
+    // 避免同一瀏覽器新開的視窗重複呼叫 signInAnonymously。
+    await this.deps.auth.authStateReady?.();
     if (!this.deps.auth.currentUser) {
       await this.deps.signInAnonymously(this.deps.auth);
     }

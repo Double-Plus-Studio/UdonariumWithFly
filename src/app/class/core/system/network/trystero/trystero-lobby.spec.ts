@@ -36,6 +36,22 @@ describe('TrysteroLobby', () => {
 
       expect(deps.signInAnonymously).not.toHaveBeenCalled();
     });
+
+    it('應先等待 authStateReady 還原持久化登入，避免重複建立匿名帳號', async () => {
+      const auth: any = { currentUser: null };
+      auth.authStateReady = jasmine.createSpy('authStateReady').and.callFake(() => {
+        // 模擬從 IndexedDB 還原既有的匿名使用者
+        auth.currentUser = { uid: 'restored' };
+        return Promise.resolve();
+      });
+      const deps = makeDeps({ auth });
+      const lobby = new TrysteroLobby({} as FirebaseApp, deps);
+
+      await lobby.ensureSignedIn();
+
+      expect(auth.authStateReady).toHaveBeenCalled();
+      expect(deps.signInAnonymously).not.toHaveBeenCalled();
+    });
   });
 
   describe('register()', () => {
