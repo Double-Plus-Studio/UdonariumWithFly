@@ -12,6 +12,9 @@
     "lint:fix": "eslint src --fix",
     "type-check": "tsc --noEmit",
     "check": "npm run lint && npm run type-check",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:headed": "playwright test --headed",
     "prepare": "husky install",
     "postinstall": "patch-package && node scripts/generate-bcdice-registry.mjs"
   },
@@ -62,6 +65,7 @@
     "@angular-eslint/template-parser": "^21.4.0",
     "@angular/cli": "^21.2.15",
     "@angular/compiler-cli": "^21.2.17",
+    "@playwright/test": "^1.61.1",
     "@types/crypto-js": "^4.2.2",
     "@types/file-saver": "^2.0.7",
     "@types/hammerjs": "^2.0.45",

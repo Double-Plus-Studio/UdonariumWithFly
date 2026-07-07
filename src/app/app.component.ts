@@ -56,6 +56,7 @@ import { SwUpdate } from '@angular/service-worker';
 
 import * as localForage from 'localforage';
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
+import { environment } from '../environments/environment';
 
 @Component({
     selector: 'app-root',
@@ -144,6 +145,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngZone.runOutsideAngular(() => {
       void EventSystem;
       void Network;
+      if (!environment.production) {
+        // E2E 測試與除錯用（讓 Playwright evaluate 可以讀取連線狀態）
+        (window as any).Network = Network;
+      }
       FileArchiver.instance.initialize();
       ImageSharingSystem.instance.initialize();
       void ImageStorage.instance;
